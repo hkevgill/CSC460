@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "LiquidCrystal.h"
+#include "scheduler.h"
 
 int LASER = 0;
 int SERVO = 1;
@@ -28,6 +29,18 @@ typedef struct ListElement{
 
 // GLOBAL LIST HEADS //
 ListElem *screenHead = NULL;
+
+// Function prototypes
+void insertEnd(int val, ListElem **head);
+void deleteElem(int val, ListElem **head);
+void setup();
+void bluetoothReceive();
+void screenTask();
+void laserTask();
+void lightSensorTask();
+void movementTask();
+void readByte(int *inByte);
+
 
 // ------------------------------ INSERT END ------------------------------ //
 void insertEnd(int val, ListElem **head){
@@ -78,20 +91,31 @@ void deleteElem(int val, ListElem **head){
 
 void setup() {
 
- // Serial
- Serial.begin(9600);
- Serial1.begin(9600);
+  // TTA
+  Scheduler_Init();
 
- // LCD
- lcd.begin(16, 2);
-
- // Joystick
- pinMode(joyX, INPUT);
- pinMode(joyZ, INPUT_PULLUP);
-
- // Buzzer
- pinMode(buzzerPin, OUTPUT);
- digitalWrite(buzzerPin, HIGH);
+  // Start tasks arguments
+  // Offset in ms, period in ms, function callback
+  Scheduler_StartTask(0, 150, bluetoothReceive);
+  Scheduler_StartTask(5, 100, laserTask);
+  Scheduler_StartTask(10, 100, movementTask);
+  Scheduler_StartTask(15, 150, screenTask);
+  Scheduler_StartTask(20, 100, lightSensorTask);
+  
+  // Serial
+  Serial.begin(9600);
+  Serial1.begin(9600);
+  
+  // LCD
+  lcd.begin(16, 2);
+  
+  // Joystick
+  pinMode(joyX, INPUT);
+  pinMode(joyZ, INPUT_PULLUP);
+  
+  // Buzzer
+  pinMode(buzzerPin, OUTPUT);
+  digitalWrite(buzzerPin, HIGH);
 }
 
 void readByte(int *inByte) {
@@ -151,7 +175,7 @@ void screenTask() {
 
   lcd.setCursor(4, 1);
 
-  if (photocellReading > 350) {
+  if (photocellReading > 450) {
     lcd.print("SHOT");
   }
   else {
@@ -212,15 +236,17 @@ int main() {
  setup();
  
  for(;;) {
-    movementTask();
-    delay(5);
-    laserTask();
-    delay(5);
-    lightSensorTask();
-    delay(5);
-    bluetoothReceive();
-    delay(5);
-    screenTask();
-    delay(5);
+  Scheduler_Dispatch();
+  
+//    movementTask();
+//    delay(5);
+//    laserTask();
+//    delay(5);
+//    lightSensorTask();
+//    delay(5);
+//    bluetoothReceive();
+//    delay(5);
+//    screenTask();
+//    delay(5);
  }
 }

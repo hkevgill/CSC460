@@ -1,8 +1,9 @@
 
 #include "Arduino.h"
 #include "Servo.h"
-#include <stdlib.h>
-#include <stdio.h>
+#include "scheduler.h"
+//#include <stdlib.h>
+//#include <stdio.h>
 
 // ------------------------------ GLOBALS ------------------------------ //
 int LASER = 0;      
@@ -14,8 +15,8 @@ Servo servo;        //  Servo motor
 int laserPin = 30;  //  (digital pin)
 int servoPin = 28;  //  (pwm pin)
 
-char laserState;    //  0 = On, 1 = Off
-char servoState;    //  0 = Full Back
+int laserState;     //  0 = On, 1 = Off
+int servoState;     //  0 = Full Back
                     //  1 = Half Back
                     //  2 = Mid
                     //  3 = Half Forward
@@ -79,6 +80,7 @@ void deleteElem(int val, ListElem **head){
 }
 
 // ------------------------------ PRINT LIST ------------------------------ //
+// For debugging purposes
 void printList(ListElem *head) {
   if (head == NULL){
     return;
@@ -90,32 +92,19 @@ void printList(ListElem *head) {
   }
   Serial.println();
 }
- 
-// ------------------------------ SETUP ------------------------------ //
-void setup() {
-  // Serial
-  Serial1.begin(9600);
-  Serial.begin(9600);
-  
-  // Servo
-  servo.attach(servoPin);
-  servo.writeMicroseconds(1500);
-  servoState = 2;
-  
-  // Laser
-  pinMode(laserPin, OUTPUT);
-  digitalWrite(laserPin, LOW);
-  laserState = 1;
-}
+
+// ------------------------------ FUNCTION PROTOTYPES ------------------------------ //
+void laserTask();
+void servoTask();
+void readByte(int *inByte);
+void bluetoothReceive();
+void bluetoothSend();
+void setup();
 
 // ------------------------------ LASER TASK ------------------------------ //
 void laserTask() {
   if (laserHead != NULL) {
     laserState = laserHead->data;
-
-    // DEBUG
-    Serial.print("Laser command: ");
-    printList(laserHead);
     
     if(laserState == 0){
       // Fire the laser
@@ -133,10 +122,6 @@ void laserTask() {
 void servoTask() {
   if (servoHead != NULL) {
     servoState = servoHead->data;
-
-    // DEBUG
-    Serial.print("Servo command: ");
-    printList(servoHead);
     
     switch (servoState) {
       case 0:
@@ -188,17 +173,34 @@ void bluetoothReceive() {
 }
 
 // ------------------------------ BLUETOOTH SEND ------------------------------ //
-void bluetoothSend(int laserState, int servoState) {
+void bluetoothSend() {
   Serial1.print(SCREEN);
-  Serial1.print(laserState);
-  Serial1.print(servoState);
+  Serial1.print((int)laserState);
+  Serial1.print((int)servoState);
+}
+
+// ------------------------------ SETUP ------------------------------ //
+void setup() {
+  // Scheduler
+  Scheduler_Init();
+  Scheduler_StartTask(0, 50, bluetoothReceive);
+  Scheduler_StartTask(5, 100, laserTask);
+  Scheduler_StartTask(10, 50, servoTask);
+  Scheduler_StartTask(15, 150, bluetoothSend);
   
-  Serial.print("Flag: ");
-  Serial.print(SCREEN);
-  Serial.print(" laserState: ");
-  Serial.print(laserState);
-  Serial.print(" servoState: ");
-  Serial.println(servoState);
+  // Serial
+  Serial1.begin(9600);
+  Serial.begin(9600);
+  
+  // Servo
+  servo.attach(servoPin);
+  servo.writeMicroseconds(1500);
+  servoState = 2;
+  
+  // Laser
+  pinMode(laserPin, OUTPUT);
+  digitalWrite(laserPin, LOW);
+  laserState = 1;
 }
 
 // ------------------------------ MAIN ------------------------------ //
@@ -207,13 +209,6 @@ int main() {
   setup();
 
   for(;;) {
-    bluetoothReceive();
-    delay(5);
-    laserTask();
-    delay(5);
-    servoTask();
-    delay(5);
-    bluetoothSend(laserState, servoState);
-    delay(25);
+    Scheduler_Dispatch();
   }
 }

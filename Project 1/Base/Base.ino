@@ -98,8 +98,8 @@ void setup() {
   // Offset in ms, period in ms, function callback
   Scheduler_StartTask(0, 150, bluetoothReceive);
   Scheduler_StartTask(5, 100, laserTask);
-  Scheduler_StartTask(10, 100, movementTask);
-  Scheduler_StartTask(15, 150, screenTask);
+  Scheduler_StartTask(15, 10, movementTask);
+  Scheduler_StartTask(10, 150, screenTask);
   Scheduler_StartTask(20, 100, lightSensorTask);
   
   // Serial
@@ -131,15 +131,32 @@ void bluetoothReceive() {
   if(Serial1.available() > 0) {
     int flag;
     int laserData;
+    int digits;
     int servoData;
+    int servoData1;
+    int servoData2;
+    int servoData3;
   
     readByte(&flag);
     readByte(&laserData);
-    readByte(&servoData);
+    readByte(&digits);
 
-    Serial.print(flag);
-    Serial.print(laserData);
-    Serial.println(servoData);
+    if (digits == 1) {
+      readByte(&servoData);
+    }
+    else if(digits == 2) {
+      readByte(&servoData1);
+      readByte(&servoData2);
+
+      servoData = servoData1*10 + servoData2;
+    }
+    else {
+      readByte(&servoData1);
+      readByte(&servoData2);
+      readByte(&servoData3);
+
+      servoData = servoData1*100 + servoData2*10 + servoData3;
+    }
   
     if (flag == SCREEN) {
       insertEnd(laserData, &screenHead);
@@ -149,37 +166,39 @@ void bluetoothReceive() {
 }
 
 void screenTask() {
-  lcd.clear();
+  if(screenHead != NULL) {
+    lcd.clear();
 
-  lcd.setCursor(0,1);
+    lcd.setCursor(0,1);
+  
+    int laserState = screenHead->data;
+  
+    if (laserState == 0) {
+      lcd.print("ON");
+    }
+    else {
+      lcd.print("OFF");
+    }
+  
+    deleteElem(laserState, &screenHead);
+  
+    lcd.setCursor(0,0);
+  
+    int servoState = screenHead->data;
+  
+    lcd.print("Servo:");
+    lcd.print(servoState);
+  
+    deleteElem(servoState, &screenHead);
+  
+    lcd.setCursor(4, 1);
 
-  int laserState = screenHead->data;
-
-  if (laserState == 0) {
-    lcd.print("ON");
-  }
-  else {
-    lcd.print("OFF");
-  }
-
-  deleteElem(laserState, &screenHead);
-
-  lcd.setCursor(0,0);
-
-  int servoState = screenHead->data;
-
-  lcd.print("Servo:");
-  lcd.print(servoState);
-
-  deleteElem(servoState, &screenHead);
-
-  lcd.setCursor(4, 1);
-
-  if (photocellReading > 450) {
-    lcd.print("SHOT");
-  }
-  else {
-    lcd.print("NOT SHOT");
+    if (photocellReading > 650) {
+      lcd.print("SHOT");
+    }
+    else {
+      lcd.print("NOT SHOT");
+    }
   }
 }
 
@@ -201,6 +220,32 @@ void lightSensorTask() {
 }
 
 void movementTask() {
+  int x;
+  int digits;
+  int newState;
+  
+  newState = map(analogRead(joyX), 0, 1023, 5, 175);
+
+  if(newState < 10) {
+    digits = 1;
+  }
+  else if (newState < 100) {
+    digits = 2;
+  }
+  else {
+    digits = 3;
+  }
+
+  if((newState - servoState > 0 && newState > 92) || (newState < 88 && newState - servoState < 0)) {
+    Serial1.print(SERVO);
+    Serial1.print(digits);
+    Serial1.print(newState);
+
+    servoState = newState;
+  }
+}
+
+void speedTask() {
   int x;
   int newState;
   
@@ -238,15 +283,5 @@ int main() {
  for(;;) {
   Scheduler_Dispatch();
   
-//    movementTask();
-//    delay(5);
-//    laserTask();
-//    delay(5);
-//    lightSensorTask();
-//    delay(5);
-//    bluetoothReceive();
-//    delay(5);
-//    screenTask();
-//    delay(5);
  }
 }

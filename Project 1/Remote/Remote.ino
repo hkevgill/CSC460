@@ -21,6 +21,7 @@ int servoState;     //  0 = Full Back
                     //  2 = Mid
                     //  3 = Half Forward
                     //  4 = Full Forward
+int lastServoState;
 
 // ------------------------------ LIST ELEMENT ------------------------------ //
 typedef struct ListElement{
@@ -123,6 +124,26 @@ void servoTask() {
   if (servoHead != NULL) {
     servoState = servoHead->data;
     
+    deleteElem(servoState, &servoHead);
+  }
+
+  if(servoState != lastServoState) {
+    if(servoState - lastServoState > 0){
+      lastServoState++;
+      servo.write(lastServoState);
+    }
+    else {
+      lastServoState--;
+      servo.write(lastServoState);
+    } 
+  }
+}
+
+// ------------------------------ SPEED TASK ------------------------------ //
+void speedTask() {
+  if (servoHead != NULL) {
+    servoState = servoHead->data;
+    
     switch (servoState) {
       case 0:
         servo.writeMicroseconds(600);
@@ -158,16 +179,39 @@ void readByte(int *inByte) {
 void bluetoothReceive() {
   if(Serial1.available() > 0) {
      int flag;
+     int digits;
      int data;
+     int data1;
+     int data2;
+     int data3;
 
      readByte(&flag);
-     readByte(&data);
   
     if (flag == LASER) {
+      readByte(&data);
       insertEnd(data, &laserHead); 
     }
     else if (flag == SERVO) {
-       insertEnd(data, &servoHead);
+      readByte(&digits);
+
+      if(digits == 1) {
+        readByte(&data);
+      }
+      else if(digits == 2) {
+        readByte(&data1);
+        readByte(&data2);
+
+        data = data1*10 + data2;
+      }
+      else if(digits = 3) {
+        readByte(&data1);
+        readByte(&data2);
+        readByte(&data3);
+
+        data = data1*100 + data2*10 + data3;
+      }
+
+      insertEnd(data, &servoHead);
     }
   }
 }
@@ -176,6 +220,17 @@ void bluetoothReceive() {
 void bluetoothSend() {
   Serial1.print(SCREEN);
   Serial1.print((int)laserState);
+
+  if(servoState < 10) {
+    Serial1.print(1);
+  }
+  else if(servoState < 100) {
+    Serial1.print(2);
+  }
+  else {
+    Serial1.print(3);
+  }
+  
   Serial1.print((int)servoState);
 }
 
@@ -183,10 +238,10 @@ void bluetoothSend() {
 void setup() {
   // Scheduler
   Scheduler_Init();
-  Scheduler_StartTask(0, 50, bluetoothReceive);
+  Scheduler_StartTask(0, 10, bluetoothReceive);
   Scheduler_StartTask(5, 100, laserTask);
-  Scheduler_StartTask(10, 50, servoTask);
-  Scheduler_StartTask(15, 150, bluetoothSend);
+  Scheduler_StartTask(15, 10, servoTask);
+  Scheduler_StartTask(10, 150, bluetoothSend);
   
   // Serial
   Serial1.begin(9600);
@@ -196,6 +251,7 @@ void setup() {
   servo.attach(servoPin);
   servo.writeMicroseconds(1500);
   servoState = 2;
+  lastServoState = 90;
   
   // Laser
   pinMode(laserPin, OUTPUT);

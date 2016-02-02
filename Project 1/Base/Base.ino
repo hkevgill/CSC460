@@ -20,6 +20,8 @@ int joyZ = 52;            // Push-Down button
 int laser = 1;
 int previousLaser = 1;
 
+int stopped = 0;
+
 
 // ------------------------------ LIST ELEMENT ------------------------------ //
 typedef struct ListElement{
@@ -98,7 +100,7 @@ void setup() {
   // Offset in ms, period in ms, function callback
   Scheduler_StartTask(0, 150, bluetoothReceive);
   Scheduler_StartTask(5, 100, laserTask);
-  Scheduler_StartTask(15, 10, movementTask);
+  Scheduler_StartTask(15, 100, movementTask);
   Scheduler_StartTask(10, 150, screenTask);
   Scheduler_StartTask(20, 100, lightSensorTask);
   
@@ -241,7 +243,16 @@ void movementTask() {
     Serial1.print(digits);
     Serial1.print(newState);
 
+    stopped = 0;
     servoState = newState;
+  }
+  else if((newState <= 92 && newState >= 88)) {
+    stopped = 1;
+
+    Serial1.print(SERVO);
+    Serial1.print(0);
+    newState = 90;
+    servoState = 90;
   }
 }
 

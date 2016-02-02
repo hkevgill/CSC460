@@ -192,6 +192,7 @@ void bluetoothReceive() {
       insertEnd(data, &laserHead); 
     }
     else if (flag == SERVO) {
+      Serial.println("SERVO");
       readByte(&digits);
 
       if(digits == 1) {
@@ -203,12 +204,16 @@ void bluetoothReceive() {
 
         data = data1*10 + data2;
       }
-      else if(digits = 3) {
+      else if(digits == 3) {
         readByte(&data1);
         readByte(&data2);
         readByte(&data3);
 
         data = data1*100 + data2*10 + data3;
+      }
+      else if(digits == 0) {
+        servoState = lastServoState;
+        data = lastServoState;
       }
 
       insertEnd(data, &servoHead);
@@ -221,24 +226,24 @@ void bluetoothSend() {
   Serial1.print(SCREEN);
   Serial1.print((int)laserState);
 
-  if(servoState < 10) {
+  if(lastServoState < 10) {
     Serial1.print(1);
   }
-  else if(servoState < 100) {
+  else if(lastServoState < 100) {
     Serial1.print(2);
   }
   else {
     Serial1.print(3);
   }
   
-  Serial1.print((int)servoState);
+  Serial1.print((int)lastServoState);
 }
 
 // ------------------------------ SETUP ------------------------------ //
 void setup() {
   // Scheduler
   Scheduler_Init();
-  Scheduler_StartTask(0, 10, bluetoothReceive);
+  Scheduler_StartTask(0, 50, bluetoothReceive);
   Scheduler_StartTask(5, 100, laserTask);
   Scheduler_StartTask(15, 10, servoTask);
   Scheduler_StartTask(10, 150, bluetoothSend);
@@ -250,7 +255,7 @@ void setup() {
   // Servo
   servo.attach(servoPin);
   servo.writeMicroseconds(1500);
-  servoState = 2;
+  servoState = 90;
   lastServoState = 90;
   
   // Laser

@@ -2,6 +2,8 @@
 #include "Arduino.h"
 #include "Servo.h"
 #include "scheduler.h"
+//#include <stdlib.h>
+//#include <stdio.h>
 
 // ------------------------------ GLOBALS ------------------------------ //
 int LASER = 0;      
@@ -21,75 +23,57 @@ int servoState;     //  0 = Full Back
                     //  4 = Full Forward
 int lastServoState;
 
-// ------------------------------ LIST ELEMENT ------------------------------ //
-typedef struct ListElement{
-  int data;
-  struct ListElement *next;
-}ListElem;
+// Queue globals
+const int QSize = 10;
 
-// GLOBAL LIST HEADS //
-ListElem *laserHead = NULL;
-ListElem *servoHead = NULL;
+int servoQueue[QSize];
+int servoFront;
+int servoRear;
 
-// ------------------------------ INSERT END ------------------------------ //
-void insertEnd(int val, ListElem **head){
-  ListElem *newElem = (ListElem*)malloc(sizeof(ListElem));
-  if (newElem == NULL) {
-    exit(1);
-  }
-  newElem->data = val;
-  newElem->next = NULL;
-  
-  ListElem *p;
-  p = *head;
-  
-  if (*head == NULL) {
-    *head = newElem;
-  }
-  else {
-    while (p->next != NULL) {
-      p = p->next;
-    }
-    p->next = newElem;
-  }
+int laserQueue[QSize];
+int laserFront;
+int laserRear;
+
+// ------------------------------ IS FULL ------------------------------ //
+int isFull(int *front, int *rear) {
+  return (*rear == (*front - 1) % QSize);
 }
 
-// ------------------------------ DELETE ELEM ------------------------------ //
-void deleteElem(int val, ListElem **head){
-  ListElem *curr = *head;
-  ListElem *prev;
-  while(curr != NULL){
-    if(( (curr->data) == val)) {
-      if(curr == *head) {
-        *head = curr->next;
-        free(curr);
-        return;
-      }
-      else {
-        prev->next = curr->next;
-        free(curr);
-        return;
-      }
-    }
-    else {
-      prev = curr;
-      curr = curr->next;
-    }
-  }
+// ------------------------------ IS EMPTY ------------------------------ //
+int isEmpty(int *front, int *rear) {
+  return (*rear == *front);
 }
 
-// ------------------------------ PRINT LIST ------------------------------ //
-// For debugging purposes
-void printList(ListElem *head) {
-  if (head == NULL){
+// ------------------------------ ENQUEUE ------------------------------ //
+void enqueue(int val, int *queue, int *front, int *rear) {
+  if (isFull(front, rear)) {
     return;
   }
-  ListElem *curr = head;
-  for(curr=head; curr!=NULL; curr=curr->next) {
-    Serial.print(curr->data);
-    Serial.print(", ");
+  queue[*rear] = val;
+  *rear = (*rear + 1) % QSize;
+}
+
+// ------------------------------ DEQUEUE ------------------------------ //
+int dequeue(int *queue, int *front, int *rear){
+  if (isEmpty(front, rear)) {
+    return -1;
   }
-  Serial.println();
+  int result = queue[*front];
+  *front = (*front + 1) % QSize;
+  return result;
+}
+
+// ------------------------------ PRINT QUEUE ------------------------------ //
+// For debugging purposes
+void printQueue(int *queue, int *front, int *rear) {
+  if (isEmpty(front, rear)){
+    return;
+  }
+  int curr = *front;
+  while (curr != *rear) {
+    Serial.print(queue[curr % QSize]);
+    curr = (curr + 1) % QSize;
+  }
 }
 
 // ------------------------------ FUNCTION PROTOTYPES ------------------------------ //
@@ -102,27 +86,26 @@ void setup();
 
 // ------------------------------ LASER TASK ------------------------------ //
 void laserTask() {
-  if (laserHead != NULL) {
-    laserState = laserHead->data;
+  if (!isEmpty(&laserFront, &laserRear)) {
+//    printQueue(laserQueue, &laserFront, &laserRear);
+    laserState = dequeue(laserQueue, &laserFront, &laserRear);
     
     if(laserState == 0){
       // Fire the laser
       digitalWrite(laserPin, HIGH);
     } 
-    else {
+    else if(laserState == 1){
       // Turn off laser
       digitalWrite(laserPin, LOW);
     }
-    deleteElem(laserState, &laserHead);
   }
 }
 
 // ------------------------------ SERVO TASK ------------------------------ //
 void servoTask() {
-  if (servoHead != NULL) {
-    servoState = servoHead->data;
-    
-    deleteElem(servoState, &servoHead);
+  if (!isEmpty(&servoFront, &servoRear)) {
+//    printQueue(servoQueue, &servoFront, &servoRear);
+    servoState = dequeue(servoQueue, &servoFront, &servoRear);
   }
 
   if(servoState != lastServoState) {
@@ -130,7 +113,7 @@ void servoTask() {
       lastServoState++;
       servo.write(lastServoState);
     }
-    else {
+    if(servoState - lastServoState < 0){
       lastServoState--;
       servo.write(lastServoState);
     } 
@@ -139,28 +122,27 @@ void servoTask() {
 
 // ------------------------------ SPEED TASK ------------------------------ //
 void speedTask() {
-  if (servoHead != NULL) {
-    servoState = servoHead->data;
-    
-    switch (servoState) {
-      case 0:
-        servo.writeMicroseconds(600);
-        break;
-      case 1:
-        servo.writeMicroseconds(1050);
-        break;
-      case 2:
-        servo.writeMicroseconds(1500);
-        break;
-      case 3:
-        servo.writeMicroseconds(1950);
-        break;
-      case 4:
-        servo.writeMicroseconds(2400);
-        break;
-    }
-    deleteElem(servoState, &servoHead);
-  }
+//  if (!isEmpty(speedFront, speedRear)) {
+//    speedState = dequeue(speedQueue);
+//    
+//    switch (servoState) {
+//      case 0:
+//        servo.writeMicroseconds(600);
+//        break;
+//      case 1:
+//        servo.writeMicroseconds(1050);
+//        break;
+//      case 2:
+//        servo.writeMicroseconds(1500);
+//        break;
+//      case 3:
+//        servo.writeMicroseconds(1950);
+//        break;
+//      case 4:
+//        servo.writeMicroseconds(2400);
+//        break;
+//    }
+//  }
 }
 
 // ------------------------------ READ BYTE ------------------------------ //
@@ -187,10 +169,9 @@ void bluetoothReceive() {
   
     if (flag == LASER) {
       readByte(&data);
-      insertEnd(data, &laserHead); 
+      enqueue(data, laserQueue, &laserFront, &laserRear); 
     }
     else if (flag == SERVO) {
-      Serial.println("SERVO");
       readByte(&digits);
 
       if(digits == 1) {
@@ -213,8 +194,7 @@ void bluetoothReceive() {
         servoState = lastServoState;
         data = lastServoState;
       }
-
-      insertEnd(data, &servoHead);
+      enqueue(data, servoQueue, &servoFront, &servoRear);
     }
   }
 }
@@ -233,12 +213,17 @@ void bluetoothSend() {
   else {
     Serial1.print(3);
   }
-  
   Serial1.print((int)lastServoState);
 }
 
 // ------------------------------ SETUP ------------------------------ //
 void setup() {
+  // Queue
+  servoFront = 0;
+  servoRear = 0;
+  laserFront = 0;
+  laserRear = 0;
+  
   // Scheduler
   Scheduler_Init();
   Scheduler_StartTask(0, 50, bluetoothReceive);

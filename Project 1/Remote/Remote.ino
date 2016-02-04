@@ -2,8 +2,6 @@
 #include "Arduino.h"
 #include "Servo.h"
 #include "scheduler.h"
-//#include <stdlib.h>
-//#include <stdio.h>
 
 // ------------------------------ GLOBALS ------------------------------ //
 int LASER = 0;      

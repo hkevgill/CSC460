@@ -10,6 +10,8 @@ LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 
 int servoState = 2;
 
+int buzzer = 39;
+
 int photocellPin = A7;    // the cell and 10K pulldown are connected to A7
 int buzzerPin = 8;        // Digital pin
 
@@ -110,6 +112,9 @@ void setup() {
   
   // LCD
   lcd.begin(16, 2);
+
+  // Buzzer
+  pinMode(buzzer, OUTPUT);
   
   // Joystick
   pinMode(joyX, INPUT);
@@ -196,9 +201,11 @@ void screenTask() {
     lcd.setCursor(4, 1);
 
     if (photocellReading > 650) {
+      tone(buzzer, 50000, 2000);
       lcd.print("SHOT");
     }
     else {
+      noTone(buzzer);
       lcd.print("NOT SHOT");
     }
   }

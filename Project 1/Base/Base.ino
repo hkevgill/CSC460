@@ -2,13 +2,19 @@
 #include "LiquidCrystal.h"
 #include "scheduler.h"
 
+const int MAX = 10;
+
+int screenQueue[MAX];
+int screenFront = 0;
+int screenRear = 0;
+
 int LASER = 0;
 int SERVO = 1;
 int SCREEN = 2;
 
 LiquidCrystal lcd(8, 9, 4, 5, 6, 7);
 
-int servoState = 2;
+int servoState = 90;
 
 int buzzer = 39;
 
@@ -24,19 +30,11 @@ int previousLaser = 1;
 
 int stopped = 0;
 
-
-// ------------------------------ LIST ELEMENT ------------------------------ //
-typedef struct ListElement{
- int data;
- struct ListElement *next;
-}ListElem;
-
-// GLOBAL LIST HEADS //
-ListElem *screenHead = NULL;
-
 // Function prototypes
-void insertEnd(int val, ListElem **head);
-void deleteElem(int val, ListElem **head);
+int isFull(int *front, int *rear);
+int isEmpty(int *front, int *rear);
+void enqueue(int val, int *queue, int *front, int *rear);
+int dequeue(int *queue, int *front, int *rear);
 void setup();
 void bluetoothReceive();
 void screenTask();
@@ -46,52 +44,51 @@ void movementTask();
 void readByte(int *inByte);
 
 
-// ------------------------------ INSERT END ------------------------------ //
-void insertEnd(int val, ListElem **head){
- ListElem *newElem = (ListElem*)malloc(sizeof(ListElem));
- if (newElem == NULL) {
-   exit(1);
- }
- newElem->data = val;
- newElem->next = NULL;
- 
- ListElem *p;
- p = *head;
- 
- if (*head == NULL) {
-   *head = newElem;
- }
- else {
-   while (p->next != NULL) {
-     p = p->next;
-   }
-   p->next = newElem;
- }
+// ------------------------------ isFull ------------------------------ //
+int isFull(int *front, int *rear) {
+  return *rear == (*front - 1) & MAX;
 }
 
-// ------------------------------ DELETE ELEM ------------------------------ //
-void deleteElem(int val, ListElem **head){
- ListElem *curr = *head;
- ListElem *prev;
- while(curr != NULL){
-   if(( (curr->data) == val)) {
-     if(curr == *head) {
-       *head = curr->next;
-       free(curr);
-       return;
-     }
-     else {
-       prev->next = curr->next;
-       free(curr);
-       return;
-     }
-   }
-   else {
-     prev = curr;
-     curr = curr->next;
-   }
- }
+int isEmpty(int *front, int *rear) {
+  return *rear == *front;
 }
+
+// ------------------------------ Enqueue ------------------------------ //
+void enqueue(int val, int *queue, int *front, int *rear){
+  if(isFull(front, rear)) {
+    return;
+  }
+
+  queue[*rear] = val;
+  *rear = (*rear + 1) % MAX;
+}
+
+// ------------------------------ Dequeue ------------------------------ //
+int dequeue(int *queue, int *front, int *rear) {
+  if(isEmpty(front, rear)) {
+    return -1;
+  }
+
+  int result = queue[*front];
+
+  *front = (*front + 1) % MAX;
+
+  return result;
+}
+
+
+// ------------------------------ PRINT QUEUE ------------------------------ //
+// For debugging purposes
+//void printQueue(int *queue, int *front, int *rear) {
+// if (isEmpty(front, rear)){
+//   return;
+// }
+// int curr = *front;
+// while (curr != *rear) {
+//   Serial.print(queue[curr % QSize]);
+//   curr = (curr + 1) % QSize;
+// }
+//}
 
 void setup() {
 
@@ -166,37 +163,34 @@ void bluetoothReceive() {
     }
   
     if (flag == SCREEN) {
-      insertEnd(laserData, &screenHead);
-      insertEnd(servoData, &screenHead);
+//      Serial.println(servoData);
+      enqueue(laserData, screenQueue, &screenFront, &screenRear);
+      enqueue(servoData, screenQueue, &screenFront, &screenRear);
     }
   }
 }
 
 void screenTask() {
-  if(screenHead != NULL) {
+  if(!isEmpty(&screenFront, &screenRear)) {
     lcd.clear();
 
     lcd.setCursor(0,1);
-  
-    int laserState = screenHead->data;
+
+    int laserState = dequeue(screenQueue, &screenFront, &screenRear);
   
     if (laserState == 0) {
       lcd.print("ON");
     }
-    else {
+    else if (laserState == 1){
       lcd.print("OFF");
     }
   
-    deleteElem(laserState, &screenHead);
-  
     lcd.setCursor(0,0);
   
-    int servoState = screenHead->data;
+    int servoState = dequeue(screenQueue, &screenFront, &screenRear);
   
     lcd.print("Servo:");
     lcd.print(servoState);
-  
-    deleteElem(servoState, &screenHead);
   
     lcd.setCursor(4, 1);
 
@@ -245,16 +239,14 @@ void movementTask() {
     digits = 3;
   }
 
-  if((newState - servoState > 0 && newState > 92) || (newState < 88 && newState - servoState < 0)) {
+  if ((newState - servoState > 0 && newState > 92) || (newState < 88 && newState - servoState < 0)) {
     Serial1.print(SERVO);
     Serial1.print(digits);
     Serial1.print(newState);
 
-    stopped = 0;
     servoState = newState;
   }
-  else if((newState <= 92 && newState >= 88)) {
-    stopped = 1;
+  else if (newState <= 92 && newState >= 88) {
 
     Serial1.print(SERVO);
     Serial1.print(0);

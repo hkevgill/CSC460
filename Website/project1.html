@@ -118,12 +118,15 @@
 										<h3>Phase 2</h3>
 									</header>
 									<p>
-										Nunc diam iaculis massa, et aliquet nibh leo non nisl vitae porta lobortis, enim neque fringilla nunc,
-										eget faucibus lacus sem quis nunc suspendisse nec lectus sit amet augue rutrum vulputate ut ut mi. Aenean
-										elementum, mi sit amet porttitor lorem ipsum dolor sit amet, consectetur adipiscing elit. Lorem ipsum dolor
-										sit amet nullam consequat feugiat dolore tempus. Elementum odio duis semper risus et lectus commodo fringilla.
-										Maecenas sagittis convallis justo vel mattis.
+										In Phase 2, the existing system components of Phase 1 were split between two Arduino ATMega2560 boards. The goal was to have one board function as the "base" station, and the other as the "remote" station (which would eventually be connected to a Roomba and function as our "laser tank"). Both systems were also required to operate using a time-triggered scheduler so that the CPU utilization could be minimized. Using a USB logic-analyzer, the expected timing requirements of all I/O devices were tested and optimized.
 									</p>
+									<p>
+										Bluetooth adapters were wired to the RX1 and TX1 pins on each board so that the two boards could communicate wirelessly over a serial connection. The bluetooth configuration procedure can be found <a href="www.google.com">here</a>. Packets were designed to send state information for each of the I/O devices. The structure of each packet is as follows:
+									</p>
+									<ul>
+										<li> A byte that determines what I/O device is being sent control information (ie: 0 for LASER, 1 for SERVO)
+										<li> 
+									</ul>
 								</section>
 								<section>
 									<header>

@@ -149,7 +149,7 @@
 									<p>
 										A time-triggered architecture (TTA) was incorporated for phase 2. The library that was used can be found <a href="www.google.com">here</a>. The tasks from Phase 1 were periodically scheduled using the TTA. Additionally, two new Bluetooth tasks were created (Receive and Send) and scheduled using the TTA library. The Bluetooth Receive function that was written reads in packets (described above) and stores them in a fixed-length queue. T
 									</p>
-									<h4>Logic-Analyzer and CPU Utilization</h4>
+									<h4>Logic-Analyzer</h4>
 									<p>
 										The USB logic-analyzer ensured timing requirements were met. Initially on the base station, the screenTask was taking a long enough time that it delayed the laserTask. This is seen in the figure below between 0.7 and 0.8s. The channels correspond to:
 										<ul class="bulleted">
@@ -163,11 +163,13 @@
 									</p>
 									<a class="image"><img src="images/base_timing_not_met.png"></a>
 									<p>
-										After adjusting the offsets and timing so that no conflicts occured and everything remained responsive, we came up with the times stated in the above section and the following logic-analyzer outputs for the base and remote station respectivly:
+										After adjusting the offsets and timing so that no conflicts occured and everything remained responsive, we came up with the times stated in the above TTA section and the following logic-analyzer outputs for the base and remote station respectivly:
 									</p>
 									<a class="image"><img src="images/base_timing.png"></a>
 									<br><br>
 									<a class="image"><img src="images/remote_timing.png"></a>
+									<br>
+									<h4>CPU Utilization</h4>
 									<p>
 
 									</p>

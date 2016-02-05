@@ -108,16 +108,21 @@ void servoTask() {
     servoState = dequeue(servoQueue, &servoFront, &servoRear);
   }
 
-  if(servoState != lastServoState) {
-    if(servoState - lastServoState > 0){
+  if (servoState > 92 && lastServoState <= 175) {
+    if (servoState > 150) {
       lastServoState++;
-      servo.write(lastServoState);
     }
-    if(servoState - lastServoState < 0){
-      lastServoState--;
-      servo.write(lastServoState);
-    } 
+    lastServoState++;
+    servo.write(lastServoState);
   }
+  else if (servoState < 88 && lastServoState >= 5) {
+    if (servoState < 30) {
+      lastServoState--;
+    }
+    lastServoState--;
+    servo.write(lastServoState);
+  }
+
 }
 
 // ------------------------------ SPEED TASK ------------------------------ //
@@ -191,8 +196,8 @@ void bluetoothReceive() {
         data = data1*100 + data2*10 + data3;
       }
       else if(digits == 0) {
-        servoState = lastServoState;
-        data = lastServoState;
+        servoState = 90;
+        return;
       }
       enqueue(data, servoQueue, &servoFront, &servoRear);
     }

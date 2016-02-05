@@ -133,23 +133,63 @@
 										<h3>Phase 2</h3>
 									</header>
 									<p>
-										In Phase 2, the existing system components of Phase 1 were split between two Arduino ATMega2560 boards. The goal was to have one board function as the "base" station, and the other as the "remote" station (which would eventually be connected to a Roomba and function as our "laser tank"). Both systems were also required to operate using a time-triggered scheduler (TTA) so that the CPU utilization could be minimized. Using a USB logic-analyzer, the expected timing requirements of all I/O devices were tested and optimized.
+										In Phase 2, the existing system components of Phase 1 were split between two Arduino ATMega2560 boards. The goal was to have one board function as the "base" station, and the other as the "remote" station (which would eventually be connected to a Roomba and function as our "laser tank"). Both systems were also required to operate using a time-triggered scheduler (TTA) so that CPU utilization could be minimized. Using a USB logic-analyzer, the expected timing requirements of all I/O devices were tested and optimized.
 									</p>
 									<p>
-										Several changes were made to the system in Phase 2. Three additional light sensors were wired in parallel with the single sensor from Phase 1 - this was done to increase the accuracy of the "Red Solo Cup" target (seen in Phase 1 photo). An additional Arduino ATMega2560 board was introduced, and Bluetooth adapters were wired to the RX1 and TX1 pins on each board so that the two boards could communicate wirelessly over a bi-directional serial connection. Two new Bluetooth tasks (Receive and Send) were created for this purpose. The bluetooth configuration procedure can be found <a href="www.google.com">here</a>. The block diagram configuration of the entire system in Phase 2 is as follows:
+										Apart from the split into two boards, several changes were made to the system in Phase 2. Three additional light sensors were wired in parallel with the single sensor from Phase 1 - this was done to increase the accuracy of the "Red Solo Cup" target (seen in Phase 1 photo). Because an additional Arduino ATMega2560 board was introduced, Bluetooth adapters were wired to the RX1 and TX1 pins on each board so that the two boards could communicate wirelessly over a bi-directional serial connection. Two new Bluetooth tasks (Receive and Send) were created on each station for this purpose. The bluetooth configuration procedure can be found <a href="www.google.com">here</a>. The block diagram configuration of the entire system in Phase 2 is as follows:
 									</p>
 									<a class="image paragraph"><img src="images/csc460_project1_phase2_png.png"></a>
 									<h4>Time Triggered Architecture</h4>
 									<p>
-										A time-triggered architecture (TTA) was incorporated for phase 2. The library that was used can be found <a href="www.google.com">here</a>. This architecture allowed "tasks" to be created and periodically scheduled on both of stations. The methods written in Phase 1 were split between the two stations and periodically scheduled as tasks using the TTA. Additionally, two new Bluetooth tasks were created (Receive and Send) on both stations and scheduled respectively. To store control information sent from both stations, a fixed-sized queue structure was implemented for each I/O device.
+										A time-triggered architecture (TTA) was also incorporated for phase 2. The library that was used can be found <a href="www.google.com">here</a>. This architecture allowed "tasks" to be created and periodically scheduled on both stations. The methods written in Phase 1 were split between the two stations and periodically scheduled as tasks using the TTA. Additionally, the new Bluetooth tasks were scheduled on each stations. To store control information sent from both stations, a fixed-sized queue structure was implemented for each I/O device. When the "Bluetooth Receive" function runs on either station, the control information that is received is stored in a dedicated queue for the device it was received for. The data is used (and removed from the queue) when the respective device task runs on its periodic schedule.
 									</p>
 									<h4>Base Station</h4>
 									<p>
-										Base info - TODO
+										The base station has five tasks that use the TTA library to run on a fixed schedule. They are:
+										<ol>
+											<li> laserTask - <i>Scheduled every 100ms, with an 25ms offset</i>
+												<p>
+													DESCRIPTION
+												</p>
+											<li> bluetoothReceive - <i>Scheduled every 150ms, with an 0ms offset</i>
+												<p>
+													DESCRIPTION
+												</p>
+											<li> lightSensorTask - <i>Scheduled every 100ms, with an 20ms offset</i>
+												<p>
+													DESCRIPTION
+												</p>
+											<li> screenTask - <i>Scheduled every 150ms, with an 50ms offset</i>
+												<p>
+													DESCRIPTION
+												</p>
+											<li> movementTask - <i>Scheduled every 200ms, with an 15ms offset</i>
+												<p>
+													DESCRIPTION
+												</p>
+										</ol>
 									</p>
 									<h4>Remote Station</h4>
 									<p>
-										Remote info - TODO
+										The remote station has four tasks that use the TTA library to run on a fixed schedule. They are:
+										<ol>
+											<li> laserTask - <i>Scheduled every 100ms, with an 20ms offset</i>
+												<p>
+													DESCRIPTION
+												</p>
+											<li> servoTask - <i>Scheduled every 25ms, with an 0ms offset</i>
+												<p>
+													DESCRIPTION
+												</p>
+											<li> bluetoothReceive - <i>Scheduled every 50ms, with an 5ms offset</i>
+												<p>
+													DESCRIPTION
+												</p>
+											<li> bluetoothSend - <i>Scheduled every 100ms, with an 35ms offset</i>
+												<p>
+													DESCRIPTION
+												</p>
+										</ol>
 									</p>
 									<p>
 										Worth mentioning is the decision to control the servo motor using relative positioning. Since it was imagined that the servo motor would eventually control a sort of "laser turret" on top of the Roomba Tank, it was decided that controls sent to the servo motor must give precise and consistent control to the operator. To meet this requirement, control-data for the servo is sent as a degree between 

@@ -139,12 +139,19 @@
 										Several changes were made to the system in Phase 2. Three additional light sensors were wired in parallel with the single sensor from Phase 1 - this was done to increase the accuracy of the "Red Solo Cup" target (seen in Phase 1 photo). An additional Arduino ATMega2560 board was introduced, and Bluetooth adapters were wired to the RX1 and TX1 pins on each board so that the two boards could communicate wirelessly over a bi-directional serial connection. Two new Bluetooth tasks (Receive and Send) were created for this purpose. The bluetooth configuration procedure can be found <a href="www.google.com">here</a>. The block diagram configuration of the entire system in Phase 2 is as follows:
 									</p>
 									<a class="image paragraph"><img src="images/csc460_project1_phase2_png.png"></a>
+									<h4>Base Station</h4>
+									<p>
+										CONTENT
+									</p>
+									<h4>Remote Station</h4>
+									<p>
+										STUFF ABOUT REMOTE
+
+										Worth mentioning is the decision to control the servo motor using relative positioning. Since it was imagined that the servo motor would eventually control a sort of "laser turret" on top of the Roomba Tank, it was decided that controls sent to the servo motor must give precise and consistent control to the operator. To meet this requirement, control-data for the servo is sent as a degree between 
+									</p>
 									<h4>Time Triggered Architecture</h4>
 									<p>
 										Packets were designed to send state information for each of the I/O devices. The first byte of each packet determines what I/O device is being sent control information (ie: 0 for LASER, 1 for SERVO, 2 for SCREEN). If the device being controlled is the servo motor, an additional byte is sent that tells the remote station how many subsequent digits of data to read. Finally, the control data is sent. For the laser, this is a single binary value (representing on or off); for the servo, it is a set of digits that when combined, are equal to a degree signal between 5 and 175 to control the servo motor. The Bluetooth Receive function that was created reads in these packets and stores them in a fixed-length queue. Each I/O task then dequeues data from the queue and uses it to control each respective device.
-									</p>
-									<p>
-										Worth mentioning is the decision to control the servo motor using relative positioning. Since it was imagined that the servo motor would eventually control a sort of "laser turret" on top of the Roomba Tank, it was decided that controls sent to the servo motor must give precise and consistent control to the operator.
 									</p>
 									<p>
 										A time-triggered architecture (TTA) was incorporated for phase 2. The library that was used can be found <a href="www.google.com">here</a>. The tasks from Phase 1 were periodically scheduled using the TTA. Additionally, two new Bluetooth tasks were created (Receive and Send) and scheduled using the TTA library. The Bluetooth Receive function that was written reads in packets (described above) and stores them in a fixed-length queue. T

@@ -76,20 +76,6 @@ int dequeue(int *queue, int *front, int *rear) {
   return result;
 }
 
-
-// ------------------------------ PRINT QUEUE ------------------------------ //
-// For debugging purposes
-//void printQueue(int *queue, int *front, int *rear) {
-// if (isEmpty(front, rear)){
-//   return;
-// }
-// int curr = *front;
-// while (curr != *rear) {
-//   Serial.print(queue[curr % QSize]);
-//   curr = (curr + 1) % QSize;
-// }
-//}
-
 void setup() {
 
   // TTA
@@ -195,7 +181,6 @@ void bluetoothReceive() {
 void screenTask() {
   digitalWrite(49, HIGH);
   if(!isEmpty(&screenFront, &screenRear)) {
-//    lcd.clear();
 
     lcd.setCursor(6,1);
 
@@ -283,36 +268,6 @@ void movementTask() {
     servoState = 90;
   }
   digitalWrite(51, LOW);
-}
-
-void speedTask() {
-  int x;
-  int newState;
-  
-  x = map(analogRead(joyX), 0, 1023, 600, 2400);
-
-  if(x < 800) {
-    newState = 0;
-  }
-  else if(x < 1400) {
-    newState = 1;
-  }
-  else if(x < 1600) {
-    newState = 2;
-  }
-  else if(x < 2200) {
-    newState = 3;
-  }
-  else if(x < 2430) {
-    newState = 4;
-  }
-
-  if(newState != servoState) {
-    Serial1.print(SERVO);
-    Serial1.print(newState);
-  }
-
-  servoState = newState;
 }
 
 void idle(uint32_t idlePeriod) {

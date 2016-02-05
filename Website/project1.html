@@ -141,7 +141,7 @@
 									<a class="image paragraph"><img src="images/csc460_project1_phase2_png.png"></a>
 									<h4>Time Triggered Architecture</h4>
 									<p>
-										A time-triggered architecture (TTA) was also incorporated for phase 2. The library that was used can be found <a href="www.google.com">here</a>. This architecture allowed "tasks" to be created and periodically scheduled on both stations. The methods written in Phase 1 were split between the two stations and periodically scheduled as tasks using the TTA. Additionally, the new Bluetooth tasks were scheduled on each stations. To store control information sent from both stations, a fixed-sized queue structure was implemented for each I/O device. When the "Bluetooth Receive" function runs on either station, the control information that is received is stored in a dedicated queue for the device it was received for. The data is used (and removed from the queue) when the respective device task runs on its periodic schedule.
+										A time-triggered architecture (TTA) was also incorporated for phase 2. The library that was used can be found <a href="www.google.com">here</a>. This architecture allowed "tasks" to be created and periodically scheduled on both stations. The methods written in Phase 1 were split between the two stations and periodically scheduled as tasks using the TTA. Additionally, the new Bluetooth tasks were scheduled on each stations. To store control information sent from both stations, a fixed-sized queue was instantiated for each I/O device. When the "Bluetooth Receive" function runs on either station, the control information that is received is stored in the dedicated queue for the device it was intended for. The data is used (and removed from the queue) when the respective device task runs on its periodic schedule. Each queue was implemented as a circular array with a length of 10, which drops new data entries when it is full (although this has never been observed to be the case).
 									</p>
 									<h4>Base Station</h4>
 									<p>
@@ -179,7 +179,7 @@
 												</p>
 											<li> servoTask - <i>Scheduled every 25ms, with an 0ms offset</i>
 												<p>
-													DESCRIPTION
+													Since it was imagined that the servo motor would eventually control a sort of "laser turret" on top of the Roomba Tank, it was decided that controls sent to the servo motor must give precise and consistent control to the operator. To meet this requirement, control-data for the servo is sent as a degree between 5 and 175, and on each call to the servoTask by the TTA, the servo motor increments or decrements it's position towards that "goal". The decision to control the servo motor using this type of relative positioning means that the sampling frequency of the servoTask is relatively higher than the other tasks, although it provides for very exact movement.
 												</p>
 											<li> bluetoothReceive - <i>Scheduled every 50ms, with an 5ms offset</i>
 												<p>
@@ -190,9 +190,6 @@
 													DESCRIPTION
 												</p>
 										</ol>
-									</p>
-									<p>
-										Worth mentioning is the decision to control the servo motor using relative positioning. Since it was imagined that the servo motor would eventually control a sort of "laser turret" on top of the Roomba Tank, it was decided that controls sent to the servo motor must give precise and consistent control to the operator. To meet this requirement, control-data for the servo is sent as a degree between 
 									</p>
 									<p>
 										Packets were designed to send state information for each of the I/O devices. The first byte of each packet determines what I/O device is being sent control information (ie: 0 for LASER, 1 for SERVO, 2 for SCREEN). If the device being controlled is the servo motor, an additional byte is sent that tells the remote station how many subsequent digits of data to read. Finally, the control data is sent. For the laser, this is a single binary value (representing on or off); for the servo, it is a set of digits that when combined, are equal to a degree signal between 5 and 175 to control the servo motor. The Bluetooth Receive function that was created reads in these packets and stores them in a fixed-length queue. Each I/O task then dequeues data from the queue and uses it to control each respective device.

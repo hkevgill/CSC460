@@ -86,6 +86,8 @@ void setup();
 
 // ------------------------------ LASER TASK ------------------------------ //
 void laserTask() {
+  digitalWrite(41, HIGH);
+
   if (!isEmpty(&laserFront, &laserRear)) {
 //    printQueue(laserQueue, &laserFront, &laserRear);
     laserState = dequeue(laserQueue, &laserFront, &laserRear);
@@ -99,10 +101,14 @@ void laserTask() {
       digitalWrite(laserPin, LOW);
     }
   }
+
+  digitalWrite(41, LOW);
 }
 
 // ------------------------------ SERVO TASK ------------------------------ //
 void servoTask() {
+  digitalWrite(43, HIGH);
+
   if (!isEmpty(&servoFront, &servoRear)) {
 //    printQueue(servoQueue, &servoFront, &servoRear);
     servoState = dequeue(servoQueue, &servoFront, &servoRear);
@@ -123,6 +129,7 @@ void servoTask() {
     servo.write(lastServoState);
   }
 
+  digitalWrite(43, LOW);
 }
 
 // ------------------------------ SPEED TASK ------------------------------ //
@@ -162,6 +169,9 @@ void readByte(int *inByte) {
 
 // ------------------------------ BLUETOOTH RECIEVE ------------------------------ //
 void bluetoothReceive() {
+  digitalWrite(45, HIGH);
+//  digitalWrite(45, LOW);
+
   if(Serial1.available() > 0) {
      int flag;
      int digits;
@@ -197,15 +207,21 @@ void bluetoothReceive() {
       }
       else if(digits == 0) {
         servoState = 90;
+        digitalWrite(45, LOW);
         return;
       }
       enqueue(data, servoQueue, &servoFront, &servoRear);
     }
   }
+
+//  digitalWrite(45, HIGH);
+  digitalWrite(45, LOW);
 }
 
 // ------------------------------ BLUETOOTH SEND ------------------------------ //
 void bluetoothSend() {
+  digitalWrite(47, HIGH);
+  
   Serial1.print(SCREEN);
   Serial1.print((int)laserState);
 
@@ -219,6 +235,8 @@ void bluetoothSend() {
     Serial1.print(3);
   }
   Serial1.print((int)lastServoState);
+
+  digitalWrite(47, LOW);
 }
 
 // ------------------------------ SETUP ------------------------------ //
@@ -231,10 +249,10 @@ void setup() {
   
   // Scheduler
   Scheduler_Init();
-  Scheduler_StartTask(0, 50, bluetoothReceive);
+  Scheduler_StartTask(0, 25, servoTask);
+  Scheduler_StartTask(5, 50, bluetoothReceive);
   Scheduler_StartTask(20, 100, laserTask);
-  Scheduler_StartTask(15, 20, servoTask);
-  Scheduler_StartTask(10, 150, bluetoothSend);
+  Scheduler_StartTask(35, 100, bluetoothSend);
   
   // Serial
   Serial1.begin(9600);
@@ -256,6 +274,19 @@ void setup() {
   pinMode(43, OUTPUT);
   pinMode(45, OUTPUT);
   pinMode(47, OUTPUT);
+  pinMode(49, OUTPUT);
+  digitalWrite(41, LOW);  // Laser
+  digitalWrite(43, LOW);  // Servo
+  digitalWrite(45, LOW);  // Bluetooth Receive
+  digitalWrite(47, LOW);  // Bluetooth Send
+  digitalWrite(49, LOW);  // Idle
+}
+
+// ------------------------------ MAIN ------------------------------ //
+void idle(uint32_t idlePeriod){
+  digitalWrite(49, HIGH);
+  delay(idlePeriod);
+  digitalWrite(49, LOW);
 }
 
 // ------------------------------ MAIN ------------------------------ //
@@ -264,6 +295,7 @@ int main() {
   setup();
 
   for(;;) {
-    Scheduler_Dispatch();
+    uint32_t idlePeriod = Scheduler_Dispatch();
+    idle(idlePeriod);
   }
 }

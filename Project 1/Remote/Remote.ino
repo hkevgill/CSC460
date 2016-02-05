@@ -110,16 +110,16 @@ void servoTask() {
 
   if (servoState > 92 && lastServoState <= 175) {
     if (servoState > 150) {
-      lastServoState++;
+      lastServoState = lastServoState + 2;
     }
-    lastServoState++;
+    lastServoState = lastServoState + 1;
     servo.write(lastServoState);
   }
   else if (servoState < 88 && lastServoState >= 5) {
     if (servoState < 30) {
-      lastServoState--;
+      lastServoState = lastServoState - 2;
     }
-    lastServoState--;
+    lastServoState = lastServoState - 1;
     servo.write(lastServoState);
   }
 
@@ -232,8 +232,8 @@ void setup() {
   // Scheduler
   Scheduler_Init();
   Scheduler_StartTask(0, 50, bluetoothReceive);
-  Scheduler_StartTask(5, 100, laserTask);
-  Scheduler_StartTask(15, 10, servoTask);
+  Scheduler_StartTask(20, 100, laserTask);
+  Scheduler_StartTask(15, 20, servoTask);
   Scheduler_StartTask(10, 150, bluetoothSend);
   
   // Serial
@@ -250,6 +250,12 @@ void setup() {
   pinMode(laserPin, OUTPUT);
   digitalWrite(laserPin, LOW);
   laserState = 1;
+
+  // LOGIC ANALYSER
+  pinMode(41, OUTPUT);
+  pinMode(43, OUTPUT);
+  pinMode(45, OUTPUT);
+  pinMode(47, OUTPUT);
 }
 
 // ------------------------------ MAIN ------------------------------ //

@@ -290,7 +290,7 @@
 												<td>bluetoothSend</td>
 												<td>Period    = 0.1005094s</td>
 												<td>Width     = 0.34333ms</td>
-												<td>Frequency = 9.949316</td>
+												<td>Frequency = 9.949316Hz</td>
 												<td>CPU util  = 0.34159%</td>
 											</tr>
 											<tr>
@@ -299,8 +299,53 @@
 											</tr>
 										</table>
 									</p>
+									<h4>Sampling Frequencies</h4>
 									<p>
-										From this, the CPU utilization for each station can be determined.
+										As can be seen in the below tables, we estimated the lowest sampling frequency for each I/O device in order for the system to still run smoothly. The base station's frequencies are as follows:
+
+										<table>
+											<tr>
+												<td>laserTask</td>
+												<td>Lowest sampling frequency = 10Hz</td>
+											</tr>
+											<tr>
+												<td>bluetoothReceive</td>
+												<td>Lowest sampling frequency = 6.66Hz</td>
+											</tr>
+											<tr>
+												<td>lightSensorTask</td>
+												<td>Lowest sampling frequency = 10Hz</td>
+											</tr>
+											<tr>
+												<td>screenTask</td>
+												<td>Lowest sampling frequency = 6.66 Hz</td>
+											</tr>
+											<tr>
+												<td>movementTask</td>
+												<td>Lowest sampling frequency = 5Hz</td>
+											</tr>
+										</table>
+									</p>
+									<p>
+										The remote station's frequencies are as follows:
+										<table>
+											<tr>
+												<td>laserTask</td>
+												<td>Lowest sampling frequency = 10Hz</td>
+											</tr>
+											<tr>
+												<td>servoTask</td>
+												<td>Lowest sampling frequency = 40Hz</td>
+											</tr>
+											<tr>
+												<td>bluetoothReceive</td>
+												<td>Lowest sampling frequency = 20Hz</td>
+											</tr>
+											<tr>
+												<td>bluetoothSend</td>
+												<td>Lowest sampling frequency = 10Hz</td>
+											</tr>
+										</table>
 									</p>
 								</section>
 								<section>

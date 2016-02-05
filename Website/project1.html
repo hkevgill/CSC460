@@ -51,7 +51,7 @@
 										<h3>Introduction</h3>
 									</header>
 									<p>
-										The goal of project 1 is to become familiar with embedded systems programming techniques, the required hardware, and software/hardware interfacing issues. Project 1 is divided into two phases. Phase 1 consists of connecting all the necessary sensors and actuators into a single station. Phase 2 consists of separatings the single station into a base and a remote station. The two stations communicate through bluetooth radio.
+										The goal of project 1 is to become familiar with embedded systems programming techniques, the required hardware, and software/hardware interfacing issues. Project 1 is divided into two phases. Phase 1 consists of connecting all the necessary sensors and actuators into a single station. Phase 2 consists of separating the single station into a base and a remote station. The two stations communicate through bluetooth radio.
 									</p>
 								</section>
 								<section>
@@ -101,7 +101,7 @@
 									<a class="image paragraph"><img src="images/bluetooth.jpg"></a>
 									<h4>Lightsensor</h4>
 									<p>
-										When the lightsensor is exposed to light, the resistance goes down. Connecting the lightsensor requires using a pull-down resistor.
+										When the lightsensor is exposed to light, the resistance goes up. Connecting the lightsensor requires using a pull-down resistor.
 									</p>
 									<a class="image paragraph"><img src="images/lightsensor.jpg"></a>
 								</section>
@@ -113,14 +113,15 @@
 										All of the hardware components (except bluetooth) are connected to a single Arduino Mega 2560. The figure below shows the connected components.
 									</p>
 									<a class="image paragraph"><img src="images/phase1wiring.jpg"></a>
+									<br>
 									<p>
-										Three functions run in a loop about every 100 milliseconds (10 Hz): movementTask, laserTask, and lightSensorTask. The movement task reads the x value (0-1023) from the joystick pin and maps it to a value between 800 and 2200 microseconds and writes it to the servo. The servo's movement is controller by writing a microsecond value between 500 and 2500, where 1500 is the middle. The method also keeps track of the previous 2 previous values written to the servo and computes the new value to be written to the servo by weighting the newest value at 60%, the last used value at 30%, and the last value at 10%. This helps reduce noise and provide a smoother motion from the servo.
+										Three functions run in a loop about every 100 milliseconds (10 Hz): movementTask, laserTask, and lightSensorTask. The movement task reads the x value (0-1023) from the joystick pin and maps it to a value between 800 and 2200 microseconds and writes it to the servo. The servo's movement is controller by writing a microsecond value between 500 and 2500, where 1500 is the middle. The method also keeps track of the previous 2 previous values written to the servo and computes the new value to be written to the servo by weighting the newest value at 60%, the last used value at 30%, and the third most recent value at 10%. This helps reduce noise and provide a smoother motion from the servo.
 									</p>
 									<p>
 										The laser task performs a digital read from the SW pin on the joystick (denoted by joyZ) and if the push-button on the joystick is pressed, turns on the laser by writing a value of HIGH to the pin.
 									</p>
 									<p>
-										The light sensor task performs an analog read (A/D conversion) on the pin connected to the photo cell. The value is small when there is little light hitting the photocell. We determined through trial and error that a reading greater than 350 meant the photocell was exposed to excess light, and thus concluded anything higher meant a laser was being fired. One end of the photocell is connected to power, and the other to a 10K pull-down resistor and ground. The point between the pull-down resistor and the photocell is connected to an analog input on the Arduino Mega 2560. This is illustrated by the figure below:
+										The light sensor task performs an analog read (A/D conversion) on the pin connected to the photocell. The value is small when there is little light hitting the photocell. We determined through trial and error that a reading greater than 350 meant the photocell was exposed to excess light, and thus concluded anything higher meant a laser was being fired. One end of the photocell is connected to power, and the other to a 10K pull-down resistor and ground. The point between the pull-down resistor and the photocell is connected to an analog input on the Arduino Mega 2560. This is illustrated by the figure below:
 									</p>
 									<a class="image circuit"><img src="images/lightcircuit.gif"></a>
 									<p>
@@ -133,7 +134,7 @@
 										<h3>Phase 2</h3>
 									</header>
 									<p>
-										In Phase 2, the existing system components of Phase 1 were split between two Arduino ATMega2560 boards. The goal was to have one board function as the "base" station, and the other as the "remote" station (which would eventually be connected to a Roomba and function as our "laser tank"). Both systems were also required to operate using a time-triggered scheduler (TTA) so that CPU utilization could be minimized. Using a USB logic-analyzer, the expected timing requirements of all I/O devices were tested and optimized.
+										In Phase 2, the existing system components of Phase 1 were split between two Arduino ATMega2560 boards. The goal was to have one board function as the "base" station, and the other as the "remote" station (which would eventually be connected to a Roomba and function as our "laser tank"). Both systems were also required to operate using a time-triggered scheduler so that CPU utilization could be minimized. Using a USB logic-analyzer, the expected timing requirements of all I/O devices were tested and optimized.
 									</p>
 									<p>
 										Apart from the split into two boards, several changes were made to the system in Phase 2. Three additional light sensors were wired in parallel with the single sensor from Phase 1 - this was done to increase the accuracy of the "Red Solo Cup" target (seen in Phase 1 photo). Because an additional Arduino ATMega2560 board was introduced, Bluetooth adapters were wired to the RX1 and TX1 pins on each board so that the two boards could communicate wirelessly over a bi-directional serial connection. Two new Bluetooth tasks (Receive and Send) were created on each station for this purpose. The bluetooth configuration procedure can be found <a href="https://connex.csc.uvic.ca/access/content/group/895e8da2-2062-4f55-b7a0-6010a0998236/drivers/Bluetooth/Bluetooth%20module%20configuration%20guide-1.pdf">here</a>. The block diagram configuration of the entire system in Phase 2 is as follows:
@@ -141,7 +142,7 @@
 									<a class="image paragraph"><img src="images/csc460_project1_phase2_png.png"></a>
 									<h4>Time Triggered Architecture</h4>
 									<p>
-										A time-triggered architecture (TTA) was also incorporated for phase 2. The library that was used can be downloaded with the phase 2 code in the appendix. This architecture allowed "tasks" to be created and periodically scheduled on both stations. The methods written in Phase 1 were split between the two stations and periodically scheduled as tasks using the TTA. Additionally, the new Bluetooth tasks were scheduled on each stations. To store control information sent from both stations, a fixed-sized queue was instantiated for each I/O device. When the "Bluetooth Receive" function runs on either station, the control information that is received is stored in the dedicated queue for the device it was intended for. The data is used (and removed from the queue) when the respective device task runs on its periodic schedule. Each queue was implemented as a circular array with a length of 10, which drops new data entries when it is full (although this has never been observed to be the case).
+										A time-triggered architecture (TTA) was also incorporated for phase 2. The library that was used can be downloaded with the phase 2 code in the appendix. This architecture allowed "tasks" to be created and periodically scheduled on both stations. The methods written in Phase 1 were split between the two stations and periodically scheduled using the TTA. Additionally, the new Bluetooth tasks were scheduled on each station. To store control information sent from both stations, a fixed-sized queue was instantiated for each I/O device. When the "Bluetooth Receive" function runs on either station, the control information that is received is stored in the dedicated queue for the device it was intended for. The data is used (and dequeued) when the respective device task runs on its periodic schedule. Each queue was implemented as a circular array with a length of 10, which drops new data entries when it is full (although this has never been observed to be the case). The array can queue 9 items as the last spot is not used to ensure a full queue does not behave like an empty queue.
 									</p>
 									<h4>Base Station</h4>
 									<p>
@@ -149,7 +150,7 @@
 										<ol>
 											<li> laserTask - <i>Scheduled every 100ms, with an 25ms offset</i>
 												<p>
-													The laser tasks samples push-button on the joystick using a digital read. It also keeps track of the previous state of the laser and only sends new information to the remote station when the value changes.
+													The laser tasks samples the push-button on the joystick using a digital read. It also keeps track of the previous state of the laser and only sends new information to the remote station when the value changes.
 												</p>
 											<li> bluetoothReceive - <i>Scheduled every 150ms, with an 0ms offset</i>
 												<p>
@@ -165,7 +166,7 @@
 												</p>
 											<li> movementTask - <i>Scheduled every 200ms, with an 15ms offset</i>
 												<p>
-													The movement task reads values from the joystick and maps them to a degree value between 5 and 175. If the joystick is between 88 and 92, it is in what is considered the "dead zone". This means the servo should stop moving where it is. Anything outside this range and the degree or eventual "goal" of the servo is sent to the remote station.
+													The movement task reads values from the joystick and maps them to a degree value between 5 and 175. If the joystick is between 88 and 92, it is in what is considered the "dead zone". This means the servo should stop moving where it is. The value is sent in degrees to the remote station where the logic lies to control the servo.
 												</p>
 										</ol>
 									</p>
@@ -179,7 +180,7 @@
 												</p>
 											<li> servoTask - <i>Scheduled every 25ms, with an 0ms offset</i>
 												<p>
-													Since it was imagined that the servo motor would eventually control a sort of "laser turret" on top of the Roomba Tank, it was decided that controls sent to the servo motor must give precise and consistent control to the operator. To meet this requirement, control-data for the servo is sent as a degree between 5 and 175, and on each call to the servoTask by the TTA, the servo motor increments or decrements it's position towards that "goal". The decision to control the servo motor using this type of relative positioning means that the sampling frequency of the servoTask is relatively higher than the other tasks, although it provides for very exact movement.
+													Since it was imagined that the servo motor would eventually control a sort of "laser turret" on top of the Roomba Tank, it was decided that controls sent to the servo motor must give precise and consistent control to the operator. To meet this requirement, control-data for the servo is sent as a degree between 5 and 175. If the value is between 5 and 30, each call to the servo task by the TTA decrements the value by 3, providing a fast motion in the required direction. If the value is between 30 and 88, it is decremented by 1, providing precise control of the servo at a slower speed. The same exists from 92 to 150, and 150 to 175. This means the joystick effectively has 5 zones. The middle means don't move. Slightly to the -x direction means move slowly in that direction, sharply to the -x direction means move quickly that way, and the same for the +x direction. The decision to control the servo motor using this type of relative positioning means that the sampling frequency of the servoTask is relatively higher than the other tasks, although it provides for very exact movement.
 												</p>
 											<li> bluetoothReceive - <i>Scheduled every 50ms, with an 5ms offset</i>
 												<p>
@@ -187,12 +188,12 @@
 												</p>
 											<li> bluetoothSend - <i>Scheduled every 100ms, with an 35ms offset</i>
 												<p>
-													The base station must receive information confirming what actions have been taken on the remote station, so that it can display it on an LCD. This function compiles the current state of the laser (0 or 1) and the servo (5-175) into a packet, and prints it with a header byte to the Bluetooth serial UART pin. 
+													The base station must receive information confirming what actions have been taken on the remote station, so that it can display it on an LCD. This function compiles the current state of the laser (0 or 1) and the servo (5-175) into a packet, and prints it with a header byte to the Bluetooth serial UART1 pin. 
 												</p>
 										</ol>
 									</p>
 									<p>
-										Packets were designed to send state information for each of the I/O devices. The first byte of each packet determines what I/O device is being sent control information (ie: 0 for LASER, 1 for SERVO, 2 for SCREEN). If the device being controlled is the servo motor, an additional byte is sent that tells the remote station how many subsequent digits of data to read. Finally, the control data is sent. For the laser, this is a single binary value (representing on or off); for the servo, it is a set of digits that when combined, are equal to a degree signal between 5 and 175 to control the servo motor. The Bluetooth Receive function that was created reads in these packets and stores them in a fixed-length queue. Each I/O task then dequeues data from the queue and uses it to control each respective device.
+										Packets were designed to send state information for each of the I/O devices. The first byte of each packet determines what I/O device is being sent control information (ie: 0 for LASER, 1 for SERVO, 2 for SCREEN). If the device being controlled is the servo motor, an additional byte is sent that tells the remote station how many subsequent digits of data to read. Finally, the control data is sent. For the laser, this is a single binary value (representing on or off); for the servo, it is a set of digits that when combined, are equal to a degree signal between 5 and 175 to control the servo motor. The Bluetooth Receive function that was created reads in and processes these packets and stores them in a fixed-length queue. Each I/O task then dequeues data from the queue and uses it to control each respective device.
 									</p>
 									<h4>Logic-Analyzer</h4>
 									<p>
@@ -207,11 +208,33 @@
 										</ul>
 									</p>
 									<a class="image"><img src="images/base_timing_not_met.png"></a>
+									<br><br>
 									<p>
-										After adjusting the offsets and timing so that no conflicts occured and everything remained responsive, we came up with the times stated in the above TTA section and the following logic-analyzer outputs for the base and remote station respectivly:
+										After adjusting the offsets and timing so that no conflicts occured and everything remained responsive, we came up with the times stated in the above Remote and Base station sections and captured the following logic-analyzer outputs for the base and remote station respectivly:
+									</p>
+									<p>
+										The base station channels are listed again for convenience:
+										<ul class="bulleted">
+											<li>Channel 0: laserTask</li>
+											<li>Channel 1: bluetoothReceive</li>
+											<li>Channel 2: lightSensorTask</li>
+											<li>Channel 3: screenTask</li>
+											<li>Channel 5: movementTask</li>
+											<li>Channel 7: CPU idle time</li>
+										</ul>
 									</p>
 									<a class="image"><img src="images/base_timing.png"></a>
 									<br><br>
+									<p>
+										For the remote station, the corresponding channels are:
+										<ul class="bulleted">
+											<li>Channel 0: laserTask</li>
+											<li>Channel 1: servoTask</li>
+											<li>Channel 2: bluetoothReceive</li>
+											<li>Channel 3: bluetoothSend</li>
+											<li>Channel 4: CPU idle time</li>
+										</ul>
+									</p>
 									<a class="image"><img src="images/remote_timing.png"></a>
 									<br><br>
 									<h4>CPU Utilization</h4>
@@ -350,7 +373,7 @@
 										<h3>Conclusion</h3>
 									</header>
 									<p>
-										The main goal of project 1 is to work towards eventually mounting the remote-station on top of a Roomba. The base-station will then be able to control the movement of the Roomba as well as the position of the laser. Using the TTA has ensured that the embedded system is meeting all timing requirements. This was verified using a logic analyzer. The total CPU utilization was calculated to be 3.28721% for the base station, and 0.64819% for the remote station, which provides confidence going into project 2.
+										The main goal of project 1 is to work towards eventually mounting the remote-station on top of a Roomba. The base-station will then be able to control the movement of the Roomba as well as the position of the laser. Using the TTA has ensured that the embedded system is meeting all timing requirements. This was verified using a logic-analyzer. The total CPU utilization was calculated to be 3.28721% for the base station, and 0.64819% for the remote station, which provides confidence going into project 2.
 									</p>
 								</section>
 								<section>

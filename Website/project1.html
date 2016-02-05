@@ -179,71 +179,88 @@
 									<br><br>
 									<h4>CPU Utilization</h4>
 									<p>
-										The following table shows data taken from the logic-analyzer about each task.
+										The following table shows data taken from the logic-analyzer about each task and the computed CPU utilization of each task.
 										For the base station:
-										<table border="1">
+										<table>
 											<tr>
 												<td>laserTask</td>
 												<td>Period    = 0.100217s</td>
 												<td>Width     = 0.133833ms</td>
 												<td>Frequency = 9.967Hz</td>
+												<td>CPU util  = 0.13339%</td>
 											</tr>
 											<tr>
 												<td>bluetoothReceive</td>
 												<td>Period    = 0.1502475s</td>
 												<td>Width     = 76.08333us</td>
 												<td>Frequency = 6.6557Hz</td>
+												<td>CPU util  = 0.05064%</td>
 											</tr>
 											<tr>
 												<td>lightSensorTask</td>
 												<td>Period    = 0.1005703s</td>
 												<td>Width     = 0.1180833ms</td>
 												<td>Frequency = 9.943298Hz</td>
+												<td>CPU util  = 0.11741%</td>
 											</tr>
 											<tr>
 												<td>screenTask</td>
 												<td>Period    = 0.14925283s</td>
 												<td>Width     = 4.23963333ms</td>
 												<td>Frequency = 6.70004Hz</td>
+												<td>CPU util  = 2.84067%</td>
 											</tr>
 											<tr>
 												<td>movementTask</td>
 												<td>Period    = 0.2003315s</td>
 												<td>Width     = 0.2910833ms</td>
 												<td>Frequency = 4.991726Hz</td>
+												<td>CPU util  = 0.14530%</td>
+											</tr>
+											<tr>
+												<td>Total CPU util  = 3.28721%</td>
+												<td>Total CPU idle  = 96.7128%</td>
 											</tr>
 										</table>
 									</p>
 									<p>And the remote station:
-										<table border="1">
+										<table>
 											<tr>
 												<td>laserTask</td>
-												<td>Period    = </td>
-												<td>Width     = </td>
-												<td>Frequency = </td>
+												<td>Period    = 99.95083ms</td>
+												<td>Width     = 5.833333us</td>
+												<td>Frequency = 10.004919Hz</td>
+												<td>CPU util  = 0.000006%</td>
 											</tr>
 											<tr>
 												<td>servoTask</td>
-												<td>Period    = </td>
-												<td>Width     = </td>
-												<td>Frequency = </td>
+												<td>Period    = 24.38783ms</td>
+												<td>Width     = 70.75us</td>
+												<td>Frequency = 41.004053Hz</td>
+												<td>CPU util  = 0.29010%</td>
 											</tr>
 											<tr>
-												<td>blueToothReceive</td>
-												<td>Period    = </td>
-												<td>Width     = </td>
-												<td>Frequency = </td>
+												<td>bluetoothReceive</td>
+												<td>Period    = 50.50625ms</td>
+												<td>Width     = 8.3333us</td>
+												<td>Frequency = 19.7995Hz</td>
+												<td>CPU util  = 0.01649%</td>
 											</tr>
 											<tr>
 												<td>bluetoothSend</td>
-												<td>Period    = </td>
-												<td>Width     = </td>
-												<td>Frequency = </td>
+												<td>Period    = 0.1005094s</td>
+												<td>Width     = 0.34333ms</td>
+												<td>Frequency = 9.949316</td>
+												<td>CPU util  = 0.34159%</td>
+											</tr>
+											<tr>
+												<td>Total CPU util  = 0.64819%</td>
+												<td>Total CPU idle  = 99.3318%</td>
 											</tr>
 										</table>
 									</p>
 									<p>
-										Then
+										From this, the CPU utilization for each station can be determined.
 									</p>
 								</section>
 								<section>

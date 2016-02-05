@@ -132,31 +132,6 @@ void servoTask() {
   digitalWrite(43, LOW);
 }
 
-// ------------------------------ SPEED TASK ------------------------------ //
-void speedTask() {
-//  if (!isEmpty(speedFront, speedRear)) {
-//    speedState = dequeue(speedQueue);
-//    
-//    switch (servoState) {
-//      case 0:
-//        servo.writeMicroseconds(600);
-//        break;
-//      case 1:
-//        servo.writeMicroseconds(1050);
-//        break;
-//      case 2:
-//        servo.writeMicroseconds(1500);
-//        break;
-//      case 3:
-//        servo.writeMicroseconds(1950);
-//        break;
-//      case 4:
-//        servo.writeMicroseconds(2400);
-//        break;
-//    }
-//  }
-}
-
 // ------------------------------ READ BYTE ------------------------------ //
 void readByte(int *inByte) {
  while(1) {

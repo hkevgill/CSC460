@@ -175,7 +175,7 @@
 										<ol>
 											<li> laserTask - <i>Scheduled every 100ms, with an 20ms offset</i>
 												<p>
-													DESCRIPTION
+													If there is data available in the laser data queue, this task simply dequeues the data and uses the value obtained to control the status of the laser (0 for on, 1 for off).
 												</p>
 											<li> servoTask - <i>Scheduled every 25ms, with an 0ms offset</i>
 												<p>
@@ -183,11 +183,11 @@
 												</p>
 											<li> bluetoothReceive - <i>Scheduled every 50ms, with an 5ms offset</i>
 												<p>
-													DESCRIPTION
+													This function checks the Bluetooth serial connection for incoming information. If there is something available, it reads the first byte to determine what kind of control data has been sent, and places it in the appropriate I/O device queue.
 												</p>
 											<li> bluetoothSend - <i>Scheduled every 100ms, with an 35ms offset</i>
 												<p>
-													DESCRIPTION
+													The base station must receive information confirming what actions have been taken on the remote station, so that it can display it on an LCD. This function compiles the current state of the laser (0 or 1) and the servo (5-175) into a packet, and prints it with a header byte to the Bluetooth serial UART pin. 
 												</p>
 										</ol>
 									</p>

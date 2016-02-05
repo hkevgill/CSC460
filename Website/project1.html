@@ -149,23 +149,23 @@
 										<ol>
 											<li> laserTask - <i>Scheduled every 100ms, with an 25ms offset</i>
 												<p>
-													DESCRIPTION
+													The laser tasks samples push-button on the joystick using a digital read. It also keeps track of the previous state of the laser and only sends new information to the remote station when the value changes.
 												</p>
 											<li> bluetoothReceive - <i>Scheduled every 150ms, with an 0ms offset</i>
 												<p>
-													DESCRIPTION
+													The bluetooth receive function checks the Serial connection for any incoming packets and processes them. This includes putting the packet data into the correct queue for other tasks to pick up. More about packets is discussed later on.
 												</p>
 											<li> lightSensorTask - <i>Scheduled every 100ms, with an 20ms offset</i>
 												<p>
-													DESCRIPTION
+													The light sensor task reads the value of the photocell and stores it. There are four photocells wired in parallel in order to detect the laser hitting the cup directly, or on the inside edges.
 												</p>
 											<li> screenTask - <i>Scheduled every 150ms, with an 50ms offset</i>
 												<p>
-													DESCRIPTION
+													The screen task updates the LCD display with the position of the servo and state of the laser. These values come from the remote station, but this task just checks the screen queue to see if the screen needs updating and does the updating if required. The photocell state is also displayed on the LCD as "HIT" or "Clear".
 												</p>
 											<li> movementTask - <i>Scheduled every 200ms, with an 15ms offset</i>
 												<p>
-													DESCRIPTION
+													The movement task reads values from the joystick and maps them to a degree value between 5 and 175. If the joystick is between 88 and 92, it is in what is considered the "dead zone". This means the servo should stop moving where it is. Anything outside this range and the degree or eventual "goal" of the servo is sent to the remote station.
 												</p>
 										</ol>
 									</p>
@@ -350,7 +350,7 @@
 										<h3>Conclusion</h3>
 									</header>
 									<p>
-										The main goal of project 1 is to work towards eventually mounting the remote-station on top of a Roomba. The base-station will then be able to control the movement of the Roomba as well as the position of the laser. Using the TTA has ensured that the embedded system is meeting all timing requirements. This was verified using a logic analyzer. The total CPU utilization was calculated to be _, which provides confidence going into project 2.
+										The main goal of project 1 is to work towards eventually mounting the remote-station on top of a Roomba. The base-station will then be able to control the movement of the Roomba as well as the position of the laser. Using the TTA has ensured that the embedded system is meeting all timing requirements. This was verified using a logic analyzer. The total CPU utilization was calculated to be 3.28721% for the base station, and 0.64819% for the remote station, which provides confidence going into project 2.
 									</p>
 								</section>
 								<section>

@@ -1372,6 +1372,14 @@
 		outline: 0;
 	}
 
+		.image.circuit {
+			width: 100px;
+			height: auto;
+			display: block;
+			margin: 0 0 2em 0;
+			margin: 0 auto;
+		}
+
 		.image.paragraph {
 			width: 400px;
 			height: auto;

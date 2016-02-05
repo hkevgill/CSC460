@@ -110,8 +110,23 @@
 										<h3>Phase 1</h3>
 									</header>
 									<p>
-										All of the hardware components (except bluetooth) are connected to a single Arduino Mega 2560. The joystick is set up t
+										All of the hardware components (except bluetooth) are connected to a single Arduino Mega 2560. The figure below shows the connected components.
 									</p>
+									<a class="image paragraph"><img src="images/phase1wiring.jpg"></a>
+									<p>
+										Three functions run in a loop about every 100 milliseconds (10 Hz): movementTask, laserTask, and lightSensorTask. The movement task reads the x value (0-1023) from the joystick pin and maps it to a value between 800 and 2200 microseconds and writes it to the servo. The servo's movement is controller by writing a microsecond value between 500 and 2500, where 1500 is the middle. The method also keeps track of the previous 2 previous values written to the servo and computes the new value to be written to the servo by weighting the newest value at 60%, the last used value at 30%, and the last value at 10%. This helps reduce noise and provide a smoother motion from the servo.
+									</p>
+									<p>
+										The laser task performs a digital read from the SW pin on the joystick (denoted by joyZ) and if the push-button on the joystick is pressed, turns on the laser by writing a value of HIGH to the pin.
+									</p>
+									<p>
+										The light sensor task performs an analog read (A/D conversion) on the pin connected to the photo cell. The value is small when there is little light hitting the photocell. We determined through trial and error that a reading greater than 350 meant the photocell was exposed to excess light, and thus concluded anything higher meant a laser was being fired. One end of the photocell is connected to power, and the other to a 10K pull-down resistor and ground. The point between the pull-down resistor and the photocell is connected to an analog input on the Arduino Mega 2560. This is illustrated by the figure below:
+									</p>
+									<a class="image circuit"><img src="images/lightcircuit.gif"></a>
+									<p>
+										The LCD displays the current position of the servo, whether the laser is on or off, and whether the light sensor is being shot or not. Each of the three functions is responsible for updating the display, but later this functionality will be moved out into its own task. Phase 1 is concluded with a block diagram showing all the components connected to the Arduino Mega 2560 station.
+									</p>
+									<a class="image paragraph"><img src="images/block_diagram_phase1.png"></a>
 								</section>
 								<section>
 									<header>
@@ -138,7 +153,8 @@
 										<h3>Appendix</h3>
 									</header>
 									<p>
-										Download source code <a>here</a>.
+										Download the phase 1 source code <a>here</a>.
+										Download the phase 2 source code <a>here</a>.
 									</p>
 								</section>
 							</article>

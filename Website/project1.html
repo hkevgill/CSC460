@@ -101,7 +101,7 @@
 									<a class="image paragraph"><img src="images/bluetooth.jpg"></a>
 									<h4>Lightsensor</h4>
 									<p>
-										When the lightsensor is exposed to light, the resistance goes up. Connecting the lightsensor requires using a pull-down resistor.
+										When the lightsensor is exposed to light, the resistance goes up. Connecting the lightsensor requires using a pull-down resistor. The lightsensor works by splitting voltage which is why the 10k resistor is needed (Pull-up/down resistors are used to deal with floating voltages, like on the joystick button).
 									</p>
 									<a class="image paragraph"><img src="images/lightsensor.jpg"></a>
 								</section>
@@ -115,7 +115,7 @@
 									<a class="image paragraph"><img src="images/phase1wiring.jpg"></a>
 									<br>
 									<p>
-										Three functions run in a loop about every 100 milliseconds (10 Hz): movementTask, laserTask, and lightSensorTask. The movement task reads the x value (0-1023) from the joystick pin and maps it to a value between 800 and 2200 microseconds and writes it to the servo. The servo's movement is controller by writing a microsecond value between 500 and 2500, where 1500 is the middle. The method also keeps track of the previous 2 previous values written to the servo and computes the new value to be written to the servo by weighting the newest value at 60%, the last used value at 30%, and the third most recent value at 10%. This helps reduce noise and provide a smoother motion from the servo.
+										Three functions run in a loop about every 100 milliseconds (10 Hz): movementTask, laserTask, and lightSensorTask. The movement task reads the x value (0-1023) from the joystick pin and maps it to a value between 800 and 2200 microseconds and writes it to the servo. The servo's movement is controlled by writing a microsecond value between 500 and 2500, where 1500 is the middle. The method also keeps track of the 2 previous values written to the servo and computes the new value to be written to the servo by weighting the newest value at 60%, the second most recent value at 30%, and the third most recent value at 10%. This helps reduce noise and provide a smoother motion from the servo.
 									</p>
 									<p>
 										The laser task performs a digital read from the SW pin on the joystick (denoted by joyZ) and if the push-button on the joystick is pressed, turns on the laser by writing a value of HIGH to the pin.
@@ -148,23 +148,23 @@
 									<p>
 										The base station has five tasks that use the TTA library to run on a fixed schedule. They are:
 										<ol>
-											<li> laserTask - <i>Scheduled every 100ms, with an 25ms offset</i>
+											<li> laserTask - <i>Scheduled every 100ms, with a 25ms offset</i>
 												<p>
 													The laser tasks samples the push-button on the joystick using a digital read. It also keeps track of the previous state of the laser and only sends new information to the remote station when the value changes.
 												</p>
-											<li> bluetoothReceive - <i>Scheduled every 150ms, with an 0ms offset</i>
+											<li> bluetoothReceive - <i>Scheduled every 150ms, with a 0ms offset</i>
 												<p>
 													The bluetooth receive function checks the Serial connection for any incoming packets and processes them. This includes putting the packet data into the correct queue for other tasks to pick up. More about packets is discussed later on.
 												</p>
-											<li> lightSensorTask - <i>Scheduled every 100ms, with an 20ms offset</i>
+											<li> lightSensorTask - <i>Scheduled every 100ms, with a 20ms offset</i>
 												<p>
 													The light sensor task reads the value of the photocell and stores it. There are four photocells wired in parallel in order to detect the laser hitting the cup directly, or on the inside edges.
 												</p>
-											<li> screenTask - <i>Scheduled every 150ms, with an 50ms offset</i>
+											<li> screenTask - <i>Scheduled every 150ms, with a 50ms offset</i>
 												<p>
 													The screen task updates the LCD display with the position of the servo and state of the laser. These values come from the remote station, but this task just checks the screen queue to see if the screen needs updating and does the updating if required. The photocell state is also displayed on the LCD as "HIT" or "Clear".
 												</p>
-											<li> movementTask - <i>Scheduled every 200ms, with an 15ms offset</i>
+											<li> movementTask - <i>Scheduled every 200ms, with a 15ms offset</i>
 												<p>
 													The movement task reads values from the joystick and maps them to a degree value between 5 and 175. If the joystick is between 88 and 92, it is in what is considered the "dead zone". This means the servo should stop moving where it is. The value is sent in degrees to the remote station where the logic lies to control the servo.
 												</p>
@@ -174,19 +174,19 @@
 									<p>
 										The remote station has four tasks that use the TTA library to run on a fixed schedule. They are:
 										<ol>
-											<li> laserTask - <i>Scheduled every 100ms, with an 20ms offset</i>
+											<li> laserTask - <i>Scheduled every 100ms, with a 20ms offset</i>
 												<p>
-													If there is data available in the laser data queue, this task simply dequeues the data and uses the value obtained to control the status of the laser (0 for on, 1 for off).
+													If there is data available in the laser data queue, this task simply dequeues the data and uses the value obtained to control the state of the laser (0 for on, 1 for off).
 												</p>
-											<li> servoTask - <i>Scheduled every 25ms, with an 0ms offset</i>
+											<li> servoTask - <i>Scheduled every 25ms, with a 0ms offset</i>
 												<p>
 													Since it was imagined that the servo motor would eventually control a sort of "laser turret" on top of the Roomba Tank, it was decided that controls sent to the servo motor must give precise and consistent control to the operator. To meet this requirement, control-data for the servo is sent as a degree between 5 and 175. If the value is between 5 and 30, each call to the servo task by the TTA decrements the value by 3, providing a fast motion in the required direction. If the value is between 30 and 88, it is decremented by 1, providing precise control of the servo at a slower speed. The same exists from 92 to 150, and 150 to 175. This means the joystick effectively has 5 zones. The middle means don't move. Slightly to the -x direction means move slowly in that direction, sharply to the -x direction means move quickly that way, and the same for the +x direction. The decision to control the servo motor using this type of relative positioning means that the sampling frequency of the servoTask is relatively higher than the other tasks, although it provides for very exact movement.
 												</p>
-											<li> bluetoothReceive - <i>Scheduled every 50ms, with an 5ms offset</i>
+											<li> bluetoothReceive - <i>Scheduled every 50ms, with a 5ms offset</i>
 												<p>
 													This function checks the Bluetooth serial connection for incoming information. If there is something available, it reads the first byte to determine what kind of control data has been sent, and places it in the appropriate I/O device queue.
 												</p>
-											<li> bluetoothSend - <i>Scheduled every 100ms, with an 35ms offset</i>
+											<li> bluetoothSend - <i>Scheduled every 100ms, with a 35ms offset</i>
 												<p>
 													The base station must receive information confirming what actions have been taken on the remote station, so that it can display it on an LCD. This function compiles the current state of the laser (0 or 1) and the servo (5-175) into a packet, and prints it with a header byte to the Bluetooth serial UART1 pin. 
 												</p>

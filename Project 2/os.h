@@ -15,7 +15,7 @@
 
 typedef unsigned int PID;        // always non-zero if it is valid
 typedef unsigned int MUTEX;      // always non-zero if it is valid
-typedef unsigned char PRIORITY;
+typedef unsigned int PRIORITY;
 typedef unsigned int EVENT;      // always non-zero if it is valid
 typedef unsigned int TICK;
 

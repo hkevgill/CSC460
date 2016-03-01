@@ -93,6 +93,10 @@ typedef struct ProcessDescriptor {
   */
 static PD Process[MAXTHREAD];
 
+PD ReadyQueue[MAXTHREAD];
+volatile int RQFront = 0;
+volatile int RQRear = 0;
+
 /**
   * The process descriptor of the currently RUNNING task.
   */
@@ -126,6 +130,47 @@ volatile static unsigned int Tasks;
 
 // Next process id
 volatile unsigned int pCount = 0;
+
+/*
+ *  Checks if queue is full
+ */
+int isFull() {
+    return RQRear == (RQFront - 1) % MAXTHREAD;
+}
+
+// /*
+//  *  Checks if queue is empty, SHOULD NEVER BE EMPTY
+//  */
+int isEmpty() {
+    return RQRear == RQFront;
+}
+
+/*
+ *  Insert into the queue sorted by priority
+ */
+void enqueueRQ(PD *p){
+    if(isFull()) {
+        return;
+    }
+
+    ReadyQueue[RQRear] = *p;
+    RQRear = (RQRear + 1) % MAXTHREAD;
+}
+
+// /*
+//  *  Return the first element of the queue
+//  */
+PD *dequeueRQ() {
+    if(isEmpty()) {
+        return;
+    }
+
+    PD *result = &(ReadyQueue[RQFront]);
+
+    RQFront = (RQFront + 1) % MAXTHREAD;
+
+    return result;
+}
 
 /**
  * When creating a new task, it is important to initialize its stack just like
@@ -189,6 +234,9 @@ void Kernel_Create_Task_At( PD *p, voidfuncptr f, PRIORITY py, int arg ) {
 
     p->state = READY;
 
+    // Add to ready queue
+    enqueueRQ(p);
+
 }
 
 /**
@@ -217,11 +265,16 @@ static void Dispatch() {
      /* find the next READY task
        * Note: if there is no READY task, then this will loop forever!.
        */
-    while(Process[NextP].state != READY) {
-        NextP = (NextP + 1) % MAXTHREAD;
-    }
+    // NextP = 0;
+    // while(ReadyQueue[NextP].state != READY) {
+    //     NextP = (NextP + 1) % MAXTHREAD;
+    // }
 
-    Cp = &(Process[NextP]);
+    Cp = dequeueRQ();
+    while (Cp->state != READY){
+        disable_LED(PORTL2);
+        disable_LED(PORTL6);
+    }
     CurrentSp = Cp->sp;
     Cp->state = RUNNING;
 
@@ -260,6 +313,7 @@ static void Next_Kernel_Request() {
         case NONE:
             /* NONE could be caused by a timer interrupt */
             Cp->state = READY;
+            enqueueRQ(Cp);
             Dispatch();
             break;
         case TERMINATE:
@@ -431,7 +485,9 @@ ISR(TIMER1_COMPA_vect) {
 }
 
 void idle() {
-    for(;;);
+    for(;;) {
+
+    }
 }
 
 void a_main() {

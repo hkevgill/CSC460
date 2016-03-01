@@ -1,7 +1,7 @@
 #ifndef _OS_H_  
 #define _OS_H_  
    
-#define MAXTHREAD     16       
+#define MAXTHREAD     8       
 #define WORKSPACE     256   // in bytes, per THREAD
 #define MAXMUTEX      8 
 #define MAXEVENT      8      

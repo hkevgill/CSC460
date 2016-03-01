@@ -94,8 +94,7 @@ typedef struct ProcessDescriptor {
 static PD Process[MAXTHREAD];
 
 PD ReadyQueue[MAXTHREAD];
-volatile int RQFront = 0;
-volatile int RQRear = 0;
+volatile int RQCount = 0;
 
 /**
   * The process descriptor of the currently RUNNING task.
@@ -135,14 +134,14 @@ volatile unsigned int pCount = 0;
  *  Checks if queue is full
  */
 int isFull() {
-    return RQRear == (RQFront - 1) % MAXTHREAD;
+    return RQCount == MAXTHREAD - 1;
 }
 
 // /*
 //  *  Checks if queue is empty, SHOULD NEVER BE EMPTY
 //  */
 int isEmpty() {
-    return RQRear == RQFront;
+    return RQCount == 0;
 }
 
 /*
@@ -153,8 +152,15 @@ void enqueueRQ(PD *p){
         return;
     }
 
-    ReadyQueue[RQRear] = *p;
-    RQRear = (RQRear + 1) % MAXTHREAD;
+    int i = RQCount - 1;
+
+    while(i >= 0 && (p->py >= ReadyQueue[i].py)) {
+        ReadyQueue[i+1] = ReadyQueue[i];
+        i--;
+    }
+
+    ReadyQueue[i+1] = *p;
+    RQCount++;
 }
 
 // /*
@@ -165,9 +171,8 @@ PD *dequeueRQ() {
         return;
     }
 
-    PD *result = &(ReadyQueue[RQFront]);
-
-    RQFront = (RQFront + 1) % MAXTHREAD;
+    PD *result = &(ReadyQueue[RQCount-1]);
+    RQCount--;
 
     return result;
 }
@@ -265,20 +270,11 @@ static void Dispatch() {
      /* find the next READY task
        * Note: if there is no READY task, then this will loop forever!.
        */
-    // NextP = 0;
-    // while(ReadyQueue[NextP].state != READY) {
-    //     NextP = (NextP + 1) % MAXTHREAD;
-    // }
 
     Cp = dequeueRQ();
-    while (Cp->state != READY){
-        disable_LED(PORTL2);
-        disable_LED(PORTL6);
-    }
+
     CurrentSp = Cp->sp;
     Cp->state = RUNNING;
-
-    NextP = (NextP + 1) % MAXTHREAD;
 }
 
 /**
@@ -419,8 +415,8 @@ void Task_Terminate() {
 void Ping() {
     int  x ;
     for(;;){
-        enable_LED(PORTL6);
-        disable_LED(PORTL2);
+        // enable_LED(PORTL6);
+        // disable_LED(PORTL2);
 
         for( x=0; x < 32000; ++x );   /* do nothing */
         for( x=0; x < 32000; ++x );   /* do nothing */
@@ -438,8 +434,8 @@ void Ping() {
 void Pong() {
     int  x;
     for(;;) {
-        enable_LED(PORTL2);
-        disable_LED(PORTL6);
+        // enable_LED(PORTL2);
+        // disable_LED(PORTL6);
 
         for( x=0; x < 32000; ++x );   /* do nothing */
         for( x=0; x < 32000; ++x );   /* do nothing */
@@ -494,6 +490,11 @@ void a_main() {
     Task_Create(Pong, 9, 1);
     Task_Create(Ping, 9, 1);
     Task_Create(idle, 10, 1);
+
+    // if (ReadyQueue[0].py != 9) {
+    //     enable_LED(PORTL6);
+    //     enable_LED(PORTL2);
+    // }
 
     Task_Terminate();
 }

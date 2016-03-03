@@ -94,8 +94,7 @@ typedef struct ProcessDescriptor {
 static PD Process[MAXTHREAD];
 
 volatile PD *ReadyQueue[MAXTHREAD];
-volatile int RQFront = 0;
-volatile int RQRear = 0;
+volatile int RQCount = 0;
 
 /**
   * The process descriptor of the currently RUNNING task.
@@ -135,14 +134,14 @@ volatile unsigned int pCount = 0;
  *  Checks if queue is full
  */
 int isFull() {
-    return RQRear == (RQFront - 1) % MAXTHREAD;
+    return RQCount == MAXTHREAD - 1;
 }
 
 // /*
 //  *  Checks if queue is empty, SHOULD NEVER BE EMPTY
 //  */
 int isEmpty() {
-    return RQRear == RQFront;
+    return RQCount == 0;
 }
 
 /*
@@ -153,21 +152,32 @@ void enqueueRQ(volatile PD **p){
         return;
     }
 
-    ReadyQueue[RQRear] = *p;
-    RQRear = (RQRear + 1) % MAXTHREAD;
+    int i = RQCount - 1;
+
+    volatile PD *new = *p;
+
+    volatile PD *temp = ReadyQueue[i];
+
+    while(i >= 0 && (new->py >= temp->py)) {
+        ReadyQueue[i+1] = ReadyQueue[i];
+        i--;
+        temp = ReadyQueue[i];
+    }
+
+    ReadyQueue[i+1] = *p;
+    RQCount++;
 }
 
 // /*
 //  *  Return the first element of the queue
 //  */
-PD *dequeueRQ() {
+volatile PD *dequeueRQ() {
     if(isEmpty()) {
         return;
     }
 
-    volatile PD *result = (ReadyQueue[RQFront]);
-
-    RQFront = (RQFront + 1) % MAXTHREAD;
+    volatile PD *result = (ReadyQueue[RQCount-1]);
+    RQCount--;
 
     return result;
 }
@@ -178,7 +188,7 @@ PD *dequeueRQ() {
  * can just restore its execution context on its stack.
  * (See file "cswitch.S" for details.)
  */
-void Kernel_Create_Task_At( PD *p, voidfuncptr f, PRIORITY py, int arg ) {   
+void Kernel_Create_Task_At( volatile PD *p, voidfuncptr f, PRIORITY py, int arg ) {   
     unsigned char *sp;
 
 #ifdef DEBUG
@@ -265,20 +275,11 @@ static void Dispatch() {
      /* find the next READY task
        * Note: if there is no READY task, then this will loop forever!.
        */
-    // NextP = 0;
-    // while(ReadyQueue[NextP].state != READY) {
-    //     NextP = (NextP + 1) % MAXTHREAD;
-    // }
 
     Cp = dequeueRQ();
-    while (Cp->state != READY){
-        disable_LED(PORTL2);
-        disable_LED(PORTL6);
-    }
+
     CurrentSp = Cp->sp;
     Cp->state = RUNNING;
-
-    NextP = (NextP + 1) % MAXTHREAD;
 }
 
 /**
@@ -486,14 +487,14 @@ ISR(TIMER1_COMPA_vect) {
 
 void idle() {
     for(;;) {
-
+      enable_LED(PORTL6);
     }
 }
 
 void a_main() {
-    Task_Create(Pong, 9, 1);
-    Task_Create(Ping, 9, 1);
-    Task_Create(idle, 10, 1);
+    Task_Create(Pong, 8, 1);
+    Task_Create(Ping, 8, 1);
+    Task_Create(idle, 9, 1);
 
     Task_Terminate();
 }

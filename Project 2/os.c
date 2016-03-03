@@ -93,7 +93,7 @@ typedef struct ProcessDescriptor {
   */
 static PD Process[MAXTHREAD];
 
-PD ReadyQueue[MAXTHREAD];
+volatile PD *ReadyQueue[MAXTHREAD];
 volatile int RQCount = 0;
 
 /**
@@ -147,7 +147,7 @@ int isEmpty() {
 /*
  *  Insert into the queue sorted by priority
  */
-void enqueueRQ(PD *p){
+void enqueueRQ(volatile PD **p){
     if(isFull()) {
         return;
     }
@@ -171,7 +171,7 @@ PD *dequeueRQ() {
         return;
     }
 
-    PD *result = &(ReadyQueue[RQCount-1]);
+    volatile PD *result = (ReadyQueue[RQCount-1]);
     RQCount--;
 
     return result;
@@ -240,7 +240,7 @@ void Kernel_Create_Task_At( PD *p, voidfuncptr f, PRIORITY py, int arg ) {
     p->state = READY;
 
     // Add to ready queue
-    enqueueRQ(p);
+    enqueueRQ(&p);
 
 }
 
@@ -309,7 +309,7 @@ static void Next_Kernel_Request() {
         case NONE:
             /* NONE could be caused by a timer interrupt */
             Cp->state = READY;
-            enqueueRQ(Cp);
+            enqueueRQ(&Cp);
             Dispatch();
             break;
         case TERMINATE:

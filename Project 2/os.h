@@ -25,7 +25,7 @@ void OS_Abort(void);
 PID  Task_Create( void (*f)(void), PRIORITY py, int arg);
 void Task_Terminate(void);
 void Task_Yield(void);
-int  Task_GetArg(void);
+int  Task_GetArg( PID p );
 void Task_Suspend( PID p );          
 void Task_Resume( PID p );
 

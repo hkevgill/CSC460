@@ -383,6 +383,7 @@ PID Task_Create( voidfuncptr f, PRIORITY py, int arg){
       /* call the RTOS function directly */
       Kernel_Create_Task( f, py, arg );
     }
+    // return PID
 }
 
 /**
@@ -406,6 +407,16 @@ void Task_Terminate() {
         Enter_Kernel();
         /* never returns here! */
     }
+}
+
+int Task_GetArg(PID p) {
+	int i;
+	for (i=0; i<MAXTHREAD; i++){
+		if(Process[i].p == p){
+			return Process[i].arg;
+		}
+	}
+	return -1;
 }
 
 /*============

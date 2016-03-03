@@ -68,6 +68,7 @@ typedef enum kernel_request_type {
     NONE = 0,
     CREATE,
     NEXT,
+    SLEEP,
     TERMINATE
 } KERNEL_REQUEST_TYPE;
 
@@ -85,6 +86,7 @@ typedef struct ProcessDescriptor {
     int arg;
     voidfuncptr  code;   /* function to be executed as a task */
     KERNEL_REQUEST_TYPE request;
+    TICK sleepTime;
 } PD;
 
 /**
@@ -317,6 +319,13 @@ static void Next_Kernel_Request() {
             enqueueRQ(&Cp);
             Dispatch();
             break;
+        case SLEEP:
+            Cp->state = SLEEPING;
+
+            // Add to sleepQ
+
+            Dispatch();
+            break;
         case TERMINATE:
             /* deallocate all resources used by this task */
             Cp->state = DEAD;
@@ -392,7 +401,16 @@ PID Task_Create( voidfuncptr f, PRIORITY py, int arg){
 void Task_Next() {
     if (KernelActive) {
         Disable_Interrupt();
-        Cp ->request = NEXT;
+        Cp->request = NEXT;
+        Enter_Kernel();
+    }
+}
+
+void Task_Sleep(TICK t); {
+    if (KernelActive) {
+        Disable_Interrupt();
+        Cp->request = SLEEP;
+        Cp->sleepTime = t;
         Enter_Kernel();
     }
 }

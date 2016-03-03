@@ -154,9 +154,14 @@ void enqueueRQ(volatile PD **p){
 
     int i = RQCount - 1;
 
-    while(i >= 0 && (p->py >= ReadyQueue[i].py)) {
+    volatile PD *new = *p;
+
+    volatile PD *temp = ReadyQueue[i];
+
+    while(i >= 0 && (new->py >= temp->py)) {
         ReadyQueue[i+1] = ReadyQueue[i];
         i--;
+        temp = ReadyQueue[i];
     }
 
     ReadyQueue[i+1] = *p;
@@ -183,7 +188,7 @@ PD *dequeueRQ() {
  * can just restore its execution context on its stack.
  * (See file "cswitch.S" for details.)
  */
-void Kernel_Create_Task_At( PD *p, voidfuncptr f, PRIORITY py, int arg ) {   
+void Kernel_Create_Task_At( volatile PD *p, voidfuncptr f, PRIORITY py, int arg ) {   
     unsigned char *sp;
 
 #ifdef DEBUG

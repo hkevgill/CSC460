@@ -450,8 +450,8 @@ void Task_Terminate() {
 
 int Task_GetArg(PID p) {
 	int i;
-	for (i=0; i<MAXTHREAD; i++){
-		if(Process[i].p == p){
+	for (i = 0; i < MAXTHREAD; i++){
+		if (Process[i].p == p) {
 			return Process[i].arg;
 		}
 	}
@@ -544,7 +544,7 @@ void idle() {
 void a_main() {
     Task_Create(Pong, 8, 1);
     Task_Create(Ping, 8, 1);
-    Task_Create(idle, 9, 1);
+    Task_Create(idle, MINPRIORITY, 1);
 
     Task_Terminate();
 }

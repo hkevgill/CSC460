@@ -135,14 +135,14 @@ volatile unsigned int pCount = 0;
 /*
  *  Checks if queue is full
  */
-int isFull() {
+int isRQFull() {
     return RQCount == MAXTHREAD - 1;
 }
 
 // /*
 //  *  Checks if queue is empty, SHOULD NEVER BE EMPTY
 //  */
-int isEmpty() {
+int isRQEmpty() {
     return RQCount == 0;
 }
 
@@ -150,7 +150,7 @@ int isEmpty() {
  *  Insert into the queue sorted by priority
  */
 void enqueueRQ(volatile PD **p){
-    if(isFull()) {
+    if(isRQFull()) {
         return;
     }
 
@@ -174,7 +174,7 @@ void enqueueRQ(volatile PD **p){
 //  *  Return the first element of the queue
 //  */
 volatile PD *dequeueRQ() {
-    if(isEmpty()) {
+    if(isRQEmpty()) {
         return;
     }
 

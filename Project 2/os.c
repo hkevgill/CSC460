@@ -132,6 +132,22 @@ volatile static unsigned int Tasks;
 // Next process id
 volatile unsigned int pCount = 0;
 
+int isSQFull() {
+	return 0;
+}
+
+int isSQEmpty() {
+	return 0;
+}
+
+void enqueueSQ() {
+
+}
+
+volatile PD *dequeueSQ() {
+	return;
+}
+
 /*
  *  Checks if queue is full
  */
@@ -406,7 +422,7 @@ void Task_Next() {
     }
 }
 
-void Task_Sleep(TICK t); {
+void Task_Sleep(TICK t) {
     if (KernelActive) {
         Disable_Interrupt();
         Cp->request = SLEEP;

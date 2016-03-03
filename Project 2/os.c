@@ -171,7 +171,7 @@ void enqueueRQ(volatile PD **p){
 // /*
 //  *  Return the first element of the queue
 //  */
-PD *dequeueRQ() {
+volatile PD *dequeueRQ() {
     if(isEmpty()) {
         return;
     }
@@ -420,8 +420,8 @@ void Task_Terminate() {
 void Ping() {
     int  x ;
     for(;;){
-        // enable_LED(PORTL6);
-        // disable_LED(PORTL2);
+        enable_LED(PORTL6);
+        disable_LED(PORTL2);
 
         for( x=0; x < 32000; ++x );   /* do nothing */
         for( x=0; x < 32000; ++x );   /* do nothing */
@@ -439,8 +439,8 @@ void Ping() {
 void Pong() {
     int  x;
     for(;;) {
-        // enable_LED(PORTL2);
-        // disable_LED(PORTL6);
+        enable_LED(PORTL2);
+        disable_LED(PORTL6);
 
         for( x=0; x < 32000; ++x );   /* do nothing */
         for( x=0; x < 32000; ++x );   /* do nothing */
@@ -487,19 +487,14 @@ ISR(TIMER1_COMPA_vect) {
 
 void idle() {
     for(;;) {
-
+      enable_LED(PORTL6);
     }
 }
 
 void a_main() {
-    Task_Create(Pong, 9, 1);
-    Task_Create(Ping, 9, 1);
-    Task_Create(idle, 10, 1);
-
-    // if (ReadyQueue[0].py != 9) {
-    //     enable_LED(PORTL6);
-    //     enable_LED(PORTL2);
-    // }
+    Task_Create(Pong, 8, 1);
+    Task_Create(Ping, 8, 1);
+    Task_Create(idle, 9, 1);
 
     Task_Terminate();
 }

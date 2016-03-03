@@ -98,6 +98,11 @@ static PD Process[MAXTHREAD];
 volatile PD *ReadyQueue[MAXTHREAD];
 volatile int RQCount = 0;
 
+volatile PD *SleepQueue[MAXTHREAD];
+volatile int SQFront = 0;
+volatile int SQRear = 0;
+
+
 /**
   * The process descriptor of the currently RUNNING task.
   */

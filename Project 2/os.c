@@ -134,14 +134,23 @@ volatile static unsigned int Tasks;
 // Next process id
 volatile unsigned int pCount = 0;
 
+/*
+ *  Checks if queue is full
+ */
 volatile int isFull(volatile int *QCount) {
 	return *QCount == MAXTHREAD - 1;
 }
 
+/*
+ *  Checks if queue is empty, SHOULD NEVER BE EMPTY
+ */
 volatile int isEmpty(volatile int *QCount) {
 	return *QCount == 0;
 }
 
+/*
+ *  Insert into the queue sorted by priority
+ */
 void enqueue(volatile PD **p, volatile PD **Queue, volatile int *QCount) {
     if(isFull(QCount)) {
         return;
@@ -163,6 +172,9 @@ void enqueue(volatile PD **p, volatile PD **Queue, volatile int *QCount) {
     (*QCount)++;
 }
 
+/*
+ *  Return the first element of the queue
+ */
 volatile PD *dequeue(volatile PD **Queue, volatile int *QCount) {
 
 	if(isEmpty(QCount)) {
@@ -171,58 +183,6 @@ volatile PD *dequeue(volatile PD **Queue, volatile int *QCount) {
 
     volatile PD *result = (Queue[(*QCount)-1]);
     (*QCount)--;
-
-    return result;
-}
-
-/*
- *  Checks if queue is full
- */
-int isRQFull() {
-    return RQCount == MAXTHREAD - 1;
-}
-
-// /*
-//  *  Checks if queue is empty, SHOULD NEVER BE EMPTY
-//  */
-int isRQEmpty() {
-    return RQCount == 0;
-}
-
-/*
- *  Insert into the queue sorted by priority
- */
-void enqueueRQ(volatile PD **p){
-    if(isRQFull()) {
-        return;
-    }
-
-    int i = RQCount - 1;
-
-    volatile PD *new = *p;
-
-    volatile PD *temp = ReadyQueue[i];
-
-    while(i >= 0 && (new->py >= temp->py)) {
-        ReadyQueue[i+1] = ReadyQueue[i];
-        i--;
-        temp = ReadyQueue[i];
-    }
-
-    ReadyQueue[i+1] = *p;
-    RQCount++;
-}
-
-// /*
-//  *  Return the first element of the queue
-//  */
-volatile PD *dequeueRQ() {
-    if(isRQEmpty()) {
-        return;
-    }
-
-    volatile PD *result = (ReadyQueue[RQCount-1]);
-    RQCount--;
 
     return result;
 }

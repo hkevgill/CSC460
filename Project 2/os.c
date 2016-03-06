@@ -99,10 +99,7 @@ volatile PD *ReadyQueue[MAXTHREAD];
 volatile int RQCount = 0;
 
 volatile PD *SleepQueue[MAXTHREAD];
-volatile int SQFront = 0;
-volatile int SQRear = 0;
-
-
+volatile int SQCount = 0;
 /**
   * The process descriptor of the currently RUNNING task.
   */
@@ -137,20 +134,45 @@ volatile static unsigned int Tasks;
 // Next process id
 volatile unsigned int pCount = 0;
 
-int isSQFull() {
-	return 0;
+volatile int isFull(volatile int *QCount) {
+	return *QCount == MAXTHREAD - 1;
 }
 
-int isSQEmpty() {
-	return 0;
+volatile int isEmpty(volatile int *QCount) {
+	return *QCount == 0;
 }
 
-void enqueueSQ() {
+void enqueue(volatile PD **p, volatile PD **Queue, volatile int *QCount) {
+    if(isFull(QCount)) {
+        return;
+    }
 
+    int i = (*QCount) - 1;
+
+    volatile PD *new = *p;
+
+    volatile PD *temp = Queue[i];
+
+    while(i >= 0 && (new->py >= temp->py)) {
+        Queue[i+1] = Queue[i];
+        i--;
+        temp = Queue[i];
+    }
+
+    Queue[i+1] = *p;
+    (*QCount)++;
 }
 
-volatile PD *dequeueSQ() {
-	return;
+volatile PD *dequeue(volatile PD **Queue, volatile int *QCount) {
+
+	if(isEmpty(QCount)) {
+        return;
+    }
+
+    volatile PD *result = (Queue[(*QCount)-1]);
+    (*QCount)--;
+
+    return result;
 }
 
 /*
@@ -268,7 +290,7 @@ void Kernel_Create_Task_At( volatile PD *p, voidfuncptr f, PRIORITY py, int arg 
     p->state = READY;
 
     // Add to ready queue
-    enqueueRQ(&p);
+    enqueue(&p, &ReadyQueue, &RQCount);
 
 }
 
@@ -299,7 +321,8 @@ static void Dispatch() {
        * Note: if there is no READY task, then this will loop forever!.
        */
 
-    Cp = dequeueRQ();
+    // Cp = dequeueRQ();
+    Cp = dequeue(&ReadyQueue, &RQCount);
 
     CurrentSp = Cp->sp;
     Cp->state = RUNNING;
@@ -337,7 +360,7 @@ static void Next_Kernel_Request() {
         case NONE:
             /* NONE could be caused by a timer interrupt */
             Cp->state = READY;
-            enqueueRQ(&Cp);
+            enqueue(&Cp, &ReadyQueue, &RQCount);
             Dispatch();
             break;
         case SLEEP:

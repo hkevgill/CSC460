@@ -142,7 +142,7 @@ volatile int isFull(volatile int *QCount) {
 }
 
 /*
- *  Checks if queue is empty, SHOULD NEVER BE EMPTY
+ *  Checks if queue is empty, READY QUEUE SHOULD NEVER BE EMPTY
  */
 volatile int isEmpty(volatile int *QCount) {
 	return *QCount == 0;

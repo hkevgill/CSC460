@@ -325,9 +325,7 @@ static void Next_Kernel_Request() {
             break;
         case SLEEP:
             Cp->state = SLEEPING;
-
-            // Add to sleepQ
-
+            enqueue(&Cp, &SleepQueue, &SQCount);
             Dispatch();
             break;
         case TERMINATE:

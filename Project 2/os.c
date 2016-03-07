@@ -86,7 +86,8 @@ typedef struct ProcessDescriptor {
     int arg;
     voidfuncptr  code;   /* function to be executed as a task */
     KERNEL_REQUEST_TYPE request;
-    TICK sleepTime;
+    TICK wakeTickOverflow;
+    TICK wakeTick;
 } PD;
 
 /**
@@ -133,6 +134,9 @@ volatile static unsigned int Tasks;
 
 // Next process id
 volatile unsigned int pCount = 0;
+
+// Global tick overflow count
+volatile unsigned int tickOverflowCount = 0;
 
 /*
  *  Checks if queue is full
@@ -412,7 +416,9 @@ void Task_Sleep(TICK t) {
     if (KernelActive) {
         Disable_Interrupt();
         Cp->request = SLEEP;
-        Cp->sleepTime = t;
+        unsigned int clockTicks = TCNT3/625;
+        Cp->wakeTickOverflow = tickOverflowCount + ((t + clockTicks) / 100);
+        Cp->wakeTick = (t + clockTicks) % 100;
         Enter_Kernel();
     }
 }
@@ -451,15 +457,15 @@ int Task_GetArg(PID p) {
 void Ping() {
     int  x ;
     for(;;){
-        enable_LED(PORTL6);
-        disable_LED(PORTL2);
+        // enable_LED(PORTL6);
+        // disable_LED(PORTL2);
 
         for( x=0; x < 32000; ++x );   /* do nothing */
         for( x=0; x < 32000; ++x );   /* do nothing */
         for( x=0; x < 32000; ++x );   /* do nothing */
 
         /* printf( "*" );  */
-        // Task_Next();
+        Task_Sleep(50);
     }
 }
 
@@ -470,15 +476,15 @@ void Ping() {
 void Pong() {
     int  x;
     for(;;) {
-        enable_LED(PORTL2);
-        disable_LED(PORTL6);
+        // enable_LED(PORTL2);
+        // disable_LED(PORTL6);
 
         for( x=0; x < 32000; ++x );   /* do nothing */
         for( x=0; x < 32000; ++x );   /* do nothing */
         for( x=0; x < 32000; ++x );   /* do nothing */
 
         /* printf( "." );  */
-        // Task_Next();
+        Task_Sleep(50);
 
     }
 }
@@ -496,12 +502,13 @@ void setup() {
     // initialize Timer1 16 bit timer
     Disable_Interrupt();
 
+    // Timer 1
     TCCR1A = 0;                 // Set TCCR1A register to 0
     TCCR1B = 0;                 // Set TCCR1B register to 0
 
     TCNT1 = 0;                  // Initialize counter to 0
 
-    OCR1A = 62499;                // Compare match register (TOP comparison value) [(16MHz/(100Hz*8)] - 1
+    OCR1A = 6249;                // Compare match register (TOP comparison value) [(16MHz/(100Hz*8)] - 1
 
     TCCR1B |= (1 << WGM12);     // Turns on CTC mode (TOP is now OCR1A)
 
@@ -509,23 +516,52 @@ void setup() {
 
     TIMSK1 |= (1 << OCIE1A);    // Enable timer compare interrupt
 
+    // Timer 3
+    TCCR3A = 0;                 // Set TCCR0A register to 0
+    TCCR3B = 0;                 // Set TCCR0B register to 0
+
+    TCNT3 = 0;                  // Initialize counter to 0
+
+    OCR3A = 62499;                // Compare match register (TOP comparison value) [(16MHz/(100Hz*8)] - 1
+
+    TCCR3B |= (1 << WGM32);     // Turns on CTC mode (TOP is now OCR1A)
+
+    TCCR3B |= (1 << CS32);      // Prescaler 1024
+
+    TIMSK3 = (1 << OCIE3A);
+
     Enable_Interrupt();
 }
 
 ISR(TIMER1_COMPA_vect) {
+
+    if (isEmpty(&SQCount)) {
+        enable_LED(PORTL6);
+        return;
+    }
+    else {
+        if ((SleepQueue[0]->wakeTickOverflow <= tickOverflowCount) && (SleepQueue[0]->wakeTick <= (TCNT3/625))) {
+            toggle_LED(PORTL2);
+            PD *p = dequeue(&SleepQueue, &SQCount);
+            enqueue(&p, &ReadyQueue, &RQCount);
+        }
+    }
     Task_Next();
+}
+
+ISR(TIMER3_COMPA_vect) {
+    tickOverflowCount += 1;
 }
 
 void idle() {
     for(;;) {
-      enable_LED(PORTL6);
     }
 }
 
 void a_main() {
     Task_Create(Pong, 8, 1);
     Task_Create(Ping, 8, 1);
-    Task_Create(idle, MINPRIORITY, 1);
+    Task_Create(idle, 10, 1);
 
     Task_Terminate();
 }

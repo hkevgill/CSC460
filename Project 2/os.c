@@ -285,7 +285,6 @@ static void Dispatch() {
        * Note: if there is no READY task, then this will loop forever!.
        */
 
-    // Cp = dequeueRQ();
     Cp = dequeue(&ReadyQueue, &RQCount);
 
     CurrentSp = Cp->sp;
@@ -398,7 +397,7 @@ PID Task_Create( voidfuncptr f, PRIORITY py, int arg){
       /* call the RTOS function directly */
       Kernel_Create_Task( f, py, arg );
     }
-    // return PID
+    // TODO return PID
 }
 
 /**
@@ -457,8 +456,8 @@ int Task_GetArg(PID p) {
 void Ping() {
     int  x ;
     for(;;){
-        // enable_LED(PORTL6);
-        // disable_LED(PORTL2);
+        enable_LED(PORTL6);
+        disable_LED(PORTL2);
 
         for( x=0; x < 32000; ++x );   /* do nothing */
         for( x=0; x < 32000; ++x );   /* do nothing */
@@ -476,8 +475,8 @@ void Ping() {
 void Pong() {
     int  x;
     for(;;) {
-        // enable_LED(PORTL2);
-        // disable_LED(PORTL6);
+        enable_LED(PORTL2);
+        disable_LED(PORTL6);
 
         for( x=0; x < 32000; ++x );   /* do nothing */
         for( x=0; x < 32000; ++x );   /* do nothing */
@@ -508,7 +507,7 @@ void setup() {
 
     TCNT1 = 0;                  // Initialize counter to 0
 
-    OCR1A = 6249;                // Compare match register (TOP comparison value) [(16MHz/(100Hz*8)] - 1
+    OCR1A = 624;                // Compare match register (TOP comparison value) [(16MHz/(100Hz*8)] - 1
 
     TCCR1B |= (1 << WGM12);     // Turns on CTC mode (TOP is now OCR1A)
 
@@ -535,17 +534,25 @@ void setup() {
 
 ISR(TIMER1_COMPA_vect) {
 
-    if (isEmpty(&SQCount)) {
-        enable_LED(PORTL6);
-        return;
-    }
-    else {
-        if ((SleepQueue[0]->wakeTickOverflow <= tickOverflowCount) && (SleepQueue[0]->wakeTick <= (TCNT3/625))) {
-            toggle_LED(PORTL2);
-            PD *p = dequeue(&SleepQueue, &SQCount);
+    // This version dequeues all that need dequeuing.
+    volatile int i;
+
+    for (i = SQCount-1; i >= 0; i--) {
+        if ((SleepQueue[i]->wakeTickOverflow <= tickOverflowCount) && (SleepQueue[i]->wakeTick <= (TCNT3/625))) {
+            volatile PD *p = dequeue(&SleepQueue, &SQCount);
             enqueue(&p, &ReadyQueue, &RQCount);
         }
+        else {
+            break;
+        }
     }
+
+    // This version dequeues one item.
+    // if ((!isEmpty(&SQCount)) && (SleepQueue[SQCount-1]->wakeTickOverflow <= tickOverflowCount) && (SleepQueue[SQCount-1]->wakeTick <= (TCNT3/625))) {
+    //     volatile PD *p = dequeue(&SleepQueue, &SQCount);
+    //     enqueue(&p, &ReadyQueue, &RQCount);
+    // }
+
     Task_Next();
 }
 

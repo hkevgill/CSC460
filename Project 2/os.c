@@ -152,10 +152,33 @@ volatile int isEmpty(volatile int *QCount) {
 	return *QCount == 0;
 }
 
+void enqueueSQ(volatile PD **p, volatile PD **Queue, volatile int *QCount) {
+    if(isFull(QCount)) {
+        return;
+    }
+
+    int i = (*QCount) - 1;
+
+    volatile PD *new = *p;
+
+    volatile PD *temp = Queue[i];
+
+    while(i >= 0 && ((new->wakeTickOverflow >= temp->wakeTickOverflow) || ((new->wakeTickOverflow >= temp->wakeTickOverflow) && (new->wakeTick >= temp->wakeTick)))) {
+        Queue[i+1] = Queue[i];
+        i--;
+        temp = Queue[i];
+    }
+
+    // toggle_LED(PORTL6);
+
+    Queue[i+1] = *p;
+    (*QCount)++;
+}
+
 /*
  *  Insert into the queue sorted by priority
  */
-void enqueue(volatile PD **p, volatile PD **Queue, volatile int *QCount) {
+void enqueueRQ(volatile PD **p, volatile PD **Queue, volatile int *QCount) {
     if(isFull(QCount)) {
         return;
     }
@@ -254,7 +277,7 @@ void Kernel_Create_Task_At( volatile PD *p, voidfuncptr f, PRIORITY py, int arg 
     p->state = READY;
 
     // Add to ready queue
-    enqueue(&p, &ReadyQueue, &RQCount);
+    enqueueRQ(&p, &ReadyQueue, &RQCount);
 
 }
 
@@ -323,12 +346,12 @@ static void Next_Kernel_Request() {
         case NONE:
             /* NONE could be caused by a timer interrupt */
             Cp->state = READY;
-            enqueue(&Cp, &ReadyQueue, &RQCount);
+            enqueueRQ(&Cp, &ReadyQueue, &RQCount);
             Dispatch();
             break;
         case SLEEP:
             Cp->state = SLEEPING;
-            enqueue(&Cp, &SleepQueue, &SQCount);
+            enqueueSQ(&Cp, &SleepQueue, &SQCount);
             Dispatch();
             break;
         case TERMINATE:
@@ -456,15 +479,17 @@ int Task_GetArg(PID p) {
 void Ping() {
     int  x ;
     for(;;){
-        enable_LED(PORTL6);
-        disable_LED(PORTL2);
+        // enable_LED(PORTL6);
+        // disable_LED(PORTL2);
+
+        toggle_LED(PORTL6);
 
         for( x=0; x < 32000; ++x );   /* do nothing */
         for( x=0; x < 32000; ++x );   /* do nothing */
         for( x=0; x < 32000; ++x );   /* do nothing */
 
         /* printf( "*" );  */
-        Task_Sleep(50);
+        Task_Sleep(500);
     }
 }
 
@@ -475,15 +500,17 @@ void Ping() {
 void Pong() {
     int  x;
     for(;;) {
-        enable_LED(PORTL2);
-        disable_LED(PORTL6);
+        // enable_LED(PORTL2);
+        // disable_LED(PORTL6);
+
+        toggle_LED(PORTL2);
 
         for( x=0; x < 32000; ++x );   /* do nothing */
         for( x=0; x < 32000; ++x );   /* do nothing */
         for( x=0; x < 32000; ++x );   /* do nothing */
 
         /* printf( "." );  */
-        Task_Sleep(50);
+        Task_Sleep(500);
 
     }
 }
@@ -540,7 +567,7 @@ ISR(TIMER1_COMPA_vect) {
     for (i = SQCount-1; i >= 0; i--) {
         if ((SleepQueue[i]->wakeTickOverflow <= tickOverflowCount) && (SleepQueue[i]->wakeTick <= (TCNT3/625))) {
             volatile PD *p = dequeue(&SleepQueue, &SQCount);
-            enqueue(&p, &ReadyQueue, &RQCount);
+            enqueueRQ(&p, &ReadyQueue, &RQCount);
         }
         else {
             break;
@@ -550,7 +577,7 @@ ISR(TIMER1_COMPA_vect) {
     // This version dequeues one item.
     // if ((!isEmpty(&SQCount)) && (SleepQueue[SQCount-1]->wakeTickOverflow <= tickOverflowCount) && (SleepQueue[SQCount-1]->wakeTick <= (TCNT3/625))) {
     //     volatile PD *p = dequeue(&SleepQueue, &SQCount);
-    //     enqueue(&p, &ReadyQueue, &RQCount);
+    //     enqueueRQ(&p, &ReadyQueue, &RQCount);
     // }
 
     Task_Next();
@@ -568,7 +595,7 @@ void idle() {
 void a_main() {
     Task_Create(Pong, 8, 1);
     Task_Create(Ping, 8, 1);
-    Task_Create(idle, 10, 1);
+    Task_Create(idle, MINPRIORITY, 1);
 
     Task_Terminate();
 }

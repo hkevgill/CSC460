@@ -8,11 +8,11 @@ LOADFLAGS=-p m2560 -c stk500v2 -P /dev/cu.usbmodem1421 -b 115200 -U flash:w:rtos
 
 all: compile elf hex load
 
-compile: cswitch.S os.c main.c LED_Test.c
-	$(CC) $(FLAGS) os.c cswitch.S main.c LED_Test.c
+compile: cswitch.S os.c main.c queue.c LED_Test.c
+	$(CC) $(FLAGS) os.c cswitch.S main.c queue.c LED_Test.c
 
-elf: cswitch.o os.o main.o LED_Test.o
-	$(CC) $(ELFFLAGS) rtos.elf os.o main.o LED_Test.o cswitch.o
+elf: cswitch.o os.o main.o queue.o LED_Test.o
+	$(CC) $(ELFFLAGS) rtos.elf os.o main.o queue.o LED_Test.o cswitch.o
 
 hex: rtos.elf
 	$(COPY) $(HEXFLAGS) rtos.elf rtos.hex

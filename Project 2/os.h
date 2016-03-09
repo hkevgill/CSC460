@@ -13,11 +13,56 @@
 #define NULL          0   /* undefined */
 #endif
 
+#define Disable_Interrupt()     asm volatile ("cli"::)
+#define Enable_Interrupt()      asm volatile ("sei"::)
+
+typedef void (*voidfuncptr) (void);      /* pointer to void f(void) */
+
 typedef unsigned int PID;        // always non-zero if it is valid
 typedef unsigned int MUTEX;      // always non-zero if it is valid
 typedef unsigned int PRIORITY;
 typedef unsigned int EVENT;      // always non-zero if it is valid
 typedef unsigned int TICK;
+
+/**
+  *  This is the set of states that a task can be in at any given time.
+  */
+typedef enum process_states { 
+    DEAD = 0, 
+    READY,
+    RUNNING,
+    SLEEPING,
+    SUSPENDED
+} PROCESS_STATES;
+
+/**
+  * This is the set of kernel requests, i.e., a request code for each system call.
+  */
+typedef enum kernel_request_type {
+    NONE = 0,
+    CREATE,
+    NEXT,
+    SLEEP,
+    TERMINATE
+} KERNEL_REQUEST_TYPE;
+
+/**
+  * Each task is represented by a process descriptor, which contains all
+  * relevant information about this task. For convenience, we also store
+  * the task's stack, i.e., its workspace, in here.
+  */
+typedef struct ProcessDescriptor {
+    PID p;
+    unsigned char *sp;   /* stack pointer into the "workSpace" */
+    unsigned char workSpace[WORKSPACE]; 
+    PROCESS_STATES state;
+    PRIORITY py;
+    int arg;
+    voidfuncptr  code;   /* function to be executed as a task */
+    KERNEL_REQUEST_TYPE request;
+    TICK wakeTickOverflow;
+    TICK wakeTick;
+} PD;
 
 // void OS_Init(void);      redefined as main()
 void OS_Abort(void);

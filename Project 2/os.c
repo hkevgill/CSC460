@@ -7,7 +7,9 @@
 //Comment out the following line to remove debugging code from compiled version.
 #define DEBUG
 
-typedef void (*voidfuncptr) (void);      /* pointer to void f(void) */ 
+typedef void (*voidfuncptr) (void);      /* pointer to void f(void) */
+
+extern void a_main();
 
 /*===========
   * RTOS Internal
@@ -467,54 +469,6 @@ int Task_GetArg(PID p) {
 	return -1;
 }
 
-/*============
-  * A Simple Test 
-  *============
-  */
-
-/**
-  * A cooperative "Ping" task.
-  * Added testing code for LEDs.
-  */
-void Ping() {
-    int  x ;
-    for(;;){
-        // enable_LED(PORTL6);
-        // disable_LED(PORTL2);
-
-        toggle_LED(PORTL6);
-
-        for( x=0; x < 32000; ++x );   /* do nothing */
-        for( x=0; x < 32000; ++x );   /* do nothing */
-        for( x=0; x < 32000; ++x );   /* do nothing */
-
-        /* printf( "*" );  */
-        Task_Sleep(500);
-    }
-}
-
-/**
-  * A cooperative "Pong" task.
-  * Added testing code for LEDs.
-  */
-void Pong() {
-    int  x;
-    for(;;) {
-        // enable_LED(PORTL2);
-        // disable_LED(PORTL6);
-
-        toggle_LED(PORTL2);
-
-        for( x=0; x < 32000; ++x );   /* do nothing */
-        for( x=0; x < 32000; ++x );   /* do nothing */
-        for( x=0; x < 32000; ++x );   /* do nothing */
-
-        /* printf( "." );  */
-        Task_Sleep(500);
-
-    }
-}
-
 void setup() {
     // pin 47
     init_LED_PORTL_pin2();
@@ -585,19 +539,6 @@ ISR(TIMER1_COMPA_vect) {
 
 ISR(TIMER3_COMPA_vect) {
     tickOverflowCount += 1;
-}
-
-void idle() {
-    for(;;) {
-    }
-}
-
-void a_main() {
-    Task_Create(Pong, 8, 1);
-    Task_Create(Ping, 8, 1);
-    Task_Create(idle, MINPRIORITY, 1);
-
-    Task_Terminate();
 }
 
 /**

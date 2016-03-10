@@ -1,5 +1,6 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include <util/delay.h>
 #include "LED_Test.h"
 #include "os.h"
 
@@ -19,9 +20,7 @@ void Ping() {
 
         toggle_LED(PORTL6);
 
-        for( x=0; x < 32000; ++x );   /* do nothing */
-        for( x=0; x < 32000; ++x );   /* do nothing */
-        for( x=0; x < 32000; ++x );   /* do nothing */
+        _delay_ms(100);
 
         /* printf( "*" );  */
         Task_Sleep(100);
@@ -37,9 +36,7 @@ void Pong() {
 
         toggle_LED(PORTL2);
 
-        for( x=0; x < 32000; ++x );   /* do nothing */
-        for( x=0; x < 32000; ++x );   /* do nothing */
-        for( x=0; x < 32000; ++x );   /* do nothing */
+        _delay_ms(100);
 
         /* printf( "." );  */
         Task_Sleep(100);

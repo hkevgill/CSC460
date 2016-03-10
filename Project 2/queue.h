@@ -9,4 +9,10 @@ void enqueueSQ(volatile PD **p, volatile PD **Queue, volatile int *QCount);
 void enqueueRQ(volatile PD **p, volatile PD **Queue, volatile int *QCount);
 volatile PD *dequeue(volatile PD **Queue, volatile int *QCount);
 
+extern volatile PD *ReadyQueue[MAXTHREAD];
+extern volatile int RQCount;
+
+extern volatile PD *SleepQueue[MAXTHREAD];
+extern volatile int SQCount;
+
 #endif /* _QUEUE_H_ */

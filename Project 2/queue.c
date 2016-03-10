@@ -65,7 +65,7 @@ void enqueueRQ(volatile PD **p, volatile PD **Queue, volatile int *QCount) {
 
     volatile PD *temp = Queue[i];
 
-    while(i >= 0 && (new->py >= temp->py)) {
+    while(i >= 0 && (new->inheritedPy >= temp->inheritedPy)) {
         Queue[i+1] = Queue[i];
         i--;
         temp = Queue[i];

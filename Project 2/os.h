@@ -45,7 +45,9 @@ typedef enum kernel_request_type {
     NEXT,
     SLEEP,
     TERMINATE,
-    MUTEX_INIT
+    MUTEX_INIT,
+    MUTEX_LOCK,
+    MUTEX_UNLOCK
 } KERNEL_REQUEST_TYPE;
 
 typedef enum mutex_state {
@@ -79,6 +81,7 @@ typedef struct ProcessDescriptor {
     unsigned int response;
     TICK wakeTickOverflow;
     TICK wakeTick;
+    MUTEX m;
 } PD;
 
 // void OS_Init(void);      redefined as main()

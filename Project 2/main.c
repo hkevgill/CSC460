@@ -1,3 +1,5 @@
+#define F_CPU 16000000
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
@@ -18,7 +20,7 @@ void Ping() {
         // enable_LED(PORTL6);
         // disable_LED(PORTL2);
 
-        toggle_LED(PORTL6);
+        // toggle_LED(PORTL6);
 
         _delay_ms(100);
 
@@ -34,7 +36,7 @@ void Pong() {
         // enable_LED(PORTL2);
         // disable_LED(PORTL6);
 
-        toggle_LED(PORTL2);
+        // toggle_LED(PORTL2);
 
         _delay_ms(100);
 
@@ -49,7 +51,10 @@ void Pong() {
 void a_main() {
     Task_Create(Pong, 8, 1);
     Task_Create(Ping, 8, 1);
-    Task_Create(idle, MINPRIORITY, 1);
+    unsigned int i = Task_Create(idle, MINPRIORITY, 1);
+
+    Mutex_Init();
+    Mutex_Init();
 
     Task_Terminate();
 }

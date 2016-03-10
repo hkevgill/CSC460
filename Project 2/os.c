@@ -54,6 +54,8 @@ extern void Enter_Kernel();
   */
 static PD Process[MAXTHREAD];
 
+static MTX Mutex[MAXMUTEX];
+
 /**
   * The process descriptor of the currently RUNNING task.
   */
@@ -76,17 +78,14 @@ volatile unsigned char *KernelSp;
   */
 volatile unsigned char *CurrentSp;
 
-/** index to next task to run */
-volatile static unsigned int NextP;  
-
 /** 1 if kernel has been started; 0 otherwise. */
 volatile static unsigned int KernelActive;  
 
 /** number of tasks created so far */
 volatile static unsigned int Tasks;  
 
-// Next process id
-volatile unsigned int pCount = 0;
+// Number of mutexes created so far
+volatile static unsigned int Mutexes;
 
 // Global tick overflow count
 volatile unsigned int tickOverflowCount = 0;
@@ -97,13 +96,16 @@ volatile int RQCount = 0;
 volatile PD *SleepQueue[MAXTHREAD];
 volatile int SQCount = 0;
 
+volatile PD *WaitingQueue[MAXTHREAD];
+volatile int WQCount = 0;
+
 /**
  * When creating a new task, it is important to initialize its stack just like
  * it has called "Enter_Kernel()"; so that when we switch to it later, we
  * can just restore its execution context on its stack.
  * (See file "cswitch.S" for details.)
  */
-void Kernel_Create_Task_At( volatile PD *p, voidfuncptr f, PRIORITY py, int arg ) {   
+PID Kernel_Create_Task_At( volatile PD *p, voidfuncptr f, PRIORITY py, int arg ) {   
     unsigned char *sp;
 
 #ifdef DEBUG
@@ -150,9 +152,10 @@ void Kernel_Create_Task_At( volatile PD *p, voidfuncptr f, PRIORITY py, int arg 
     p->sp = sp;     /* stack pointer into the "workSpace" */
     p->code = f;        /* function to be executed as a task */
     p->request = NONE;
-    p->p = pCount;
-    pCount++;
+    p->p = Tasks;
+    Tasks++;
     p->py = py;
+    p->inheritedPy = py;
     p->arg = arg;
 
     /*----END of NEW CODE----*/
@@ -162,12 +165,13 @@ void Kernel_Create_Task_At( volatile PD *p, voidfuncptr f, PRIORITY py, int arg 
     // Add to ready queue
     enqueueRQ(&p, &ReadyQueue, &RQCount);
 
+    return p->p;
 }
 
 /**
   *  Create a new task
   */
-static void Kernel_Create_Task( voidfuncptr f, PRIORITY py, int arg ) {
+static PID Kernel_Create_Task( voidfuncptr f, PRIORITY py, int arg ) {
     int x;
 
     if (Tasks == MAXTHREAD) return;  /* Too many task! */
@@ -177,9 +181,32 @@ static void Kernel_Create_Task( voidfuncptr f, PRIORITY py, int arg ) {
         if (Process[x].state == DEAD) break;
     }
 
-    ++Tasks;
-    Kernel_Create_Task_At( &(Process[x]), f, py, arg );
+    unsigned int p = Kernel_Create_Task_At( &(Process[x]), f, py, arg );
 
+    return p;
+}
+
+MUTEX Kernel_Init_Mutex_At(volatile MTX *m) {
+    m->m = Mutexes;
+    m->state = FREE;
+    Mutexes++;
+
+    return m->m;
+}
+
+static MUTEX Kernel_Init_Mutex() {
+    int x;
+
+    if (Mutexes == MAXMUTEX) return; // Too many mutexes!
+
+    // find a Disabled mutex that we can use
+    for (x = 0; x < MAXMUTEX; x++) {
+        if (Mutex[x].state == DISABLED) break;
+    }
+
+    unsigned int m = Kernel_Init_Mutex_At( &(Mutex[x]) );
+
+    return m;
 }
 
 /**
@@ -223,7 +250,7 @@ static void Next_Kernel_Request() {
 
         switch(Cp->request){
         case CREATE:
-            Kernel_Create_Task( Cp->code, Cp->py, Cp->arg );
+            Cp->response = Kernel_Create_Task( Cp->code, Cp->py, Cp->arg );
             break;
         case NEXT:
         case NONE:
@@ -241,6 +268,9 @@ static void Next_Kernel_Request() {
             /* deallocate all resources used by this task */
             Cp->state = DEAD;
             Dispatch();
+            break;
+        case MUTEX_INIT:
+            Cp->response = Kernel_Init_Mutex();
             break;
         default:
             /* Houston! we have a problem here! */
@@ -263,11 +293,16 @@ void OS_Init() {
 
     Tasks = 0;
     KernelActive = 0;
-    NextP = 0;
+    Mutexes = 0;
     //Reminder: Clear the memory for the task on creation.
     for (x = 0; x < MAXTHREAD; x++) {
         memset(&(Process[x]),0,sizeof(PD));
         Process[x].state = DEAD;
+    }
+
+    for (x = 0; x < MAXMUTEX; x++) {
+        memset(&(Mutex[x]),0,sizeof(MTX));
+        Mutex[x].state = DISABLED;
     }
 }
 
@@ -286,12 +321,31 @@ void OS_Start() {
     }
 }
 
+MUTEX Mutex_Init() {
+    if(KernelActive) {
+        Disable_Interrupt();
+        Cp->request = MUTEX_INIT;
+        Enter_Kernel();
+        return Cp->response;
+    }
+}
+
+void Mutex_Lock(MUTEX m) {
+    
+}
+
+void Mutex_Unlock(MUTEX m) {
+    
+}
+
 /**
   * For this example, we only support cooperatively multitasking, i.e.,
   * each task gives up its share of the processor voluntarily by calling
   * Task_Next().
   */
 PID Task_Create( voidfuncptr f, PRIORITY py, int arg){
+    unsigned int p;
+
     if (KernelActive) {
         Disable_Interrupt();
         Cp->request = CREATE;
@@ -299,11 +353,12 @@ PID Task_Create( voidfuncptr f, PRIORITY py, int arg){
         Cp->py = py;
         Cp->arg = arg;
         Enter_Kernel();
+        p = Cp->response;
     } else { 
       /* call the RTOS function directly */
-      Kernel_Create_Task( f, py, arg );
+      p = Kernel_Create_Task( f, py, arg );
     }
-    // TODO return PID
+    return p;
 }
 
 /**

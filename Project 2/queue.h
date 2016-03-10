@@ -15,4 +15,7 @@ extern volatile int RQCount;
 extern volatile PD *SleepQueue[MAXTHREAD];
 extern volatile int SQCount;
 
+extern volatile PD *WaitingQueue[MAXTHREAD];
+extern volatile int WQCount;
+
 #endif /* _QUEUE_H_ */

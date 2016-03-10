@@ -1,10 +1,10 @@
 #ifndef _OS_H_
 #define _OS_H_
    
-#define MAXTHREAD     16       
+#define MAXTHREAD     16
 #define WORKSPACE     256   // in bytes, per THREAD
-#define MAXMUTEX      8 
-#define MAXEVENT      8      
+#define MAXMUTEX      8
+#define MAXEVENT      8
 #define MSECPERTICK   10   // resolution of a system tick in milliseconds
 #define MINPRIORITY   10   // 0 is the highest priority, 10 the lowest
 
@@ -27,12 +27,13 @@ typedef unsigned int TICK;
 /**
   *  This is the set of states that a task can be in at any given time.
   */
-typedef enum process_states { 
-    DEAD = 0, 
+typedef enum process_states {
+    DEAD = 0,
     READY,
     RUNNING,
     SLEEPING,
-    SUSPENDED
+    SUSPENDED,
+    BLOCKED_ON_MUTEX
 } PROCESS_STATES;
 
 /**
@@ -43,8 +44,22 @@ typedef enum kernel_request_type {
     CREATE,
     NEXT,
     SLEEP,
-    TERMINATE
+    TERMINATE,
+    MUTEX_INIT
 } KERNEL_REQUEST_TYPE;
+
+typedef enum mutex_state {
+    DISABLED,
+    FREE,
+    LOCKED
+} MUTEX_STATE;
+
+typedef struct Mutex {
+  MUTEX m;
+  MUTEX_STATE state;
+  PID owner;
+  unsigned int lockCount;
+} MTX;
 
 /**
   * Each task is represented by a process descriptor, which contains all
@@ -57,9 +72,11 @@ typedef struct ProcessDescriptor {
     unsigned char workSpace[WORKSPACE]; 
     PROCESS_STATES state;
     PRIORITY py;
+    PRIORITY inheritedPy;
     int arg;
     voidfuncptr  code;   /* function to be executed as a task */
     KERNEL_REQUEST_TYPE request;
+    unsigned int response;
     TICK wakeTickOverflow;
     TICK wakeTick;
 } PD;

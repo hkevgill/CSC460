@@ -14,6 +14,22 @@ volatile int isEmpty(volatile int *QCount) {
     return *QCount == 0;
 }
 
+void enqueueWQ(volatile PD **p, volatile PD **Queue, volatile int *QCount) {
+    if(isFull(QCount)) {
+        return;
+    }
+
+    int i = (*QCount) - 1;
+
+    while(i >= 0) {
+        Queue[i+1] = Queue[i];
+        i--;
+    }
+
+    Queue[i+1] = *p;
+    (*QCount)++;
+}
+
 void enqueueSQ(volatile PD **p, volatile PD **Queue, volatile int *QCount) {
     if(isFull(QCount)) {
         return;
@@ -30,8 +46,6 @@ void enqueueSQ(volatile PD **p, volatile PD **Queue, volatile int *QCount) {
         i--;
         temp = Queue[i];
     }
-
-    // toggle_LED(PORTL6);
 
     Queue[i+1] = *p;
     (*QCount)++;

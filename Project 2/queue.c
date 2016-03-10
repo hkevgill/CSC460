@@ -97,9 +97,8 @@ volatile PD *dequeueWQ(volatile PD **Queue, volatile int *QCount, MUTEX m) {
             Queue[i] = Queue[i+1];
             i++;
         }
+        (*QCount)--;
     }
-
-    (*QCount)--;
 
     return result;
 }

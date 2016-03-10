@@ -215,6 +215,10 @@ static unsigned int Kernel_Lock_Mutex() {
 	for(i=0; i<MAXMUTEX; i++) {
 		if (Mutex[i].m == m) break;
 	}
+	if(i>=MAXMUTEX){
+		return 1;
+	}
+
 	if(Mutex[i].state == FREE) {
 		Mutex[i].state = LOCKED;
 		Mutex[i].owner = Cp->p;
@@ -242,6 +246,9 @@ static void Kernel_Unlock_Mutex() {
 	MUTEX m = Cp->m;
 	for(i=0; i<MAXMUTEX; i++) {
 		if (Mutex[i].m == m) break;
+	}
+	if(i>=MAXMUTEX){
+		return;
 	}
 	if(Mutex[i].owner != Cp->p){
 		return;

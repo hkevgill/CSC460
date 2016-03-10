@@ -238,7 +238,30 @@ static unsigned int Kernel_Lock_Mutex() {
 }
 
 static void Kernel_Unlock_Mutex() {
-
+	int i;
+	MUTEX m = Cp->m;
+	for(i=0; i<MAXMUTEX; i++) {
+		if (Mutex[i].m == m) break;
+	}
+	if(Mutex[i].owner != Cp->p){
+		return;
+	} 
+	else if (Mutex[i].lockCount > 1) {
+		Mutex[i].lockCount--;
+	}
+	else {
+		volatile PD* p = dequeueWQ(&WaitingQueue, &WQCount, m);
+		if(p == NULL){
+			Mutex[i].state = FREE;
+			Mutex[i].lockCount = 0;
+			Mutex[i].owner = 99;
+		}
+		else {
+			Mutex[i].lockCount = 0;
+			Mutex[i].owner = p->p;
+			enqueueRQ(&p, &ReadyQueue, &RQCount);
+		}
+	}
 }
 
 /**

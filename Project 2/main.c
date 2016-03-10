@@ -20,15 +20,18 @@ void idle() {
 void Ping() {
     int  x ;
     for(;;){
-
-        Mutex_Lock(portL2_Mutex);
-
         // enable_LED(PORTL6);
         // disable_LED(PORTL2);
 
-        toggle_LED(PORTL6);
+        Mutex_Lock(portL2_Mutex);
+        Mutex_Lock(portL2_Mutex);
 
-        _delay_ms(200);
+        enable_LED(PORTL6);
+        _delay_ms(2000);
+        disable_LED(PORTL6);
+
+        Mutex_Unlock(portL2_Mutex);
+        Mutex_Unlock(portL2_Mutex);
 
         /* printf( "*" );  */
         Task_Sleep(100);
@@ -41,10 +44,12 @@ void Pong() {
     for(;;) {
         // enable_LED(PORTL2);
         // disable_LED(PORTL6);
+        Mutex_Lock(portL2_Mutex);
 
+        _delay_ms(200);
         toggle_LED(PORTL2);
 
-        _delay_ms(400);
+        Mutex_Unlock(portL2_Mutex);
 
         /* printf( "." );  */
         Task_Sleep(100);

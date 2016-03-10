@@ -76,6 +76,35 @@ void enqueueRQ(volatile PD **p, volatile PD **Queue, volatile int *QCount) {
 }
 
 /*
+ *  Return the first element of the queue with the correct MUTEX m
+ */
+volatile PD *dequeueWQ(volatile PD **Queue, volatile int *QCount, MUTEX m) {
+
+    if(isEmpty(QCount)) {
+        return NULL;
+    }
+
+    int i,j;
+    volatile PD* result = NULL;
+    for (i=(*QCount)-1; i>=0; i--) {
+        if(Queue[i]->m == m){
+            result = Queue[i];
+            break;
+        }
+    }
+    if(result != NULL) {
+        while(i<(*QCount)-1) {
+            Queue[i] = Queue[i+1];
+            i++;
+        }
+    }
+
+    (*QCount)--;
+
+    return result;
+}
+
+/*
  *  Return the first element of the queue
  */
 volatile PD *dequeue(volatile PD **Queue, volatile int *QCount) {

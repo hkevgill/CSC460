@@ -3,11 +3,12 @@
 #include <avr/interrupt.h>
 #include "LED_Test.h"
 #include "os.h"
+#include "queue.h"
 
 //Comment out the following line to remove debugging code from compiled version.
 #define DEBUG
 
-typedef void (*voidfuncptr) (void);      /* pointer to void f(void) */ 
+extern void a_main();
 
 /*===========
   * RTOS Internal
@@ -47,60 +48,12 @@ void Task_Terminate(void);
   */ 
 extern void Enter_Kernel();
 
-#define Disable_Interrupt()     asm volatile ("cli"::)
-#define Enable_Interrupt()      asm volatile ("sei"::)
-
-/**
-  *  This is the set of states that a task can be in at any given time.
-  */
-typedef enum process_states { 
-    DEAD = 0, 
-    READY,
-    RUNNING,
-    SLEEPING,
-    SUSPENDED
-} PROCESS_STATES;
-
-/**
-  * This is the set of kernel requests, i.e., a request code for each system call.
-  */
-typedef enum kernel_request_type {
-    NONE = 0,
-    CREATE,
-    NEXT,
-    SLEEP,
-    TERMINATE
-} KERNEL_REQUEST_TYPE;
-
-/**
-  * Each task is represented by a process descriptor, which contains all
-  * relevant information about this task. For convenience, we also store
-  * the task's stack, i.e., its workspace, in here.
-  */
-typedef struct ProcessDescriptor {
-    PID p;
-    unsigned char *sp;   /* stack pointer into the "workSpace" */
-    unsigned char workSpace[WORKSPACE]; 
-    PROCESS_STATES state;
-    PRIORITY py;
-    int arg;
-    voidfuncptr  code;   /* function to be executed as a task */
-    KERNEL_REQUEST_TYPE request;
-    TICK wakeTickOverflow;
-    TICK wakeTick;
-} PD;
-
 /**
   * This table contains ALL process descriptors. It doesn't matter what
   * state a task is in.
   */
 static PD Process[MAXTHREAD];
 
-volatile PD *ReadyQueue[MAXTHREAD];
-volatile int RQCount = 0;
-
-volatile PD *SleepQueue[MAXTHREAD];
-volatile int SQCount = 0;
 /**
   * The process descriptor of the currently RUNNING task.
   */
@@ -138,81 +91,11 @@ volatile unsigned int pCount = 0;
 // Global tick overflow count
 volatile unsigned int tickOverflowCount = 0;
 
-/*
- *  Checks if queue is full
- */
-volatile int isFull(volatile int *QCount) {
-	return *QCount == MAXTHREAD - 1;
-}
+volatile PD *ReadyQueue[MAXTHREAD];
+volatile int RQCount = 0;
 
-/*
- *  Checks if queue is empty, READY QUEUE SHOULD NEVER BE EMPTY
- */
-volatile int isEmpty(volatile int *QCount) {
-	return *QCount == 0;
-}
-
-void enqueueSQ(volatile PD **p, volatile PD **Queue, volatile int *QCount) {
-    if(isFull(QCount)) {
-        return;
-    }
-
-    int i = (*QCount) - 1;
-
-    volatile PD *new = *p;
-
-    volatile PD *temp = Queue[i];
-
-    while(i >= 0 && ((new->wakeTickOverflow >= temp->wakeTickOverflow) || ((new->wakeTickOverflow >= temp->wakeTickOverflow) && (new->wakeTick >= temp->wakeTick)))) {
-        Queue[i+1] = Queue[i];
-        i--;
-        temp = Queue[i];
-    }
-
-    // toggle_LED(PORTL6);
-
-    Queue[i+1] = *p;
-    (*QCount)++;
-}
-
-/*
- *  Insert into the queue sorted by priority
- */
-void enqueueRQ(volatile PD **p, volatile PD **Queue, volatile int *QCount) {
-    if(isFull(QCount)) {
-        return;
-    }
-
-    int i = (*QCount) - 1;
-
-    volatile PD *new = *p;
-
-    volatile PD *temp = Queue[i];
-
-    while(i >= 0 && (new->py >= temp->py)) {
-        Queue[i+1] = Queue[i];
-        i--;
-        temp = Queue[i];
-    }
-
-    Queue[i+1] = *p;
-    (*QCount)++;
-}
-
-/*
- *  Return the first element of the queue
- */
-volatile PD *dequeue(volatile PD **Queue, volatile int *QCount) {
-
-	if(isEmpty(QCount)) {
-        return;
-    }
-
-    volatile PD *result = (Queue[(*QCount)-1]);
-    (*QCount)--;
-
-    return result;
-}
+volatile PD *SleepQueue[MAXTHREAD];
+volatile int SQCount = 0;
 
 /**
  * When creating a new task, it is important to initialize its stack just like
@@ -467,54 +350,6 @@ int Task_GetArg(PID p) {
 	return -1;
 }
 
-/*============
-  * A Simple Test 
-  *============
-  */
-
-/**
-  * A cooperative "Ping" task.
-  * Added testing code for LEDs.
-  */
-void Ping() {
-    int  x ;
-    for(;;){
-        // enable_LED(PORTL6);
-        // disable_LED(PORTL2);
-
-        toggle_LED(PORTL6);
-
-        for( x=0; x < 32000; ++x );   /* do nothing */
-        for( x=0; x < 32000; ++x );   /* do nothing */
-        for( x=0; x < 32000; ++x );   /* do nothing */
-
-        /* printf( "*" );  */
-        Task_Sleep(500);
-    }
-}
-
-/**
-  * A cooperative "Pong" task.
-  * Added testing code for LEDs.
-  */
-void Pong() {
-    int  x;
-    for(;;) {
-        // enable_LED(PORTL2);
-        // disable_LED(PORTL6);
-
-        toggle_LED(PORTL2);
-
-        for( x=0; x < 32000; ++x );   /* do nothing */
-        for( x=0; x < 32000; ++x );   /* do nothing */
-        for( x=0; x < 32000; ++x );   /* do nothing */
-
-        /* printf( "." );  */
-        Task_Sleep(500);
-
-    }
-}
-
 void setup() {
     // pin 47
     init_LED_PORTL_pin2();
@@ -585,19 +420,6 @@ ISR(TIMER1_COMPA_vect) {
 
 ISR(TIMER3_COMPA_vect) {
     tickOverflowCount += 1;
-}
-
-void idle() {
-    for(;;) {
-    }
-}
-
-void a_main() {
-    Task_Create(Pong, 8, 1);
-    Task_Create(Ping, 8, 1);
-    Task_Create(idle, MINPRIORITY, 1);
-
-    Task_Terminate();
 }
 
 /**

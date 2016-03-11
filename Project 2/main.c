@@ -23,14 +23,12 @@ void Ping() {
         // enable_LED(PORTL6);
         // disable_LED(PORTL2);
 
-        Mutex_Lock(portL2_Mutex);
         Mutex_Lock(portL6_Mutex);
 
         enable_LED(PORTL6);
-        _delay_ms(2000);
+        _delay_ms(200);
         disable_LED(PORTL6);
 
-        Mutex_Unlock(portL2_Mutex);
         Mutex_Unlock(portL6_Mutex);
 
         /* printf( "*" );  */
@@ -44,16 +42,12 @@ void Pong() {
     for(;;) {
         // enable_LED(PORTL2);
         // disable_LED(PORTL6);
-        Mutex_Lock(portL6_Mutex);
-
-        // Task_Next();
-
-        // Mutex_Lock(portL2_Mutex);
+        Mutex_Lock(portL2_Mutex);
 
         _delay_ms(200);
         toggle_LED(PORTL2);
 
-        Mutex_Unlock(portL6_Mutex);
+        Mutex_Unlock(portL2_Mutex);
 
         /* printf( "." );  */
         Task_Sleep(100);

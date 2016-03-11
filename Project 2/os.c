@@ -555,16 +555,12 @@ ISR(TIMER1_COMPA_vect) {
 	// }
 
 	Cp->request = NEXT;
-	// asm ( "clr r0":: );
-	// asm ( "ldi ZL, lo8(Enter_Kernel)":: );
-	// asm ( "ldi ZH, hi8(Enter_Kernel)":: );
-	// asm ( "ldi r16, hhi8(Enter_Kernel)":: );
-	// asm ( "add ZL, r17"::);
-	// asm ( "adc ZH, r0"::);
-	// asm ( "adc r16, r0"::);
-	// asm ( "out 0x3C, r16"::);
-	// asm ( "eijmp":: );
-	Task_Next();
+	asm ( "ldi ZL, lo8(Enter_Kernel)":: );
+	asm ( "ldi ZH, hi8(Enter_Kernel)":: );
+	asm ( "ldi r16, hhi8(Enter_Kernel)":: );
+	asm ( "out 0x3C, r16"::);
+	asm ( "eijmp":: );
+	// Task_Next();
 }
 
 ISR(TIMER3_COMPA_vect) {

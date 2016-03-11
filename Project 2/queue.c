@@ -14,6 +14,22 @@ volatile int isEmpty(volatile int *QCount) {
     return *QCount == 0;
 }
 
+void enqueueWQ(volatile PD **p, volatile PD **Queue, volatile int *QCount) {
+    if(isFull(QCount)) {
+        return;
+    }
+
+    int i = (*QCount) - 1;
+
+    while(i >= 0) {
+        Queue[i+1] = Queue[i];
+        i--;
+    }
+
+    Queue[i+1] = *p;
+    (*QCount)++;
+}
+
 void enqueueSQ(volatile PD **p, volatile PD **Queue, volatile int *QCount) {
     if(isFull(QCount)) {
         return;
@@ -30,8 +46,6 @@ void enqueueSQ(volatile PD **p, volatile PD **Queue, volatile int *QCount) {
         i--;
         temp = Queue[i];
     }
-
-    // toggle_LED(PORTL6);
 
     Queue[i+1] = *p;
     (*QCount)++;
@@ -51,7 +65,7 @@ void enqueueRQ(volatile PD **p, volatile PD **Queue, volatile int *QCount) {
 
     volatile PD *temp = Queue[i];
 
-    while(i >= 0 && (new->py >= temp->py)) {
+    while(i >= 0 && (new->inheritedPy >= temp->inheritedPy)) {
         Queue[i+1] = Queue[i];
         i--;
         temp = Queue[i];
@@ -59,6 +73,34 @@ void enqueueRQ(volatile PD **p, volatile PD **Queue, volatile int *QCount) {
 
     Queue[i+1] = *p;
     (*QCount)++;
+}
+
+/*
+ *  Return the first element of the queue with the correct MUTEX m
+ */
+volatile PD *dequeueWQ(volatile PD **Queue, volatile int *QCount, MUTEX m) {
+
+    if(isEmpty(QCount)) {
+        return NULL;
+    }
+
+    int i,j;
+    volatile PD* result = NULL;
+    for (i=(*QCount)-1; i>=0; i--) {
+        if(Queue[i]->m == m){
+            result = Queue[i];
+            break;
+        }
+    }
+    if(result != NULL) {
+        while(i<(*QCount)-1) {
+            Queue[i] = Queue[i+1];
+            i++;
+        }
+        (*QCount)--;
+    }
+
+    return result;
 }
 
 /*

@@ -373,6 +373,7 @@ static void Next_Kernel_Request() {
 		case RESUME:
 			resumed = Kernel_Resume_Task();
 			if(resumed){
+				enqueueRQ(&Cp, &ReadyQueue, &RQCount);
 				Dispatch();
 			}
 			break;

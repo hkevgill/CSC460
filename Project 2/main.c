@@ -42,7 +42,7 @@ void Ping() {
     int  x;
 
     for(;;){
-        enable_LED(PORTL6);
+        toggle_LED(PORTL6);
         _delay_ms(200);
         Task_Suspend(PingPID);
 
@@ -54,7 +54,7 @@ void Ping() {
 void Pong() {
     int  x;
     for(;;) {
-        enable_LED(PORTL2);
+        toggle_LED(PORTL2);
         _delay_ms(200);
         Task_Suspend(PongPID);
         Task_Resume(PingPID);

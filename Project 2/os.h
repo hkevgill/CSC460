@@ -45,6 +45,8 @@ typedef enum kernel_request_type {
     NEXT,
     SLEEP,
     TERMINATE,
+    SUSPEND,
+    RESUME,
     MUTEX_INIT,
     MUTEX_LOCK,
     MUTEX_UNLOCK
@@ -82,6 +84,8 @@ typedef struct ProcessDescriptor {
     TICK wakeTickOverflow;
     TICK wakeTick;
     MUTEX m;
+    unsigned int suspended;
+    PID pidAction;
 } PD;
 
 // void OS_Init(void);      redefined as main()

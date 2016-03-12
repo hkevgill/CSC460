@@ -157,6 +157,7 @@ PID Kernel_Create_Task_At( volatile PD *p, voidfuncptr f, PRIORITY py, int arg )
 	p->py = py;
 	p->inheritedPy = py;
 	p->arg = arg;
+	p->suspended = 0;
 
 	/*----END of NEW CODE----*/
 
@@ -271,6 +272,35 @@ static void Kernel_Unlock_Mutex() {
 	}
 }
 
+static void Kernel_Suspend_Task() {
+	int i;
+
+	if(Cp->p == Cp->pidAction) {
+		Cp->suspended = 1;
+	}
+	else {
+		for(i=0; i<MAXTHREAD; i++) {
+			if (Process[i].p == Cp->pidAction) break;
+		}
+		Process[i].suspended = 1;
+	}
+}
+
+static unsigned int Kernel_Resume_Task() {
+	int i;
+
+	for(i=0; i<MAXTHREAD; i++) {
+		if (Process[i].p == Cp->pidAction) break;
+	}
+	if(Process[i].suspended == 1) {
+		Process[i].suspended = 0;
+		if(Process[i].inheritedPy < Cp->inheritedPy) {
+			return 1;
+		}
+	}
+	return 0;
+}
+
 /**
   * This internal kernel function is a part of the "scheduler". It chooses the 
   * next task to run, i.e., Cp.
@@ -280,7 +310,11 @@ static void Dispatch() {
 	   * Note: if there is no READY task, then this will loop forever!.
 	   */
 
-	Cp = dequeue(&ReadyQueue, &RQCount);
+	Cp = dequeueRQ(&ReadyQueue, &RQCount);
+
+	if (Cp == NULL) {
+		OS_Abort();
+	}
 
 	CurrentSp = Cp->sp;
 	Cp->state = RUNNING;
@@ -298,6 +332,7 @@ static void Next_Kernel_Request() {
 	Dispatch();  /* select a new task to run */
 
 	unsigned int mutex_is_locked;
+	unsigned int resumed;
 
 	while(1) {
 		Cp->request = NONE; /* clear its request */
@@ -327,6 +362,20 @@ static void Next_Kernel_Request() {
 			Cp->state = SLEEPING;
 			enqueueSQ(&Cp, &SleepQueue, &SQCount);
 			Dispatch();
+			break;
+		case SUSPEND:
+			Kernel_Suspend_Task();
+			if(Cp->suspended) {
+				enqueueRQ(&Cp, &ReadyQueue, &RQCount);
+				Dispatch();
+			}
+			break;
+		case RESUME:
+			resumed = Kernel_Resume_Task();
+			if(resumed){
+				enqueueRQ(&Cp, &ReadyQueue, &RQCount);
+				Dispatch();
+			}
 			break;
 		case TERMINATE:
 			/* deallocate all resources used by this task */
@@ -392,6 +441,10 @@ void OS_Start() {
 		Next_Kernel_Request();
 		/* NEVER RETURNS!!! */
 	}
+}
+
+void OS_Abort() {
+	exit(0);
 }
 
 MUTEX Mutex_Init() {
@@ -463,6 +516,24 @@ void Task_Sleep(TICK t) {
 		unsigned int clockTicks = TCNT3/625;
 		Cp->wakeTickOverflow = tickOverflowCount + ((t + clockTicks) / 100);
 		Cp->wakeTick = (t + clockTicks) % 100;
+		Enter_Kernel();
+	}
+}
+
+void Task_Suspend(PID p) {
+	if (KernelActive) {
+		Disable_Interrupt();
+		Cp->request = SUSPEND;
+		Cp->pidAction = p;
+		Enter_Kernel();
+	}
+}
+
+void Task_Resume(PID p) {
+	if (KernelActive) {
+		Disable_Interrupt();
+		Cp->request = RESUME;
+		Cp->pidAction = p;
 		Enter_Kernel();
 	}
 }

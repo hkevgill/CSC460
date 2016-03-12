@@ -366,6 +366,7 @@ static void Next_Kernel_Request() {
 		case SUSPEND:
 			Kernel_Suspend_Task();
 			if(Cp->suspended) {
+				enqueueRQ(&Cp, &ReadyQueue, &RQCount);
 				Dispatch();
 			}
 			break;

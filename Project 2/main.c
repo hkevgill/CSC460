@@ -11,6 +11,9 @@ unsigned int portL6_Mutex;
 
 unsigned int PingPID;
 unsigned int PongPID;
+unsigned int PungPID;
+
+unsigned int i = 0;
 
 // An idle task that runs when there is nothing else to do
 // Could be changed later to put CPU into low power state
@@ -20,29 +23,30 @@ void idle() {
 }
 
 // Ping task for testing
+void Pung() {
+
+    for(;;){
+        disable_LED(PORTL2);
+        disable_LED(PORTL6);
+
+        _delay_ms(200);
+
+        Task_Resume(PongPID);
+
+        Task_Next();
+    }
+}
+
+// Ping task for testing
 void Ping() {
     int  x;
 
     for(;;){
-        toggle_LED(PORTL6);
-        disable_LED(PORTL2);
-
-        Task_Suspend(PongPID);
+        enable_LED(PORTL6);
         _delay_ms(200);
-        Task_Resume(PongPID);
+        Task_Suspend(PingPID);
 
-        // MUTEX TEST CODE
-        // Mutex_Lock(portL6_Mutex);
-
-        // enable_LED(PORTL6);
-        // _delay_ms(200);
-        // disable_LED(PORTL6);
-
-        // Mutex_Unlock(portL6_Mutex);
-
-        /* printf( "*" );  */
-        // Task_Sleep(100);
-        Task_Next();
+        Task_Sleep(100);
     }
 }
 
@@ -51,19 +55,11 @@ void Pong() {
     int  x;
     for(;;) {
         enable_LED(PORTL2);
-        disable_LED(PORTL6);
-
-        // MUTEX TEST CODE
-        // Mutex_Lock(portL2_Mutex);
-
         _delay_ms(200);
-        // toggle_LED(PORTL2);
+        Task_Suspend(PongPID);
+        Task_Resume(PingPID);
 
-        // Mutex_Unlock(portL2_Mutex);
-
-        /* printf( "." );  */
-        // Task_Sleep(100);
-        Task_Next();
+        Task_Sleep(100);
     }
 }
 
@@ -76,6 +72,7 @@ void a_main() {
 
     PongPID = Task_Create(Pong, 8, 1);
     PingPID = Task_Create(Ping, 8, 1);
+    PungPID = Task_Create(Pung, 9, 1);
     unsigned int i = Task_Create(idle, MINPRIORITY, 1);
 
     Task_Terminate();

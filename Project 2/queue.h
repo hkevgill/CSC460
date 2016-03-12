@@ -7,6 +7,7 @@ volatile int isFull(volatile int *QCount);
 volatile int isEmpty(volatile int *QCount);
 void enqueueSQ(volatile PD **p, volatile PD **Queue, volatile int *QCount);
 void enqueueRQ(volatile PD **p, volatile PD **Queue, volatile int *QCount);
+volatile PD *dequeueRQ(volatile PD **Queue, volatile int *QCount);
 volatile PD *dequeue(volatile PD **Queue, volatile int *QCount);
 
 extern volatile PD *ReadyQueue[MAXTHREAD];

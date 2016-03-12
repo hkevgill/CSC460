@@ -104,6 +104,34 @@ volatile PD *dequeueWQ(volatile PD **Queue, volatile int *QCount, MUTEX m) {
 }
 
 /*
+ *  Return the first element of the Ready Queue
+ */
+volatile PD *dequeueRQ(volatile PD **Queue, volatile int *QCount) {
+
+    if(isEmpty(QCount)) {
+        return NULL;
+    }
+
+    int i,j;
+    volatile PD* result = NULL;
+    for (i=(*QCount)-1; i>=0; i--) {
+        if(Queue[i]->suspended == 0){
+            result = Queue[i];
+            break;
+        }
+    }
+    if(result != NULL) {
+        while(i<(*QCount)-1) {
+            Queue[i] = Queue[i+1];
+            i++;
+        }
+        (*QCount)--;
+    }
+
+    return result;
+}
+
+/*
  *  Return the first element of the queue
  */
 volatile PD *dequeue(volatile PD **Queue, volatile int *QCount) {

@@ -13,8 +13,6 @@ unsigned int PingPID;
 unsigned int PongPID;
 unsigned int IdlePID;
 
-unsigned int i = 0;
-
 // An idle task that runs when there is nothing else to do
 // Could be changed later to put CPU into low power state
 void Idle() {

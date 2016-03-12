@@ -25,7 +25,12 @@ void Ping() {
     int  x;
 
     for(;;){
+        Mutex_Lock(portL6_Mutex);
         toggle_LED(PORTL6);
+        Mutex_Unlock(portL6_Mutex);
+
+        Task_Suspend(PongPID);
+        Task_Resume(PongPID);
 
         Task_Sleep(100);
     }
@@ -35,7 +40,12 @@ void Ping() {
 void Pong() {
     int  x;
     for(;;) {
+        Mutex_Lock(portL2_Mutex);
         toggle_LED(PORTL2);
+        Mutex_Unlock(portL2_Mutex);
+
+        Task_Suspend(PingPID);
+        Task_Resume(PingPID);
 
         Task_Sleep(100);
     }

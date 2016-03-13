@@ -33,7 +33,8 @@ typedef enum process_states {
     RUNNING,
     SLEEPING,
     SUSPENDED,
-    BLOCKED_ON_MUTEX
+    BLOCKED_ON_MUTEX,
+    WAITING
 } PROCESS_STATES;
 
 /**
@@ -49,21 +50,50 @@ typedef enum kernel_request_type {
     RESUME,
     MUTEX_INIT,
     MUTEX_LOCK,
-    MUTEX_UNLOCK
+    MUTEX_UNLOCK,
+    EVENT_INIT,
+    EVENT_WAIT,
+    EVENT_SIGNAL
 } KERNEL_REQUEST_TYPE;
 
+/**
+  *  This is the set of states that a mutex can be in at any given time.
+  */
 typedef enum mutex_state {
     DISABLED,
     FREE,
     LOCKED
 } MUTEX_STATE;
 
+/**
+  * Each mutex is represented by a mutex struct, which contains all
+  * relevant information about this mutex.
+  */
 typedef struct Mutex {
-  MUTEX m;
-  MUTEX_STATE state;
-  PID owner;
-  unsigned int lockCount;
+    MUTEX m;
+    MUTEX_STATE state;
+    PID owner;
+    unsigned int lockCount;
 } MTX;
+
+/**
+  *  This is the set of states that a mutex can be in at any given time.
+  */
+typedef enum event_state {
+    INACTIVE,
+    UNSIGNALLED,
+    SIGNALLED
+} EVENT_STATE;
+
+/**
+  * Each event is represented by a event struct, which contains all
+  * relevant information about this event.
+  */
+typedef struct Event {
+    EVENT e;
+    EVENT_STATE state;
+    PID p;
+} EVT;
 
 /**
   * Each task is represented by a process descriptor, which contains all
@@ -84,6 +114,7 @@ typedef struct ProcessDescriptor {
     TICK wakeTickOverflow;
     TICK wakeTick;
     MUTEX m;
+    EVENT e;
     unsigned int suspended;
     PID pidAction;
 } PD;

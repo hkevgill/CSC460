@@ -56,6 +56,8 @@ static PD Process[MAXTHREAD];
 
 static MTX Mutex[MAXMUTEX];
 
+static EVT Event[MAXEVENT];
+
 /**
   * The process descriptor of the currently RUNNING task.
   */
@@ -86,6 +88,8 @@ volatile static unsigned int Tasks;
 
 // Number of mutexes created so far
 volatile static unsigned int Mutexes;
+
+volatile static unsigned int Events;
 
 // Global tick overflow count
 volatile unsigned int tickOverflowCount = 0;
@@ -187,6 +191,38 @@ static PID Kernel_Create_Task( voidfuncptr f, PRIORITY py, int arg ) {
 	return p;
 }
 
+static void Kernel_Suspend_Task() {
+	int i;
+
+	if(Cp->p == Cp->pidAction) {
+		Cp->suspended = 1;
+	}
+	else {
+		for(i=0; i<MAXTHREAD; i++) {
+			if (Process[i].p == Cp->pidAction) break;
+		}
+
+		Process[i].suspended = 1;
+	}
+}
+
+static unsigned int Kernel_Resume_Task() {
+	int i;
+
+	for(i=0; i<MAXTHREAD; i++) {
+		if (Process[i].p == Cp->pidAction) break;
+	}
+
+	if(Process[i].suspended == 1) {
+		Process[i].suspended = 0;
+		if(Process[i].inheritedPy < Cp->inheritedPy) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 MUTEX Kernel_Init_Mutex_At(volatile MTX *m) {
 	m->m = Mutexes;
 	m->state = FREE;
@@ -213,9 +249,11 @@ static MUTEX Kernel_Init_Mutex() {
 static unsigned int Kernel_Lock_Mutex() {
 	int i,j;
 	MUTEX m = Cp->m;
+
 	for(i=0; i<MAXMUTEX; i++) {
 		if (Mutex[i].m == m) break;
 	}
+
 	if(i>=MAXMUTEX){
 		return 1;
 	}
@@ -232,25 +270,32 @@ static unsigned int Kernel_Lock_Mutex() {
 		for(j=0; j<MAXTHREAD; j++) {
 			if (Process[j].m == m) break;
 		}
+
 		if (Process[j].inheritedPy > Cp->inheritedPy) {
 			Process[j].inheritedPy = Cp->inheritedPy;
 		}
+
 		Cp->state = BLOCKED_ON_MUTEX;
 		enqueueWQ(&Cp, &WaitingQueue, &WQCount);
+
 		return 0;
 	}
+
 	return 1;
 }
 
 static void Kernel_Unlock_Mutex() {
 	int i;
 	MUTEX m = Cp->m;
+
 	for(i=0; i<MAXMUTEX; i++) {
 		if (Mutex[i].m == m) break;
 	}
+
 	if(i>=MAXMUTEX){
 		return;
 	}
+
 	if(Mutex[i].owner != Cp->p){
 		return;
 	} 
@@ -259,6 +304,7 @@ static void Kernel_Unlock_Mutex() {
 	}
 	else {
 		volatile PD* p = dequeueWQ(&WaitingQueue, &WQCount, m);
+
 		if(p == NULL){
 			Mutex[i].state = FREE;
 			Mutex[i].lockCount = 0;
@@ -267,38 +313,34 @@ static void Kernel_Unlock_Mutex() {
 		else {
 			Mutex[i].lockCount = 0;
 			Mutex[i].owner = p->p;
+
 			enqueueRQ(&p, &ReadyQueue, &RQCount);
 		}
 	}
 }
 
-static void Kernel_Suspend_Task() {
-	int i;
+EVENT Kernel_Init_Event_At(volatile EVT *e) {
+	e->e = Events;
+	e->state = UNSIGNALLED;
 
-	if(Cp->p == Cp->pidAction) {
-		Cp->suspended = 1;
-	}
-	else {
-		for(i=0; i<MAXTHREAD; i++) {
-			if (Process[i].p == Cp->pidAction) break;
-		}
-		Process[i].suspended = 1;
-	}
+	Events++;
+
+	return e->e;
 }
 
-static unsigned int Kernel_Resume_Task() {
-	int i;
+static EVENT Kernel_Init_Event() {
+	int x;
 
-	for(i=0; i<MAXTHREAD; i++) {
-		if (Process[i].p == Cp->pidAction) break;
+	if (Events == MAXEVENT) return; // Too many mutexes!
+
+	// find a Disabled mutex that we can use
+	for (x = 0; x < MAXEVENT; x++) {
+		if (Event[x].state == INACTIVE) break;
 	}
-	if(Process[i].suspended == 1) {
-		Process[i].suspended = 0;
-		if(Process[i].inheritedPy < Cp->inheritedPy) {
-			return 1;
-		}
-	}
-	return 0;
+
+	unsigned int e = Kernel_Init_Event_At( &(Event[x]) );
+
+	return e;
 }
 
 /**
@@ -393,7 +435,14 @@ static void Next_Kernel_Request() {
 			break;
 		case MUTEX_UNLOCK:
 			Kernel_Unlock_Mutex();
-            break; 
+            break;
+        case EVENT_INIT:
+        	Cp->response = Kernel_Init_Event();
+        	break;
+        case EVENT_WAIT:
+        	break;
+        case EVENT_SIGNAL:
+        	break;
 		default:
 			/* Houston! we have a problem here! */
 			break;
@@ -416,6 +465,8 @@ void OS_Init() {
 	Tasks = 0;
 	KernelActive = 0;
 	Mutexes = 0;
+	Events = 0;
+
 	//Reminder: Clear the memory for the task on creation.
 	for (x = 0; x < MAXTHREAD; x++) {
 		memset(&(Process[x]),0,sizeof(PD));
@@ -425,6 +476,11 @@ void OS_Init() {
 	for (x = 0; x < MAXMUTEX; x++) {
 		memset(&(Mutex[x]),0,sizeof(MTX));
 		Mutex[x].state = DISABLED;
+	}
+
+	for (x = 0; x < MAXEVENT; x++) {
+		memset(&(Event[x]),0,sizeof(EVT));
+		Event[x].state = INACTIVE;
 	}
 }
 
@@ -471,6 +527,33 @@ void Mutex_Unlock(MUTEX m) {
 		Disable_Interrupt();
 		Cp->request = MUTEX_UNLOCK;
 		Cp->m = m;
+		Enter_Kernel();
+	}
+}
+
+EVENT Event_Init() {
+	if(KernelActive) {
+		Disable_Interrupt();
+		Cp->request = EVENT_INIT;
+		Enter_Kernel();
+		return Cp->response;
+	}
+}
+
+void Event_Wait(EVENT e) {
+	if(KernelActive) {
+		Disable_Interrupt();
+		Cp->request = EVENT_WAIT;
+		Cp->e = e;
+		Enter_Kernel();
+	}
+}
+
+void Event_Signal(EVENT e) {
+	if(KernelActive) {
+		Disable_Interrupt();
+		Cp->request = EVENT_SIGNAL;
+		Cp->e = e;
 		Enter_Kernel();
 	}
 }

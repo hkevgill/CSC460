@@ -34,6 +34,7 @@ extern void Exit_Kernel();    /* this is the same as CSwitch() */
 
 /* Prototype */
 void Task_Terminate(void);
+static void Dispatch();
 
 /** 
   * This external function could be implemented in two ways:
@@ -162,6 +163,7 @@ PID Kernel_Create_Task_At( volatile PD *p, voidfuncptr f, PRIORITY py, int arg )
 	p->inheritedPy = py;
 	p->arg = arg;
 	p->suspended = 0;
+	p->eWait = 99;
 
 	/*----END of NEW CODE----*/
 
@@ -350,8 +352,8 @@ static EVENT Kernel_Init_Event() {
 }
 
 static unsigned int Kernel_Wait_Event() {
-	int i, j;
-	unsigned int e = Cp->e;
+	int i;
+	unsigned int e = Cp->eSend;
 
 	for (i = 0; i < MAXEVENT; i++) {
 		if (Event[i].e == e) break;
@@ -367,12 +369,44 @@ static unsigned int Kernel_Wait_Event() {
 			return 0;
 		}
 		else {
+			Cp->eWait = e;
 			Event[i].p = Cp->p;
 			return 1;
 		}
 	}
 
 	return 0;
+}
+
+static void Kernel_Signal_Event() {
+	int i, j;
+	unsigned int e = Cp->eSend;
+
+	for (i = 0; i < MAXEVENT; i++) {
+		if (Event[i].e == e) break;
+	}
+
+	if (i >= MAXEVENT) {
+		return;
+	}
+
+	for(j = 0; j < MAXTHREAD; j++) {
+		if (Process[j].eWait == e) break;
+	}
+
+	if (j >= MAXTHREAD) {
+		Event[i].state = SIGNALLED;
+	}
+	else {
+		Process[j].state = READY;
+		Process[j].eWait = 99;
+
+		if ((Process[j].inheritedPy < Cp->inheritedPy) && (Process[j].suspended == 0)) {
+			Cp->state = READY;
+			enqueueRQ(&Cp, &ReadyQueue, &RQCount);
+			Dispatch();
+		}
+	}
 }
 
 /**
@@ -457,6 +491,15 @@ static void Next_Kernel_Request() {
 		case TERMINATE:
 			/* deallocate all resources used by this task */
 			Cp->state = DEAD;
+			Cp->eWait = 99;
+			Cp->inheritedPy = MINPRIORITY;
+			Cp->py = MINPRIORITY;
+			Cp->m = 0;
+
+			// TODO
+			// Unlock any mutexes
+			// Remove from waiting events
+			
 			Dispatch();
 			break;
 		case MUTEX_INIT:
@@ -483,7 +526,7 @@ static void Next_Kernel_Request() {
         	}
         	break;
         case EVENT_SIGNAL:
-        	// Kernel_Signal_Event();
+        	Kernel_Signal_Event();
         	break;
 		default:
 			/* Houston! we have a problem here! */
@@ -513,6 +556,7 @@ void OS_Init() {
 	for (x = 0; x < MAXTHREAD; x++) {
 		memset(&(Process[x]),0,sizeof(PD));
 		Process[x].state = DEAD;
+		Process[x].eWait = 99;
 	}
 
 	for (x = 0; x < MAXMUTEX; x++) {
@@ -586,7 +630,7 @@ void Event_Wait(EVENT e) {
 	if(KernelActive) {
 		Disable_Interrupt();
 		Cp->request = EVENT_WAIT;
-		Cp->e = e;
+		Cp->eSend = e;
 		Enter_Kernel();
 	}
 }
@@ -595,7 +639,7 @@ void Event_Signal(EVENT e) {
 	if(KernelActive) {
 		Disable_Interrupt();
 		Cp->request = EVENT_SIGNAL;
-		Cp->e = e;
+		Cp->eSend = e;
 		Enter_Kernel();
 	}
 }

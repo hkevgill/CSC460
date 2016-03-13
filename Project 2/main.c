@@ -32,7 +32,8 @@ void Ping() {
         toggle_LED(PORTL6);
         Mutex_Unlock(portL6_Mutex);
 
-        // Event_Wait(e1);
+        Event_Signal(e2);
+        Event_Wait(e2);
 
         Task_Suspend(PongPID);
         Task_Resume(PongPID);
@@ -44,13 +45,13 @@ void Ping() {
 // Pong task for testing
 void Pong() {
     int  x;
-
     for(;;) {
         Mutex_Lock(portL2_Mutex);
         toggle_LED(PORTL2);
         Mutex_Unlock(portL2_Mutex);
 
-        // Event_Wait(e2);
+        Event_Signal(e1);
+        Event_Wait(e1);
 
         Task_Suspend(PingPID);
         Task_Resume(PingPID);

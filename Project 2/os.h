@@ -32,7 +32,6 @@ typedef enum process_states {
     READY,
     RUNNING,
     SLEEPING,
-    SUSPENDED,
     BLOCKED_ON_MUTEX,
     WAITING
 } PROCESS_STATES;
@@ -114,7 +113,8 @@ typedef struct ProcessDescriptor {
     TICK wakeTickOverflow;
     TICK wakeTick;
     MUTEX m;
-    EVENT e;
+    EVENT eWait;
+    EVENT eSend;
     unsigned int suspended;
     PID pidAction;
 } PD;

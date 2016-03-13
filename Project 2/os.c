@@ -731,9 +731,7 @@ void Event_Signal(EVENT e) {
 }
 
 /**
-  * For this example, we only support cooperatively multitasking, i.e.,
-  * each task gives up its share of the processor voluntarily by calling
-  * Task_Next().
+  * 
   */
 PID Task_Create( voidfuncptr f, PRIORITY py, int arg){
 	unsigned int p;

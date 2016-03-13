@@ -28,16 +28,16 @@ void Ping() {
     int  x;
 
     for(;;){
-        // Mutex_Lock(portL6_Mutex);
+        Mutex_Lock(portL6_Mutex);
         toggle_LED(PORTL6);
-        // Mutex_Unlock(portL6_Mutex);
+        Mutex_Unlock(portL6_Mutex);
 
         // Event_Wait(e1);
 
-        // Task_Suspend(PongPID);
-        // Task_Resume(PongPID);
+        Task_Suspend(PongPID);
+        Task_Resume(PongPID);
 
-        // Task_Sleep(100);
+        Task_Sleep(100);
     }
 }
 
@@ -46,16 +46,16 @@ void Pong() {
     int  x;
 
     for(;;) {
-        // Mutex_Lock(portL2_Mutex);
+        Mutex_Lock(portL2_Mutex);
         toggle_LED(PORTL2);
-        // Mutex_Unlock(portL2_Mutex);
+        Mutex_Unlock(portL2_Mutex);
 
         // Event_Wait(e2);
 
-        // Task_Suspend(PingPID);
-        // Task_Resume(PingPID);
+        Task_Suspend(PingPID);
+        Task_Resume(PingPID);
 
-        // Task_Sleep(100);
+        Task_Sleep(100);
     }
 }
 
@@ -63,11 +63,11 @@ void Pong() {
 // Creates the required tasks and then terminates
 void a_main() {
 
-    // portL2_Mutex = Mutex_Init();
-    // portL6_Mutex = Mutex_Init();
+    portL2_Mutex = Mutex_Init();
+    portL6_Mutex = Mutex_Init();
 
-    // e1 = Event_Init();
-    // e2 = Event_Init();
+    e1 = Event_Init();
+    e2 = Event_Init();
 
     PongPID = Task_Create(Pong, 8, 1);
     PingPID = Task_Create(Ping, 8, 1);

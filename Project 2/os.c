@@ -314,9 +314,13 @@ static void Kernel_Unlock_Mutex() {
 			Mutex[i].lockCount = 0;
 			Mutex[i].owner = p->p;
 
+			p->inheritedPy = Cp->inheritedPy;
 			p->state = READY;
+
 			enqueueRQ(&p, &ReadyQueue, &RQCount);
 		}
+
+		Cp->inheritedPy = Cp->py;
 	}
 }
 
@@ -364,7 +368,6 @@ static unsigned int Kernel_Wait_Event() {
 		}
 		else {
 			Event[i].p = Cp->p;
-			Cp->state = WAITING;
 			return 1;
 		}
 	}
@@ -474,7 +477,7 @@ static void Next_Kernel_Request() {
         case EVENT_WAIT:
         	waiting = Kernel_Wait_Event();
         	if (waiting) {
-				Cp->state = READY;
+				Cp->state = WAITING;
         		enqueueRQ(&Cp, &ReadyQueue, &RQCount);
         		Dispatch();
         	}
@@ -701,7 +704,7 @@ void setup() {
 
 	TCNT1 = 0;                  // Initialize counter to 0
 
-	OCR1A = 62499;                // Compare match register (TOP comparison value) [(16MHz/(100Hz*8)] - 1
+	OCR1A = 624;                // Compare match register (TOP comparison value) [(16MHz/(100Hz*8)] - 1
 
 	TCCR1B |= (1 << WGM12);     // Turns on CTC mode (TOP is now OCR1A)
 

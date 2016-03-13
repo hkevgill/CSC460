@@ -362,13 +362,13 @@ static void Kernel_Unlock_Mutex() {
 			Cp->inheritedPy = Cp->py;
 
 			// Turn on pin for newly running task
-			if (Cp->p <= 14) {
+			if (Cp->p <= 1) {
 				enable_LED(PORTL2);
 			}
-			else if (Cp->p == 15) {
+			else if (Cp->p == 2) {
 				enable_LED(PORTL5);
 			}
-			else if (Cp->p == 16) {
+			else if (Cp->p == 3) {
 				enable_LED(PORTL6);
 			}
 		}
@@ -494,13 +494,13 @@ static void Dispatch() {
 	Cp->state = RUNNING;
 
 	// Turn on pin for newly running task
-	if (Cp->p <= 14) {
+	if (Cp->p <= 1) {
 		enable_LED(PORTL2);
 	}
-	else if (Cp->p == 15) {
+	else if (Cp->p == 2) {
 		enable_LED(PORTL5);
 	}
-	else if (Cp->p == 16) {
+	else if (Cp->p == 3) {
 		enable_LED(PORTL6);
 	}
 }
@@ -596,6 +596,18 @@ static void Next_Kernel_Request() {
         		enqueueRQ(&Cp, &ReadyQueue, &RQCount);
         		Dispatch();
         	}
+        	
+        	// Turn on pin for newly running task
+			if (Cp->p <= 1) {
+				enable_LED(PORTL2);
+			}
+			else if (Cp->p == 2) {
+				enable_LED(PORTL5);
+			}
+			else if (Cp->p == 3) {
+				enable_LED(PORTL6);
+			}
+
         	break;
         case EVENT_SIGNAL:
         	Kernel_Signal_Event();

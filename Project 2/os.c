@@ -35,6 +35,7 @@ extern void Exit_Kernel();    /* this is the same as CSwitch() */
 /* Prototype */
 void Task_Terminate(void);
 static void Dispatch();
+static void Kernel_Unlock_Mutex();
 
 /** 
   * This external function could be implemented in two ways:
@@ -158,12 +159,13 @@ PID Kernel_Create_Task_At( volatile PD *p, voidfuncptr f, PRIORITY py, int arg )
 	p->code = f;        /* function to be executed as a task */
 	p->request = NONE;
 	p->p = Tasks;
-	Tasks++;
 	p->py = py;
 	p->inheritedPy = py;
 	p->arg = arg;
 	p->suspended = 0;
 	p->eWait = 99;
+
+	Tasks++;
 
 	/*----END of NEW CODE----*/
 
@@ -225,6 +227,23 @@ static unsigned int Kernel_Resume_Task() {
 	return 0;
 }
 
+static void Kernel_Terminate_Task() {
+	int i;
+
+	for(i = 0; i < MAXMUTEX; i++) {
+		if (Mutex[i].owner == Cp->p) {
+			Cp->m = Mutex[i].m;
+			Kernel_Unlock_Mutex();
+		}
+	}
+
+	Cp->state = DEAD;
+	Cp->eWait = 99;
+	Cp->inheritedPy = MINPRIORITY;
+	Cp->py = MINPRIORITY;
+	Cp->p = 0;
+}
+
 MUTEX Kernel_Init_Mutex_At(volatile MTX *m) {
 	m->m = Mutexes;
 	m->state = FREE;
@@ -270,7 +289,7 @@ static unsigned int Kernel_Lock_Mutex() {
 	}
 	else {
 		for(j = 0; j < MAXTHREAD; j++) {
-			if (Process[j].m == m) break;
+			if ((Process[j].p == Mutex[i].owner) && (Process[j].p != 0)) break;
 		}
 
 		if (Process[j].inheritedPy > Cp->inheritedPy) {
@@ -310,7 +329,7 @@ static void Kernel_Unlock_Mutex() {
 		if(p == NULL){
 			Mutex[i].state = FREE;
 			Mutex[i].lockCount = 0;
-			Mutex[i].owner = 99;
+			Mutex[i].owner = 0;
 		}
 		else {
 			Mutex[i].lockCount = 0;
@@ -490,16 +509,7 @@ static void Next_Kernel_Request() {
 			break;
 		case TERMINATE:
 			/* deallocate all resources used by this task */
-			Cp->state = DEAD;
-			Cp->eWait = 99;
-			Cp->inheritedPy = MINPRIORITY;
-			Cp->py = MINPRIORITY;
-			Cp->m = 0;
-
-			// TODO
-			// Unlock any mutexes
-			// Remove from waiting events
-			
+			Kernel_Terminate_Task();
 			Dispatch();
 			break;
 		case MUTEX_INIT:
@@ -557,6 +567,7 @@ void OS_Init() {
 		memset(&(Process[x]),0,sizeof(PD));
 		Process[x].state = DEAD;
 		Process[x].eWait = 99;
+		Process[x].p = 0;
 	}
 
 	for (x = 0; x < MAXMUTEX; x++) {
@@ -720,13 +731,7 @@ void Task_Terminate() {
 }
 
 int Task_GetArg(PID p) {
-	int i;
-	for (i = 0; i < MAXTHREAD; i++){
-		if (Process[i].p == p) {
-			return Process[i].arg;
-		}
-	}
-	return -1;
+	return (Cp->arg);
 }
 
 void setup() {

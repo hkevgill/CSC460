@@ -4,7 +4,7 @@ LOAD=avrdude
 FLAGS=-c -g -Os -mmcu=atmega2560
 ELFFLAGS=-g -mmcu=atmega2560 -o
 HEXFLAGS=-j .text -j .data -O ihex
-LOADFLAGS=-p m2560 -c stk500v2 -P /dev/cu.usbmodem1421 -b 115200 -U flash:w:rtos.hex:i -D
+LOADFLAGS=-p m2560 -c stk500v2 -P /dev/cu.usbmodem1411 -b 115200 -U flash:w:rtos.hex:i -D
 
 all: compile elf hex load
 

@@ -242,10 +242,6 @@ static void Kernel_Terminate_Task() {
 	Cp->inheritedPy = MINPRIORITY;
 	Cp->py = MINPRIORITY;
 	Cp->p = 0;
-
-	// TODO
-	// Unlock any mutexes
-	// Remove from waiting events
 }
 
 MUTEX Kernel_Init_Mutex_At(volatile MTX *m) {

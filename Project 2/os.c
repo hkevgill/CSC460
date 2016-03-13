@@ -198,7 +198,7 @@ static void Kernel_Suspend_Task() {
 		Cp->suspended = 1;
 	}
 	else {
-		for(i=0; i<MAXTHREAD; i++) {
+		for(i = 0; i < MAXTHREAD; i++) {
 			if (Process[i].p == Cp->pidAction) break;
 		}
 
@@ -209,7 +209,7 @@ static void Kernel_Suspend_Task() {
 static unsigned int Kernel_Resume_Task() {
 	int i;
 
-	for(i=0; i<MAXTHREAD; i++) {
+	for(i = 0; i < MAXTHREAD; i++) {
 		if (Process[i].p == Cp->pidAction) break;
 	}
 
@@ -250,7 +250,7 @@ static unsigned int Kernel_Lock_Mutex() {
 	int i,j;
 	MUTEX m = Cp->m;
 
-	for(i=0; i<MAXMUTEX; i++) {
+	for(i = 0; i < MAXMUTEX; i++) {
 		if (Mutex[i].m == m) break;
 	}
 
@@ -267,7 +267,7 @@ static unsigned int Kernel_Lock_Mutex() {
 		Mutex[i].lockCount++;
 	}
 	else {
-		for(j=0; j<MAXTHREAD; j++) {
+		for(j = 0; j < MAXTHREAD; j++) {
 			if (Process[j].m == m) break;
 		}
 
@@ -288,11 +288,11 @@ static void Kernel_Unlock_Mutex() {
 	int i;
 	MUTEX m = Cp->m;
 
-	for(i=0; i<MAXMUTEX; i++) {
+	for(i = 0; i < MAXMUTEX; i++) {
 		if (Mutex[i].m == m) break;
 	}
 
-	if(i>=MAXMUTEX){
+	if(i >= MAXMUTEX){
 		return;
 	}
 
@@ -314,6 +314,7 @@ static void Kernel_Unlock_Mutex() {
 			Mutex[i].lockCount = 0;
 			Mutex[i].owner = p->p;
 
+			p->state = READY;
 			enqueueRQ(&p, &ReadyQueue, &RQCount);
 		}
 	}
@@ -322,6 +323,7 @@ static void Kernel_Unlock_Mutex() {
 EVENT Kernel_Init_Event_At(volatile EVT *e) {
 	e->e = Events;
 	e->state = UNSIGNALLED;
+	e->p = NULL;
 
 	Events++;
 
@@ -341,6 +343,33 @@ static EVENT Kernel_Init_Event() {
 	unsigned int e = Kernel_Init_Event_At( &(Event[x]) );
 
 	return e;
+}
+
+static unsigned int Kernel_Wait_Event() {
+	int i, j;
+	unsigned int e = Cp->e;
+
+	for (i = 0; i < MAXEVENT; i++) {
+		if (Event[i].e == e) break;
+	}
+
+	if (i >= MAXEVENT) {
+		return 0;
+	}
+
+	if (Event[i].p == NULL) {
+		if (Event[i].state == SIGNALLED) {
+			Event[i].state = UNSIGNALLED;
+			return 0;
+		}
+		else {
+			Event[i].p = Cp->p;
+			Cp->state = WAITING;
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
 /**
@@ -375,6 +404,7 @@ static void Next_Kernel_Request() {
 
 	unsigned int mutex_is_locked;
 	unsigned int resumed;
+	unsigned int waiting;
 
 	while(1) {
 		Cp->request = NONE; /* clear its request */
@@ -408,6 +438,7 @@ static void Next_Kernel_Request() {
 		case SUSPEND:
 			Kernel_Suspend_Task();
 			if(Cp->suspended) {
+				Cp->state = READY;
 				enqueueRQ(&Cp, &ReadyQueue, &RQCount);
 				Dispatch();
 			}
@@ -415,6 +446,7 @@ static void Next_Kernel_Request() {
 		case RESUME:
 			resumed = Kernel_Resume_Task();
 			if(resumed){
+				Cp->state = READY;
 				enqueueRQ(&Cp, &ReadyQueue, &RQCount);
 				Dispatch();
 			}
@@ -440,8 +472,15 @@ static void Next_Kernel_Request() {
         	Cp->response = Kernel_Init_Event();
         	break;
         case EVENT_WAIT:
+        	waiting = Kernel_Wait_Event();
+        	if (waiting) {
+				Cp->state = READY;
+        		enqueueRQ(&Cp, &ReadyQueue, &RQCount);
+        		Dispatch();
+        	}
         	break;
         case EVENT_SIGNAL:
+        	// Kernel_Signal_Event();
         	break;
 		default:
 			/* Houston! we have a problem here! */
@@ -662,7 +701,7 @@ void setup() {
 
 	TCNT1 = 0;                  // Initialize counter to 0
 
-	OCR1A = 624;                // Compare match register (TOP comparison value) [(16MHz/(100Hz*8)] - 1
+	OCR1A = 62499;                // Compare match register (TOP comparison value) [(16MHz/(100Hz*8)] - 1
 
 	TCCR1B |= (1 << WGM12);     // Turns on CTC mode (TOP is now OCR1A)
 
@@ -695,6 +734,7 @@ ISR(TIMER1_COMPA_vect) {
 	for (i = SQCount-1; i >= 0; i--) {
 		if ((SleepQueue[i]->wakeTickOverflow <= tickOverflowCount) && (SleepQueue[i]->wakeTick <= (TCNT3/625))) {
 			volatile PD *p = dequeue(&SleepQueue, &SQCount);
+			p->state = READY;
 			enqueueRQ(&p, &ReadyQueue, &RQCount);
 		}
 		else {
@@ -708,7 +748,7 @@ ISR(TIMER1_COMPA_vect) {
 	//     enqueueRQ(&p, &ReadyQueue, &RQCount);
 	// }
 
-	Cp->request = NEXT;
+	// Cp->request = NEXT;
 	// asm ( "clr r0":: );
 	// asm ( "ldi ZL, lo8(Enter_Kernel)":: );
 	// asm ( "ldi ZH, hi8(Enter_Kernel)":: );

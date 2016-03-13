@@ -87,6 +87,7 @@ volatile static unsigned int KernelActive;
 
 /** number of tasks created so far */
 volatile static unsigned int Tasks;  
+volatile static unsigned int pCount;
 
 // Number of mutexes created so far
 volatile static unsigned int Mutexes;
@@ -158,7 +159,7 @@ PID Kernel_Create_Task_At( volatile PD *p, voidfuncptr f, PRIORITY py, int arg )
 	p->sp = sp;     /* stack pointer into the "workSpace" */
 	p->code = f;        /* function to be executed as a task */
 	p->request = NONE;
-	p->p = Tasks;
+	p->p = pCount;
 	p->py = py;
 	p->inheritedPy = py;
 	p->arg = arg;
@@ -166,6 +167,7 @@ PID Kernel_Create_Task_At( volatile PD *p, voidfuncptr f, PRIORITY py, int arg )
 	p->eWait = 99;
 
 	Tasks++;
+	pCount++;
 
 	/*----END of NEW CODE----*/
 
@@ -228,6 +230,10 @@ static unsigned int Kernel_Resume_Task() {
 }
 
 static void Kernel_Terminate_Task() {
+	Cp->inheritedPy = 0;
+	Cp->py = 0;
+	Cp->state = TERMINATED;
+
 	int i;
 
 	for(i = 0; i < MAXMUTEX; i++) {
@@ -242,6 +248,7 @@ static void Kernel_Terminate_Task() {
 	Cp->inheritedPy = MINPRIORITY;
 	Cp->py = MINPRIORITY;
 	Cp->p = 0;
+	Tasks--;
 }
 
 MUTEX Kernel_Init_Mutex_At(volatile MTX *m) {
@@ -320,6 +327,28 @@ static void Kernel_Unlock_Mutex() {
 	if(Mutex[i].owner != Cp->p){
 		return;
 	} 
+	else if (Cp->state == TERMINATED) {
+		volatile PD* p = dequeueWQ(&WaitingQueue, &WQCount, m);
+		if (p == NULL) {
+			Mutex[i].lockCount = 0;
+			Mutex[i].state = FREE;
+			Mutex[i].owner = 0;
+			return;
+		}
+		else {
+			Mutex[i].lockCount = 1;
+			Mutex[i].owner = p->p;
+
+			p->inheritedPy = Cp->inheritedPy;
+			p->state = READY;
+
+			Cp->inheritedPy = Cp->py;
+
+			Cp->state = READY;
+
+			enqueueRQ(&p, &ReadyQueue, &RQCount);
+		}
+	}
 	else if (Mutex[i].lockCount > 1) {
 		Mutex[i].lockCount--;
 	}
@@ -333,13 +362,13 @@ static void Kernel_Unlock_Mutex() {
 			Cp->inheritedPy = Cp->py;
 
 			// Turn on pin for newly running task
-			if (Cp->p == 1) {
+			if (Cp->p <= 14) {
 				enable_LED(PORTL2);
 			}
-			else if (Cp->p == 2) {
+			else if (Cp->p == 15) {
 				enable_LED(PORTL5);
 			}
-			else if (Cp->p == 3) {
+			else if (Cp->p == 16) {
 				enable_LED(PORTL6);
 			}
 		}
@@ -465,13 +494,13 @@ static void Dispatch() {
 	Cp->state = RUNNING;
 
 	// Turn on pin for newly running task
-	if (Cp->p == 1) {
+	if (Cp->p <= 14) {
 		enable_LED(PORTL2);
 	}
-	else if (Cp->p == 2) {
+	else if (Cp->p == 15) {
 		enable_LED(PORTL5);
 	}
-	else if (Cp->p == 3) {
+	else if (Cp->p == 16) {
 		enable_LED(PORTL6);
 	}
 }
@@ -594,6 +623,7 @@ void OS_Init() {
 	KernelActive = 0;
 	Mutexes = 0;
 	Events = 0;
+	pCount = 0;
 
 	//Reminder: Clear the memory for the task on creation.
 	for (x = 0; x < MAXTHREAD; x++) {

@@ -62,3 +62,23 @@ compile_t4: cswitch.S os.c test4.c queue.c LED_Test.c
 
 elf_t4: cswitch.o os.o test4.o queue.o LED_Test.o
 	$(CC) $(ELFFLAGS) rtos.elf cswitch.o os.o test4.o queue.o LED_Test.o
+
+# Test Terminate With Mutex
+
+t5: compile_t5 elf_t5 hex load
+
+compile_t5: cswitch.S os.c test_terminate_with_mutex.c queue.c LED_Test.c
+	$(CC) $(FLAGS) cswitch.S os.c test_terminate_with_mutex.c queue.c LED_Test.c
+
+elf_t5: cswitch.o os.o test_terminate_with_mutex.o queue.o LED_Test.o
+	$(CC) $(ELFFLAGS) rtos.elf cswitch.o os.o test_terminate_with_mutex.o queue.o LED_Test.o
+
+# Test Terminate
+
+t6: compile_t6 elf_t6 hex load
+
+compile_t6: cswitch.S os.c test_terminate.c queue.c LED_Test.c
+	$(CC) $(FLAGS) cswitch.S os.c test_terminate.c queue.c LED_Test.c
+
+elf_t6: cswitch.o os.o test_terminate.o queue.o LED_Test.o
+	$(CC) $(ELFFLAGS) rtos.elf cswitch.o os.o test_terminate.o queue.o LED_Test.o

@@ -330,6 +330,7 @@ static void Kernel_Unlock_Mutex() {
 			Mutex[i].state = FREE;
 			Mutex[i].lockCount = 0;
 			Mutex[i].owner = 0;
+			Cp->inheritedPy = Cp->py;
 		}
 		else {
 			Mutex[i].lockCount = 0;
@@ -338,10 +339,11 @@ static void Kernel_Unlock_Mutex() {
 			p->inheritedPy = Cp->inheritedPy;
 			p->state = READY;
 
-			enqueueRQ(&p, &ReadyQueue, &RQCount);
-		}
+			Cp->inheritedPy = Cp->py;
 
-		Cp->inheritedPy = Cp->py;
+			enqueueRQ(&p, &ReadyQueue, &RQCount);
+			Dispatch();
+		}
 	}
 }
 
@@ -445,6 +447,17 @@ static void Dispatch() {
 
 	CurrentSp = Cp->sp;
 	Cp->state = RUNNING;
+
+	// Turn on pin for newly running task
+	if (Cp->p == 1) {
+		enable_LED(PORTL2);
+	}
+	else if (Cp->p == 2) {
+		enable_LED(PORTL5);
+	}
+	else if (Cp->p == 3) {
+		enable_LED(PORTL6);
+	}
 }
 
 /**
@@ -469,6 +482,10 @@ static void Next_Kernel_Request() {
 		CurrentSp = Cp->sp;
 
 		Exit_Kernel();    /* or CSwitch() */
+
+		disable_LED(PORTL2);
+		disable_LED(PORTL5);
+		disable_LED(PORTL6);
 
 		/* if this task makes a system call, it will return to here! */
 
@@ -743,6 +760,9 @@ void setup() {
 
 	// pin 44
 	init_LED_PORTL_pin5();
+
+	// pin 49
+	init_LED_PORTL_pin0();
 
 	// initialize Timer1 16 bit timer
 	Disable_Interrupt();

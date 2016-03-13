@@ -22,3 +22,14 @@ load: rtos.hex
 
 clean:
 	rm -f *.elf *.o *.hex
+
+
+# Test 1
+
+t1: compile_t1 elf_t1 hex load
+
+compile_t1: cswitch.S os.c tests/test1.c queue.c LED_Test.c
+	$(CC) $(FLAGS) cswitch.S os.c tests/test1.c queue.c LED_Test.c
+
+elf_t1: cswitch.o os.o test1.o queue.o LED_Test.o
+	$(CC) $(ELFFLAGS) rtos.elf cswitch.o os.o test1.o queue.o LED_Test.o

@@ -23,6 +23,10 @@ void init_LED_PORTL_pin5(void) {
     DDRL |= _BV(DDL5);  // Set DDL6 bit of the DDRL register
 }
 
+void init_LED_PORTL_pin0(void) {
+    DDRL |= _BV(DDL0);
+}
+
 void enable_LED(unsigned int mask) {
     /* set pin 47 high to turn led on */
     PORTL |= _BV(mask);

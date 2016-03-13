@@ -11,16 +11,24 @@
  * \date October 2006
  */
 
+void init_LED_PORTL_pin0(void) {
+    DDRL |= _BV(DDL0);
+}
+
+void init_LED_PORTL_pin1(void) {
+    DDRL |= _BV(DDL1);
+}
+
 void init_LED_PORTL_pin2(void) {
     DDRL |= _BV(DDL2);  // Set DDL2 bit of the DDRL register
 }
 
-void init_LED_PORTL_pin6(void) {
-    DDRL |= _BV(DDL6);  // Set DDL6 bit of the DDRL register
+void init_LED_PORTL_pin5(void) {
+    DDRL |= _BV(DDL5);  // Set DDL5 bit of the DDRL register
 }
 
-void init_LED_PORTL_pin5(void) {
-    DDRL |= _BV(DDL5);  // Set DDL6 bit of the DDRL register
+void init_LED_PORTL_pin6(void) {
+    DDRL |= _BV(DDL6);  // Set DDL6 bit of the DDRL register
 }
 
 void enable_LED(unsigned int mask) {

@@ -330,18 +330,34 @@ static void Kernel_Unlock_Mutex() {
 			Mutex[i].state = FREE;
 			Mutex[i].lockCount = 0;
 			Mutex[i].owner = 0;
+			Cp->inheritedPy = Cp->py;
+
+			// Turn on pin for newly running task
+			if (Cp->p == 1) {
+				enable_LED(PORTL2);
+			}
+			else if (Cp->p == 2) {
+				enable_LED(PORTL5);
+			}
+			else if (Cp->p == 3) {
+				enable_LED(PORTL6);
+			}
 		}
 		else {
-			Mutex[i].lockCount = 0;
+			Mutex[i].lockCount = 1;
 			Mutex[i].owner = p->p;
 
 			p->inheritedPy = Cp->inheritedPy;
 			p->state = READY;
 
-			enqueueRQ(&p, &ReadyQueue, &RQCount);
-		}
+			Cp->inheritedPy = Cp->py;
 
-		Cp->inheritedPy = Cp->py;
+			Cp->state = READY;
+
+			enqueueRQ(&p, &ReadyQueue, &RQCount);
+			enqueueRQ(&Cp, &ReadyQueue, &RQCount);
+			Dispatch();
+		}
 	}
 }
 
@@ -420,6 +436,8 @@ static void Kernel_Signal_Event() {
 		Process[j].state = READY;
 		Process[j].eWait = 99;
 
+		Event[i].p = NULL;
+
 		if ((Process[j].inheritedPy < Cp->inheritedPy) && (Process[j].suspended == 0)) {
 			Cp->state = READY;
 			enqueueRQ(&Cp, &ReadyQueue, &RQCount);
@@ -445,6 +463,17 @@ static void Dispatch() {
 
 	CurrentSp = Cp->sp;
 	Cp->state = RUNNING;
+
+	// Turn on pin for newly running task
+	if (Cp->p == 1) {
+		enable_LED(PORTL2);
+	}
+	else if (Cp->p == 2) {
+		enable_LED(PORTL5);
+	}
+	else if (Cp->p == 3) {
+		enable_LED(PORTL6);
+	}
 }
 
 /**
@@ -469,6 +498,10 @@ static void Next_Kernel_Request() {
 		CurrentSp = Cp->sp;
 
 		Exit_Kernel();    /* or CSwitch() */
+
+		disable_LED(PORTL2);
+		disable_LED(PORTL5);
+		disable_LED(PORTL6);
 
 		/* if this task makes a system call, it will return to here! */
 
@@ -744,6 +777,12 @@ void setup() {
 	// pin 44
 	init_LED_PORTL_pin5();
 
+	// pin 49
+	init_LED_PORTL_pin0();
+
+	// pin 48
+	init_LED_PORTL_pin1();
+
 	// initialize Timer1 16 bit timer
 	Disable_Interrupt();
 
@@ -780,7 +819,6 @@ void setup() {
 
 ISR(TIMER1_COMPA_vect) {
 
-	// This version dequeues all that need dequeuing.
 	volatile int i;
 
 	for (i = SQCount-1; i >= 0; i--) {
@@ -794,22 +832,6 @@ ISR(TIMER1_COMPA_vect) {
 		}
 	}
 
-	// This version dequeues one item.
-	// if ((!isEmpty(&SQCount)) && (SleepQueue[SQCount-1]->wakeTickOverflow <= tickOverflowCount) && (SleepQueue[SQCount-1]->wakeTick <= (TCNT3/625))) {
-	//     volatile PD *p = dequeue(&SleepQueue, &SQCount);
-	//     enqueueRQ(&p, &ReadyQueue, &RQCount);
-	// }
-
-	// Cp->request = NEXT;
-	// asm ( "clr r0":: );
-	// asm ( "ldi ZL, lo8(Enter_Kernel)":: );
-	// asm ( "ldi ZH, hi8(Enter_Kernel)":: );
-	// asm ( "ldi r16, hhi8(Enter_Kernel)":: );
-	// asm ( "add ZL, r17"::);
-	// asm ( "adc ZH, r0"::);
-	// asm ( "adc r16, r0"::);
-	// asm ( "out 0x3C, r16"::);
-	// asm ( "eijmp":: );
 	Task_Next();
 }
 

@@ -29,7 +29,7 @@ EIND  = 0x3C
   * MACROS
   */
 ;
-; Push all registers and then the status register.
+; Push all registers and then the status and EIND registers.
 ; It is important to keep the order of SAVECTX and RESTORECTX  exactly
 ; in reverse. Also, when a new process is created, it is important to 
 ; initialize its "initial" context in the same order as SAVECTX.

@@ -40,8 +40,38 @@
 								<a href="#" class="image featured"><img src="images/pic01.jpg" alt="" /></a>
 								<header>
 									<h2>Project 2</h2>
-									<p>Coming Soon</p>
 								</header>
+								<section>
+									<header>
+										<h3>Introduction</h3>
+									</header>
+									<p>
+										The goal of project 2 is to implement, and test a priority based, preemptive, multithreaded real time operating system (RTOS). This is done on the same microcontroller as in project 1, the ATMega 2560. The RTOS will have similar features to the pthread library including mutexes and priority inheritence.
+									</p>
+								</section>
+								<section>
+									<header>
+										<h3>Hardware</h3>
+									</header>
+									<h4>Arduino ATMega 2560</h4>
+									<a class="image paragraph"><img src="images/mega2560.jpg"></a>
+									<p>
+										The ATMega 2560 is an Atmel 8-bit AVR RISC based microcontroller with 256 KB of flash memory and 8 KB of SDRAM running at 16MHz. 
+									</p>
+									<h4>17-Bit Address Problem</h4>
+									<p>
+										AVR architectures store instructions in the flash part of memory. This memory is normally accessed by 2 byte words that are addressed with 16 bit addresses. This means the maximum amount of memory that can be addressed by 16 bits is 2*2^16 bytes, or 128 KB. Since the ATMega has 256 KB of flash, it uses extended addressing to address the upper part of memory. This means the CPU effectively uses a 17 bit address, with an extra bit stored in the EIND (extended indirect) register. The compiler then calls functions in memory using special instructions (like eijmp and eicall), that concatenate the EIND register with the 16 bit Z (r30 and r31) register that stores the the first 16 bits of the address.
+
+										In order to fix the 17-bit address problem in the RTOS, the RTOS needs to store the EIND register when it saves a task's context, and restore the EIND register when it restores a task's context. Also when the workspace for a task is initialized, there needs to be a 3 byte (instead of a 2 byte) return address for the program counter. Context switching will be illustrated later, but these two fixes are shown below:
+									</p>
+									<a class="image paragraph"><img src="images/17-bit-problem1.png"></a>
+									<br>
+									<a class="image paragraph"><img src="images/17-bit-problem2.png"></a>
+									<br>
+									<p>
+										As you can see, the third byte is set to 0 when the task is initialized.
+									</p>
+								</section>
 							</article>
 
 					</div>

@@ -34,6 +34,7 @@ extern void Exit_Kernel();    /* this is the same as CSwitch() */
 
 /* Prototype */
 void Task_Terminate(void);
+static void Dispatch();
 
 /** 
   * This external function could be implemented in two ways:
@@ -55,6 +56,8 @@ extern void Enter_Kernel();
 static PD Process[MAXTHREAD];
 
 static MTX Mutex[MAXMUTEX];
+
+static EVT Event[MAXEVENT];
 
 /**
   * The process descriptor of the currently RUNNING task.
@@ -86,6 +89,8 @@ volatile static unsigned int Tasks;
 
 // Number of mutexes created so far
 volatile static unsigned int Mutexes;
+
+volatile static unsigned int Events;
 
 // Global tick overflow count
 volatile unsigned int tickOverflowCount = 0;
@@ -158,6 +163,7 @@ PID Kernel_Create_Task_At( volatile PD *p, voidfuncptr f, PRIORITY py, int arg )
 	p->inheritedPy = py;
 	p->arg = arg;
 	p->suspended = 0;
+	p->eWait = 99;
 
 	/*----END of NEW CODE----*/
 
@@ -187,6 +193,38 @@ static PID Kernel_Create_Task( voidfuncptr f, PRIORITY py, int arg ) {
 	return p;
 }
 
+static void Kernel_Suspend_Task() {
+	int i;
+
+	if(Cp->p == Cp->pidAction) {
+		Cp->suspended = 1;
+	}
+	else {
+		for(i = 0; i < MAXTHREAD; i++) {
+			if (Process[i].p == Cp->pidAction) break;
+		}
+
+		Process[i].suspended = 1;
+	}
+}
+
+static unsigned int Kernel_Resume_Task() {
+	int i;
+
+	for(i = 0; i < MAXTHREAD; i++) {
+		if (Process[i].p == Cp->pidAction) break;
+	}
+
+	if(Process[i].suspended == 1) {
+		Process[i].suspended = 0;
+		if(Process[i].inheritedPy < Cp->inheritedPy) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 MUTEX Kernel_Init_Mutex_At(volatile MTX *m) {
 	m->m = Mutexes;
 	m->state = FREE;
@@ -213,9 +251,11 @@ static MUTEX Kernel_Init_Mutex() {
 static unsigned int Kernel_Lock_Mutex() {
 	int i,j;
 	MUTEX m = Cp->m;
-	for(i=0; i<MAXMUTEX; i++) {
+
+	for(i = 0; i < MAXMUTEX; i++) {
 		if (Mutex[i].m == m) break;
 	}
+
 	if(i>=MAXMUTEX){
 		return 1;
 	}
@@ -229,28 +269,35 @@ static unsigned int Kernel_Lock_Mutex() {
 		Mutex[i].lockCount++;
 	}
 	else {
-		for(j=0; j<MAXTHREAD; j++) {
+		for(j = 0; j < MAXTHREAD; j++) {
 			if (Process[j].m == m) break;
 		}
+
 		if (Process[j].inheritedPy > Cp->inheritedPy) {
 			Process[j].inheritedPy = Cp->inheritedPy;
 		}
+
 		Cp->state = BLOCKED_ON_MUTEX;
 		enqueueWQ(&Cp, &WaitingQueue, &WQCount);
+
 		return 0;
 	}
+
 	return 1;
 }
 
 static void Kernel_Unlock_Mutex() {
 	int i;
 	MUTEX m = Cp->m;
-	for(i=0; i<MAXMUTEX; i++) {
+
+	for(i = 0; i < MAXMUTEX; i++) {
 		if (Mutex[i].m == m) break;
 	}
-	if(i>=MAXMUTEX){
+
+	if(i >= MAXMUTEX){
 		return;
 	}
+
 	if(Mutex[i].owner != Cp->p){
 		return;
 	} 
@@ -259,6 +306,7 @@ static void Kernel_Unlock_Mutex() {
 	}
 	else {
 		volatile PD* p = dequeueWQ(&WaitingQueue, &WQCount, m);
+
 		if(p == NULL){
 			Mutex[i].state = FREE;
 			Mutex[i].lockCount = 0;
@@ -267,38 +315,98 @@ static void Kernel_Unlock_Mutex() {
 		else {
 			Mutex[i].lockCount = 0;
 			Mutex[i].owner = p->p;
+
+			p->inheritedPy = Cp->inheritedPy;
+			p->state = READY;
+
 			enqueueRQ(&p, &ReadyQueue, &RQCount);
 		}
+
+		Cp->inheritedPy = Cp->py;
 	}
 }
 
-static void Kernel_Suspend_Task() {
-	int i;
+EVENT Kernel_Init_Event_At(volatile EVT *e) {
+	e->e = Events;
+	e->state = UNSIGNALLED;
+	e->p = NULL;
 
-	if(Cp->p == Cp->pidAction) {
-		Cp->suspended = 1;
+	Events++;
+
+	return e->e;
+}
+
+static EVENT Kernel_Init_Event() {
+	int x;
+
+	if (Events == MAXEVENT) return; // Too many mutexes!
+
+	// find a Disabled mutex that we can use
+	for (x = 0; x < MAXEVENT; x++) {
+		if (Event[x].state == INACTIVE) break;
 	}
-	else {
-		for(i=0; i<MAXTHREAD; i++) {
-			if (Process[i].p == Cp->pidAction) break;
+
+	unsigned int e = Kernel_Init_Event_At( &(Event[x]) );
+
+	return e;
+}
+
+static unsigned int Kernel_Wait_Event() {
+	int i;
+	unsigned int e = Cp->eSend;
+
+	for (i = 0; i < MAXEVENT; i++) {
+		if (Event[i].e == e) break;
+	}
+
+	if (i >= MAXEVENT) {
+		return 0;
+	}
+
+	if (Event[i].p == NULL) {
+		if (Event[i].state == SIGNALLED) {
+			Event[i].state = UNSIGNALLED;
+			return 0;
 		}
-		Process[i].suspended = 1;
-	}
-}
-
-static unsigned int Kernel_Resume_Task() {
-	int i;
-
-	for(i=0; i<MAXTHREAD; i++) {
-		if (Process[i].p == Cp->pidAction) break;
-	}
-	if(Process[i].suspended == 1) {
-		Process[i].suspended = 0;
-		if(Process[i].inheritedPy < Cp->inheritedPy) {
+		else {
+			Cp->eWait = e;
+			Event[i].p = Cp->p;
 			return 1;
 		}
 	}
+
 	return 0;
+}
+
+static void Kernel_Signal_Event() {
+	int i, j;
+	unsigned int e = Cp->eSend;
+
+	for (i = 0; i < MAXEVENT; i++) {
+		if (Event[i].e == e) break;
+	}
+
+	if (i >= MAXEVENT) {
+		return;
+	}
+
+	for(j = 0; j < MAXTHREAD; j++) {
+		if (Process[j].eWait == e) break;
+	}
+
+	if (j >= MAXTHREAD) {
+		Event[i].state = SIGNALLED;
+	}
+	else {
+		Process[j].state = READY;
+		Process[j].eWait = 99;
+
+		if ((Process[j].inheritedPy < Cp->inheritedPy) && (Process[j].suspended == 0)) {
+			Cp->state = READY;
+			enqueueRQ(&Cp, &ReadyQueue, &RQCount);
+			Dispatch();
+		}
+	}
 }
 
 /**
@@ -333,6 +441,7 @@ static void Next_Kernel_Request() {
 
 	unsigned int mutex_is_locked;
 	unsigned int resumed;
+	unsigned int waiting;
 
 	while(1) {
 		Cp->request = NONE; /* clear its request */
@@ -366,6 +475,7 @@ static void Next_Kernel_Request() {
 		case SUSPEND:
 			Kernel_Suspend_Task();
 			if(Cp->suspended) {
+				Cp->state = READY;
 				enqueueRQ(&Cp, &ReadyQueue, &RQCount);
 				Dispatch();
 			}
@@ -373,6 +483,7 @@ static void Next_Kernel_Request() {
 		case RESUME:
 			resumed = Kernel_Resume_Task();
 			if(resumed){
+				Cp->state = READY;
 				enqueueRQ(&Cp, &ReadyQueue, &RQCount);
 				Dispatch();
 			}
@@ -380,6 +491,15 @@ static void Next_Kernel_Request() {
 		case TERMINATE:
 			/* deallocate all resources used by this task */
 			Cp->state = DEAD;
+			Cp->eWait = 99;
+			Cp->inheritedPy = MINPRIORITY;
+			Cp->py = MINPRIORITY;
+			Cp->m = 0;
+
+			// TODO
+			// Unlock any mutexes
+			// Remove from waiting events
+			
 			Dispatch();
 			break;
 		case MUTEX_INIT:
@@ -393,7 +513,21 @@ static void Next_Kernel_Request() {
 			break;
 		case MUTEX_UNLOCK:
 			Kernel_Unlock_Mutex();
-            break; 
+            break;
+        case EVENT_INIT:
+        	Cp->response = Kernel_Init_Event();
+        	break;
+        case EVENT_WAIT:
+        	waiting = Kernel_Wait_Event();
+        	if (waiting) {
+				Cp->state = WAITING;
+        		enqueueRQ(&Cp, &ReadyQueue, &RQCount);
+        		Dispatch();
+        	}
+        	break;
+        case EVENT_SIGNAL:
+        	Kernel_Signal_Event();
+        	break;
 		default:
 			/* Houston! we have a problem here! */
 			break;
@@ -416,15 +550,23 @@ void OS_Init() {
 	Tasks = 0;
 	KernelActive = 0;
 	Mutexes = 0;
+	Events = 0;
+
 	//Reminder: Clear the memory for the task on creation.
 	for (x = 0; x < MAXTHREAD; x++) {
 		memset(&(Process[x]),0,sizeof(PD));
 		Process[x].state = DEAD;
+		Process[x].eWait = 99;
 	}
 
 	for (x = 0; x < MAXMUTEX; x++) {
 		memset(&(Mutex[x]),0,sizeof(MTX));
 		Mutex[x].state = DISABLED;
+	}
+
+	for (x = 0; x < MAXEVENT; x++) {
+		memset(&(Event[x]),0,sizeof(EVT));
+		Event[x].state = INACTIVE;
 	}
 }
 
@@ -471,6 +613,33 @@ void Mutex_Unlock(MUTEX m) {
 		Disable_Interrupt();
 		Cp->request = MUTEX_UNLOCK;
 		Cp->m = m;
+		Enter_Kernel();
+	}
+}
+
+EVENT Event_Init() {
+	if(KernelActive) {
+		Disable_Interrupt();
+		Cp->request = EVENT_INIT;
+		Enter_Kernel();
+		return Cp->response;
+	}
+}
+
+void Event_Wait(EVENT e) {
+	if(KernelActive) {
+		Disable_Interrupt();
+		Cp->request = EVENT_WAIT;
+		Cp->eSend = e;
+		Enter_Kernel();
+	}
+}
+
+void Event_Signal(EVENT e) {
+	if(KernelActive) {
+		Disable_Interrupt();
+		Cp->request = EVENT_SIGNAL;
+		Cp->eSend = e;
 		Enter_Kernel();
 	}
 }
@@ -612,6 +781,7 @@ ISR(TIMER1_COMPA_vect) {
 	for (i = SQCount-1; i >= 0; i--) {
 		if ((SleepQueue[i]->wakeTickOverflow <= tickOverflowCount) && (SleepQueue[i]->wakeTick <= (TCNT3/625))) {
 			volatile PD *p = dequeue(&SleepQueue, &SQCount);
+			p->state = READY;
 			enqueueRQ(&p, &ReadyQueue, &RQCount);
 		}
 		else {
@@ -625,7 +795,7 @@ ISR(TIMER1_COMPA_vect) {
 	//     enqueueRQ(&p, &ReadyQueue, &RQCount);
 	// }
 
-	Cp->request = NEXT;
+	// Cp->request = NEXT;
 	// asm ( "clr r0":: );
 	// asm ( "ldi ZL, lo8(Enter_Kernel)":: );
 	// asm ( "ldi ZH, hi8(Enter_Kernel)":: );

@@ -9,6 +9,9 @@
 unsigned int portL2_Mutex;
 unsigned int portL6_Mutex;
 
+unsigned int e1;
+unsigned int e2;
+
 unsigned int PingPID;
 unsigned int PongPID;
 unsigned int IdlePID;
@@ -29,6 +32,9 @@ void Ping() {
         toggle_LED(PORTL6);
         Mutex_Unlock(portL6_Mutex);
 
+        Event_Signal(e2);
+        Event_Wait(e2);
+
         Task_Suspend(PongPID);
         Task_Resume(PongPID);
 
@@ -44,6 +50,9 @@ void Pong() {
         toggle_LED(PORTL2);
         Mutex_Unlock(portL2_Mutex);
 
+        Event_Signal(e1);
+        Event_Wait(e1);
+
         Task_Suspend(PingPID);
         Task_Resume(PingPID);
 
@@ -57,6 +66,9 @@ void a_main() {
 
     portL2_Mutex = Mutex_Init();
     portL6_Mutex = Mutex_Init();
+
+    e1 = Event_Init();
+    e2 = Event_Init();
 
     PongPID = Task_Create(Pong, 8, 1);
     PingPID = Task_Create(Ping, 8, 1);

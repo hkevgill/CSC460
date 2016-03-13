@@ -114,14 +114,14 @@ volatile PD *dequeueRQ(volatile PD **Queue, volatile int *QCount) {
 
     int i,j;
     volatile PD* result = NULL;
-    for (i=(*QCount)-1; i>=0; i--) {
-        if(Queue[i]->suspended == 0){
+    for (i = (*QCount)-1; i >= 0; i--) {
+        if((Queue[i]->suspended == 0) && (Queue[i]->state == READY)) {
             result = Queue[i];
             break;
         }
     }
     if(result != NULL) {
-        while(i<(*QCount)-1) {
+        while(i < (*QCount)-1) {
             Queue[i] = Queue[i+1];
             i++;
         }

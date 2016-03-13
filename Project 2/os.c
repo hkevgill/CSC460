@@ -331,9 +331,20 @@ static void Kernel_Unlock_Mutex() {
 			Mutex[i].lockCount = 0;
 			Mutex[i].owner = 0;
 			Cp->inheritedPy = Cp->py;
+
+			// Turn on pin for newly running task
+			if (Cp->p == 1) {
+				enable_LED(PORTL2);
+			}
+			else if (Cp->p == 2) {
+				enable_LED(PORTL5);
+			}
+			else if (Cp->p == 3) {
+				enable_LED(PORTL6);
+			}
 		}
 		else {
-			Mutex[i].lockCount = 0;
+			Mutex[i].lockCount = 1;
 			Mutex[i].owner = p->p;
 
 			p->inheritedPy = Cp->inheritedPy;
@@ -341,7 +352,10 @@ static void Kernel_Unlock_Mutex() {
 
 			Cp->inheritedPy = Cp->py;
 
+			Cp->state = READY;
+
 			enqueueRQ(&p, &ReadyQueue, &RQCount);
+			enqueueRQ(&Cp, &ReadyQueue, &RQCount);
 			Dispatch();
 		}
 	}
@@ -421,6 +435,8 @@ static void Kernel_Signal_Event() {
 	else {
 		Process[j].state = READY;
 		Process[j].eWait = 99;
+
+		Event[i].p = NULL;
 
 		if ((Process[j].inheritedPy < Cp->inheritedPy) && (Process[j].suspended == 0)) {
 			Cp->state = READY;
@@ -764,6 +780,9 @@ void setup() {
 	// pin 49
 	init_LED_PORTL_pin0();
 
+	// pin 48
+	init_LED_PORTL_pin1();
+
 	// initialize Timer1 16 bit timer
 	Disable_Interrupt();
 
@@ -800,7 +819,6 @@ void setup() {
 
 ISR(TIMER1_COMPA_vect) {
 
-	// This version dequeues all that need dequeuing.
 	volatile int i;
 
 	for (i = SQCount-1; i >= 0; i--) {
@@ -814,22 +832,6 @@ ISR(TIMER1_COMPA_vect) {
 		}
 	}
 
-	// This version dequeues one item.
-	// if ((!isEmpty(&SQCount)) && (SleepQueue[SQCount-1]->wakeTickOverflow <= tickOverflowCount) && (SleepQueue[SQCount-1]->wakeTick <= (TCNT3/625))) {
-	//     volatile PD *p = dequeue(&SleepQueue, &SQCount);
-	//     enqueueRQ(&p, &ReadyQueue, &RQCount);
-	// }
-
-	// Cp->request = NEXT;
-	// asm ( "clr r0":: );
-	// asm ( "ldi ZL, lo8(Enter_Kernel)":: );
-	// asm ( "ldi ZH, hi8(Enter_Kernel)":: );
-	// asm ( "ldi r16, hhi8(Enter_Kernel)":: );
-	// asm ( "add ZL, r17"::);
-	// asm ( "adc ZH, r0"::);
-	// asm ( "adc r16, r0"::);
-	// asm ( "out 0x3C, r16"::);
-	// asm ( "eijmp":: );
 	Task_Next();
 }
 

@@ -41,7 +41,7 @@ void enqueueSQ(volatile PD **p, volatile PD **Queue, volatile int *QCount) {
 
     volatile PD *temp = Queue[i];
 
-    while(i >= 0 && ((new->wakeTickOverflow >= temp->wakeTickOverflow) || ((new->wakeTickOverflow >= temp->wakeTickOverflow) && (new->wakeTick >= temp->wakeTick)))) {
+    while(i >= 0 && ((new->wakeTickOverflow > temp->wakeTickOverflow) || ((new->wakeTickOverflow >= temp->wakeTickOverflow) && (new->wakeTick >= temp->wakeTick)))) {
         Queue[i+1] = Queue[i];
         i--;
         temp = Queue[i];
@@ -86,7 +86,7 @@ volatile PD *dequeueWQ(volatile PD **Queue, volatile int *QCount, MUTEX m) {
 
     int i,j;
     volatile PD* result = NULL;
-    for (i=(*QCount)-1; i>=0; i--) {
+    for (i = (*QCount)-1; i>=0; i--) {
         if(Queue[i]->m == m){
             result = Queue[i];
             break;

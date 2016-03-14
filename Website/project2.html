@@ -93,14 +93,16 @@
 
 									<b>Timers and Interrupts</b>
 									<p>
-										Two of the 16-bit PWM timers on the ATMega2560 were used to control the flow of the RTOS. Both were configured in CTC (Clear Timer on Compare) mode with TOP values to control the rate at which their relative timer compare-vectors were set. Interrupt handlers were then created for the periodic interrupts that occurred. 
+										Two of the 16-bit PWM timers (Timer1 and Timer3) on the ATMega 2560 were used to control the flow of the RTOS. Both were configured in CTC (Clear Timer on Compare) mode with TOP values to control the rate at which their relative timer compare-vectors were set. Interrupt handlers were then created for the periodic interrupts that occurred.
 
-										For Timer 3, the OCR (Output Compare Register) was set so that an interrupt would fire every second, and increment a continuous count that tracks the number of seconds since the beginning of program execution. This count is necessary for properly sleeping tasks (explained in a later section). Timer 1 was set so that an interrupt would occur every 10ms, calling an ISR to periodically checki the SleepQueue for tasks that were due to be set READY again, dequeued from the SleepQueue, and enqueued into the ReadyQueue. This ISR would then also always call Task_Next.
+                                        Timer1 fires an interrupt every 10 ms. Its corresponding Interrupt Service Routine (ISR) checks the SleepQueue to see if any task has finished sleeping and if so will move it back to the ReadyQueue.
+
+                                        Timer 3 is used as a real time clock to keep track of the amount of time that has passed since the RTOS booted. Timer3 fires an interrupt every second and increments a global overflow count. This timer is used to put tasks to sleep and wake them up using absolute time as discussed later in the Task Sleep section.
 									</p>
 
 									<b>The Kernel</b>
 									<p>
-										The kernel of the RTOS is itself a sort of "task" in that its context is saved to and restored from RAM in the same way as all of the processes. Its entire function body boils down to a switch statement that is invoked based on the current process' request state, which is set by an OS-level function.
+										The kernel of the RTOS is itself a pseudo task in that its context is saved to and restored from RAM in the same way as all of the processes. Its entire function body boils down to a switch statement that is invoked based on the current process' request state, which is set by an OS-level function.
 
 										Most of the kernel's switch statements call kernel-level functions that contain the actual implementation of task, mutex, and event actions. These functions are inaccessible to the application that is utilizing the RTOS, which gives the system a security "buffer", in that the RTOS code itself cannot be compromized by a regular user.
 									</p>

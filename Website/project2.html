@@ -102,7 +102,7 @@
 
 									<b>The Kernel</b>
 									<p>
-										The kernel of the RTOS is itself a pseudo task in that its context is saved to and restored from RAM in the same way as all of the processes. Its entire function body boils down to a switch statement that is invoked based on the current process's request to the kernel. This switch statement can be thought of as a way for the application to make system calls for the kernel to execute.
+										The kernel of the RTOS is itself a pseudo-task in that its context is saved to and restored from RAM in the same way as all of the processes. Its entire function body boils down to a switch statement that is invoked based on the current process's request to the kernel. This switch statement can be thought of as a way for the application to make system calls for the kernel to execute.
 
 										Most of the kernel's switch statements call kernel-level functions that contain the actual implementation of task, mutex, and event actions. These functions are inaccessible to the application that is utilizing the RTOS, which gives the system a security buffer, in that the RTOS code itself cannot be compromised by a regular user.
 
@@ -123,31 +123,31 @@
 									<p>
 										Threads are represented by "tasks". Each task is represented by a process descriptor, which contains all location and state information about each task. In addition, each process descriptor contains a memory "workspace" of 256 bytes for storing the register values and return address for context-switching. Memory for MAXTHREAD number of processes is allocated upon initial booting of the RTOS.
 									</p>
-									<b>Task Next</b>
+									<b>Task_Next</b>
 									<p>
 										Task_Next sets the kernel request to NEXT and enters the kernel. The kernel simply sets the state of the current process to READY, enqueues the current process into the ReadyQueue, and calls Dispatch.
 									</p>
-									<b>Task Create</b>
+									<b>Task_Create</b>
 									<p>    
-										Task_Create is called with three parameters: a pointer to the function that is to run as the task, an integer value for the initial priority of the task, and an integer value for the task's "arg". 
+										Task_Create is called with three parameters: a pointer to the function that is to run as the task, an integer value for the initial priority of the task, and an integer value for the task's "arg". If the kernel is currently inactive, then Kernel_Create_Task will be called with these three parameters. Otherwise, variables in the current process' process descriptor will be set, and the program function will shift to the kernel. Upon hitting the "CREATE" case of the kernel, Kernel_Create_Task will immediately be called, which (if the MAXTHREAD hasn't been exceeded) locates an available DEAD process spot in the Process array that the new task can occupy. On finding this spot, Kernel_Create_Task_At is called with the original three parameters as well as the newly discovered free Process address. Kernel_Create_Task_At clears the contents of the new process' workspace, and inserts the address of the Task_Terminate at the bottom of the stack (in case the task returns, so the process slot can be freed). Above this, it inserts the return address of the function, and then skips the stack-pointer ahead 34 bytes (for saving and restoring context). Finally, the process descriptor variables are initialized, and the task is set to READY, and it is enqueued in the ReadyQueue.
 									</p>
 
-									<b>Task GetArg</b>
+									<b>Task_GetArg</b>
 									<p>
 										Calling Task_GetArg will return the initial "arg" parameter that was given to a task at creation time.
 									</p>
 
-									<b>Task Suspend</b>
+									<b>Task_Suspend</b>
 									<p>
 										Task_Suspend takes the value of its only parameter and assigns it to the current processes's "pidAction" variable. After also setting the process' kernel request to SUSPEND, it context-switches to the kernel, where it hits the SUSPEND case of the switch statement. From this case,  Kernel_Suspend_Task is called, which either sets the "suspended" flag of the current process to 1 (if it is the current process that is to be suspended), or locates the target process using the "pidAction" variable and sets its "suspended" flag to 1. Upon returning to the kernel switch case, Dispatch is called if it was indeed the current process that was suspended.
 									</p>
 
-									<b>Task Resume</b>
+									<b>Task_Resume</b>
 									<p>
 										Lorem Ipsum.
 									</p>
 
-									<b>Task Sleep</b>
+									<b>Task_Sleep</b>
 									<p>
 										Lorem Ipsum.
 									</p>
@@ -162,12 +162,12 @@
 									<p>
 										Lorem Ipsum.
 									</p>
-									<b>Mutex Lock</b>
+									<b>Mutex_Lock</b>
 									<p>
 										Lorem Ipsum.
 									</p>
 
-									<b>Mutex Unlock</b>
+									<b>Mutex_Unlock</b>
 									<p>
 										Lorem Ipsum.
 									</p>
@@ -177,12 +177,12 @@
 									<p>
 										Lorem Ipsum.
 									</p>
-									<b>Event Wait</b>
+									<b>Event_Wait</b>
 									<p>
 										Lorem Ipsum.
 									</p>
 
-									<b>Event Signal</b>
+									<b>Event_Signal</b>
 									<p>
 										Lorem Ipsum.
 									</p>

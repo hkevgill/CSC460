@@ -4,7 +4,7 @@ LOAD=avrdude
 FLAGS=-c -g -Os -mmcu=atmega2560
 ELFFLAGS=-g -mmcu=atmega2560 -o
 HEXFLAGS=-j .text -j .data -O ihex
-LOADFLAGS=-p m2560 -c stk500v2 -P /dev/cu.usbmodem1411 -b 115200 -U flash:w:rtos.hex:i -D
+LOADFLAGS=-p m2560 -c stk500v2 -P /dev/cu.usbmodem1421 -b 115200 -U flash:w:rtos.hex:i -D
 
 all: compile elf hex load
 
@@ -203,3 +203,12 @@ compile_t18: cswitch.S os.c test_events3.c queue.c LED_Test.c
 elf_t18: cswitch.o os.o test_events3.o queue.o LED_Test.o
 	$(CC) $(ELFFLAGS) rtos.elf cswitch.o os.o test_events3.o queue.o LED_Test.o
 
+# RTOS Measurements
+
+measure: compile_measure elf_measure hex load
+
+compile_measure: cswitch.S os.c rtos_measurements.c queue.c LED_Test.c
+	$(CC) $(FLAGS) cswitch.S os.c rtos_measurements.c queue.c LED_Test.c
+
+elf_measure: cswitch.o os.o rtos_measurements.o queue.o LED_Test.o
+	$(CC) $(ELFFLAGS) rtos.elf cswitch.o os.o rtos_measurements.o queue.o LED_Test.o

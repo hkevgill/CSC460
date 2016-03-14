@@ -122,15 +122,98 @@
 									<h4>Tasks</h4>
 									<b>Overview</b>
 									<p>
-										Threads are represented by "tasks". Each task is represented by a process descriptor, which contains all location and state information about each task. In addition, each process descriptor contains a memory "workspace" of 256 bytes for storing the register values and return address for context-switching. Memory for MAXTHREAD number of processes is allocated upon initial booting of the RTOS.
+										Threads are represented by "tasks". Each task is represented by a process descriptor struct, which contains all location and state information about each task. In addition, each process descriptor contains a memory "workspace" of 256 bytes for storing the register values and return address for context-switching. Memory for MAXTHREAD number of processes is allocated upon initial booting of the RTOS.
+
+                                        The struct has the following fields:
+
+                                        <table>
+                                            <tr>
+                                                <td>PID p</td>
+                                                <td>The id of the task</td>
+                                            </tr>
+                                            <tr>
+                                                <td>unsigned char *sp</td>
+                                                <td>Stack pointer into the workspacee</td>
+                                            </tr>
+                                            <tr>
+                                                <td>PROCESS_STATES state</td>
+                                                <td>The state of the task</td>
+                                            </tr>
+                                            <tr>
+                                                <td>PRIORITY py</td>
+                                                <td>The original priority of the task</td>
+                                            </tr>
+                                            <tr>
+                                                <td>PRIORITY inheritedPy</td>
+                                                <td>The inherited priority (defaults to py)</td>
+                                            </tr>
+                                            <tr>
+                                                <td>int arg</td>
+                                                <td>An initial parameter given at creation time</td>
+                                            </tr>
+                                            <tr>
+                                                <td>voidfuncptr code</td>
+                                                <td>The function to be executed as a task</td>
+                                            </tr>
+                                            <tr>
+                                                <td>KERNEL_REQUEST_TYPE request</td>
+                                                <td>A request the current process can make to the kernel</td>
+                                            </tr>
+                                            <tr>
+                                                <td>unsigned int response</td>
+                                                <td>A response the kernel can give back to the calling task</td>
+                                            </tr>
+                                            <tr>
+                                                <td>TICK wakeTickOverflow</td>
+                                                <td>The overflow count that together with wakeTick can construct absolute time of the program's execution</td>
+                                            </tr>
+                                            <tr>
+                                                <td>TICK wakeTick</td>
+                                                <td>The tick count that together with wakeTickOverflow can construct absolute time of the program's execution</td>
+                                            </tr>
+                                            <tr>
+                                                <td>MUTEX m</td>
+                                                <td>The mutex the task wishes to lock</td>
+                                            </tr>
+                                            <tr>
+                                                <td>EVENT eWait</td>
+                                                <td>The event the task is waiting on</td>
+                                            </tr>
+                                            <tr>
+                                                <td>EVENT eSend</td>
+                                                <td>Used to pass data to the kernel when the task calls signal or wait</td>
+                                            </tr>
+                                            <tr>
+                                                <td>unsigned int suspended</td>
+                                                <td>Whether or not the task is suspended</td>
+                                            </tr>
+                                            <tr>
+                                                <td>PID pidAction</td>
+                                                <td>Used to pass a process id to the kernel in cases such as suspend and resume</td>
+                                            </tr>
+                                        </table>
+
+                                        The valid states a task can be in are as follows:
+
+                                        <ul>
+                                            <li>DEAD</li>
+                                            <li>READY</li>
+                                            <li>RUNNING</li>
+                                            <li>SLEEPING</li>
+                                            <li>BLOCKED_ON_MUTEX</li>
+                                            <li>WAITING</li>
+                                            <li>TERMINATED</li>
+                                        </ul>
 									</p>
+
+                                    <b>Task_Create</b>
+                                    <p>    
+                                        Task_Create is called with three parameters: the address of the function that is to run as the task, an integer value for the initial priority of the task, and an integer value for the task's initial arg. If the kernel is currently inactive, then Kernel_Create_Task will be called with these three parameters because we are already in the kernel (its booting process to be exact). Otherwise a context switch to the kernel will be initiated with the request to create a task. Upon hitting the CREATE case of the kernel, Kernel_Create_Task will immediately be called, which (if the MAXTHREAD hasn't been exceeded) locates an available DEAD process spot in the Process array that the new task can occupy. On finding this spot, Kernel_Create_Task_At is called with the original three parameters as well as the newly discovered free Process address. Kernel_Create_Task_At clears the contents of the new process' workspace, and inserts the address of the Task_Terminate function at the bottom of the stack (in case the task returns, so the process slot can be freed). Above this, it inserts the return address of the function, and then skips the stack-pointer ahead 34 bytes. The stack pointer needs to be moved ahead because when this task executes for the first time, the context switching code will attempt to pop registers 0 - 31, SREG, and EIND, so initial dummy values need to be in place. Finally, the process descriptor variables are initialized, the task is set to READY, and it is enqueued in the ReadyQueue.
+                                    </p>
+
 									<b>Task_Next</b>
 									<p>
 										Task_Next sets the kernel request to NEXT and enters the kernel. The kernel simply sets the state of the current process to READY, enqueues the current process into the ReadyQueue, and calls Dispatch.
-									</p>
-									<b>Task_Create</b>
-									<p>    
-										Task_Create is called with three parameters: the address of the function that is to run as the task, an integer value for the initial priority of the task, and an integer value for the task's initial arg. If the kernel is currently inactive, then Kernel_Create_Task will be called with these three parameters because we are already in the kernel (its booting process to be exact). Otherwise a context switch to the kernel will be initiated with the request to create a task. Upon hitting the CREATE case of the kernel, Kernel_Create_Task will immediately be called, which (if the MAXTHREAD hasn't been exceeded) locates an available DEAD process spot in the Process array that the new task can occupy. On finding this spot, Kernel_Create_Task_At is called with the original three parameters as well as the newly discovered free Process address. Kernel_Create_Task_At clears the contents of the new process' workspace, and inserts the address of the Task_Terminate function at the bottom of the stack (in case the task returns, so the process slot can be freed). Above this, it inserts the return address of the function, and then skips the stack-pointer ahead 34 bytes. The stack pointer needs to be moved ahead because when this task executes for the first time, the context switching code will attempt to pop registers 0 - 31, SREG, and EIND, so initial dummy values need to be in place. Finally, the process descriptor variables are initialized, the task is set to READY, and it is enqueued in the ReadyQueue.
 									</p>
 
 									<b>Task_GetArg</b>
@@ -140,7 +223,7 @@
 
 									<b>Task_Suspend</b>
 									<p>
-										Task_Suspend takes the process id to be suspended and assigns it to the current processes's "pidAction" variable. After also setting the process's kernel request to SUSPEND, it context-switches to the kernel, where it hits the SUSPEND case of the switch statement. From this case, Kernel_Suspend_Task is called, which either sets the "suspended" flag of the current process to 1 (if it is the current process that is to be suspended), or locates the target process using the "pidAction" variable and sets its "suspended" flag to 1. Upon returning to the kernel switch case, Dispatch is called if it was indeed the current process that was suspended. It is important to note that suspended tasks can changes states, can be woken up and moved to the ReadyQueue, can acquire mutexes if they were blocked on a mutex, but cannot become running until they are resumed.
+										Task_Suspend takes the process id to be suspended and assigns it to the current processes's pidAction variable. After also setting the process's kernel request to SUSPEND, it context-switches to the kernel, where it hits the SUSPEND case of the switch statement. From this case, Kernel_Suspend_Task is called, which either sets the "suspended" flag of the current process to 1 (if it is the current process that is to be suspended), or locates the target process using the pidAction variable and sets its suspended flag to 1. Upon returning to the kernel switch case, Dispatch is called if it was indeed the current process that was suspended. It is important to note that suspended tasks can changes states, can be woken up and moved to the ReadyQueue, can acquire mutexes if they were blocked on a mutex, but cannot become running until they are resumed.
 									</p>
 
 									<b>Task_Resume</b>
@@ -155,7 +238,7 @@
 
 									<b>Task_Terminate</b>
 									<p>
-										The process of terminating a task happens in the kernel function Kernel_Terminate_Task. There, all process descriptor variables are set to their default values, and the all mutexes that are held by the terminating task are freed.
+                                        A task can terminate itself by calling Task_Terminate. Termination is immediate, so the first action is to raise the priority of the terminating task to 0 (highest), and set the state to TERMINATED. Now all mutexes locked by this process can be released or given away if another task is waiting for them, then the state of the task is set to DEAD. Since tasks can only terminate themselves, there is no need to check any queues because the task is running.
 									</p>
 
 									<h4>Mutexes and Priority Inheritence</h4>
@@ -199,7 +282,26 @@
 									<h4>Error Handling</h4>
 									<b>Recoverable Errors</b>
 									<p>
-										Lorem Ipsum.
+										The RTOS can recover from a number of errors. These errors and the RTOS behavior are described in the following table:
+
+                                        <table>
+                                            <tr>
+                                                <td>Creating one more task than MAXTHREAD</td>
+                                                <td>The task is not created and RTOS continues on (no-op)</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Initializing one more mutex than MAXMUTEX</td>
+                                                <td>The mutex is not created and RTOS continues on (no-op)</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Locking or unlocking a mutex that does not exist</td>
+                                                <td>No mutex is locked and the RTOS continues on</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Suspending or resuming a task that does not exist</td>
+                                                <td>No task is suspended or resumed and the RTOS continues on</td>
+                                            </tr>
+                                        </table>
 									</p>
 
 									<b>Unrecoverable Errors</b>

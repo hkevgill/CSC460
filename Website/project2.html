@@ -145,12 +145,12 @@
 
 									<b>Task_Resume</b>
 									<p>
-										Resumption is nearly identical to Task_Suspend, except that it reverses its behaviour. The only relative difference is that if the current priority of the resumed task is greater than the priority of the current task, then the current task should be immediately preempted - so Dispatch is called in that case.
+										Resumption is nearly identical to Task_Suspend, except that it reverses its behaviour. The only relative difference is that if the current priority of the resumed task is greater than the priority of the current task, then the current task should be immediately preempted - and Dispatch is called in that case.
 									</p>
 
 									<b>Task_Sleep</b>
 									<p>
-										Lorem Ipsum.
+										Calling Task_Sleep will add the TICKS parameter you pass to it to the current count of Timer 3 (converted to TICKS), counting any overflow (above 100 TICKS) in a special variable. It then enters the kernel with the TICKS and overflow set to when the task should be "woken up". The kernel simply enqueues the task into the SleepQueue and calls Dispatch.
 									</p>
 
 									<b>Task Terminate</b>

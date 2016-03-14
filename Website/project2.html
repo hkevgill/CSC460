@@ -186,7 +186,26 @@
 									<h4>Error Handling</h4>
 									<b>Recoverable Errors</b>
 									<p>
-										Lorem Ipsum.
+										The RTOS can recover from a number of errors. These errors and the RTOS behavior are described in the following table:
+
+                                        <table>
+                                            <tr>
+                                                <td>Creating one more task than MAXTHREAD</td>
+                                                <td>The task is not created and RTOS continues on (no-op)</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Initializing one more mutex than MAXMUTEX</td>
+                                                <td>The mutex is not created and RTOS continues on (no-op)</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Locking or unlocking a mutex that does not exist</td>
+                                                <td>No mutex is locked and the RTOS continues on</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Suspending or resuming a task that does not exist</td>
+                                                <td>No task is suspended or resumed and the RTOS continues on</td>
+                                            </tr>
+                                        </table>
 									</p>
 
 									<b>Unrecoverable Errors</b>
@@ -414,8 +433,9 @@
 									<header>
 										<h3>References</h3>
 									</header>
-									<ul>
-										<li></li>
+									<ul class="bulleted">
+										<li>The ATMega 2560 Datasheet is available <a href="http://www.atmel.com/images/atmel-2549-8-bit-avr-microcontroller-atmega640-1280-1281-2560-2561_datasheet.pdf">here</a>.</li>
+                                        <li>The Atmel AVR 8-bit instruction set is available <a href="http://www.atmel.com/images/atmel-0856-avr-instruction-set-manual.pdf">here</a>.</li>
 									</ul>
 								</section>
 

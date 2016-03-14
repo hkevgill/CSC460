@@ -58,6 +58,7 @@
 									</header>
 									<h4>Arduino ATMega 2560</h4>
 									<a class="image paragraph"><img src="images/mega2560.jpg"></a>
+                                    <br>
 									<p>
 										The ATMega 2560 is an Atmel 8-bit AVR RISC based microcontroller with 256 KB of flash memory and 8 KB of SDRAM running at 16MHz. 
 									</p>
@@ -106,7 +107,7 @@
 
 										Most of the kernel's switch statements call kernel-level functions that contain the actual implementation of task, mutex, and event actions. These functions are inaccessible to the application that is utilizing the RTOS, which gives the system a security buffer, in that the RTOS code itself cannot be compromised by a regular user.
 
-                                        Any system call (request) to the kernel will disable interrupts. Interrupts will then remain disabled while inside the kernel. Only when the kernel exits will interrupts be re-enabled.
+                                        Any system call (request) to the kernel will disable interrupts. Interrupts will then remain disabled until the kernel exits.
 									</p>
 
 									<h4>Priority Scheduling</h4>
@@ -115,7 +116,7 @@
                                     </p>
 									<b>Dispatch</b>
 									<p>
-										The Dispatch function is the scheduler. Every time dispatch is called, it takes the highest priority task from the ReadyQueue and sets it to become the next running task. The scheduler always picks a task whose state is READY, and who is not suspended.g
+										The Dispatch function is the scheduler. Every time dispatch is called, it takes the highest priority task from the ReadyQueue and sets it to become the next running task. The scheduler always picks a task whose state is READY, and who is not suspended.
 									</p>
 
 									<h4>Tasks</h4>
@@ -175,16 +176,16 @@
 									<h4>Events</h4>
 									<b>Overview</b>
 									<p>
-										Lorem Ipsum.
+										An event is a resource that tasks can wait on and signal. An event has 3 states: INACTIVE, UNSIGNALLED, and SIGNALLED. When initialized, the state it set to UNSIGNALLED. Only one task can wait on an event at a time. 
 									</p>
 									<b>Event Wait</b>
 									<p>
-										Lorem Ipsum.
+										When a task calls Event_Wait(e), the task will be blocked if nothing else is waiting on the event and if the event has not yet been signalled (The task's state will be changed to WAITING). If the event has already been signalled, then the event's state will be set back to UNSIGNALLED and the calling task will continue to execute.
 									</p>
 
 									<b>Event Signal</b>
 									<p>
-										Lorem Ipsum.
+										Any running task can signal an event. If a task is waiting on that event, the waiting task's state is set back to READY and the events state goes back to UNSIGNALLED. If no task is waiting on the event, then the state of the event is simply set to SIGNALLED as events record one signal and drop any subsequent signals.
 									</p>
 
 									<h4>Error Handling</h4>

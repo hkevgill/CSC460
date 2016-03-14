@@ -106,7 +106,7 @@
 
 										Most of the kernel's switch statements call kernel-level functions that contain the actual implementation of task, mutex, and event actions. These functions are inaccessible to the application that is utilizing the RTOS, which gives the system a security buffer, in that the RTOS code itself cannot be compromised by a regular user.
 									</p>
-										
+
 									<h4>Priority Scheduling</h4>
                                     <p>
                                         All active tasks have a priority from 0 (highest) to 10 (lowest). The task with the highest priority will be the task that runs next. If there are tasks with equal priority, they will execute cooperatively on a first-come-first-served basis.
@@ -134,12 +134,12 @@
 
 									<b>Task GetArg</b>
 									<p>
-										Lorem Ipsum.
+										Calling Task_GetArg will return the initial "arg" parameter that was given to a task at creation time.
 									</p>
 
 									<b>Task Suspend</b>
 									<p>
-										Lorem Ipsum.
+										Task_Suspend takes the value of its only parameter and assigns it to the current processes's "pidAction" variable. After also setting the process' kernel request to SUSPEND, it context-switches to the kernel, where it hits the SUSPEND case of the switch statement. From this case,  Kernel_Suspend_Task is called, which either sets the "suspended" flag of the current process to 1 (if it is the current process that is to be suspended), or locates the target process using the "pidAction" variable and sets its "suspended" flag to 1. Upon returning to the kernel switch case, Dispatch is called if it was indeed the current process that was suspended.
 									</p>
 
 									<b>Task Resume</b>

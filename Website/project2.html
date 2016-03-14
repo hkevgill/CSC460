@@ -285,39 +285,120 @@
 
 								<section>
 									<header>
-										<h3>RTOS Timing Measurements</h3>
+										<h3>RTOS Performance Measurements</h3>
 									</header>
-									<b>Dispatch</b>
 									<p>
-										Lorem Ipsum.
+										Performance measurements were collected using a USB logic analyzer and setting a pin high when entering the specific piece of code to be instrumented. The pin would then be set low when the desired piece of code had finished executing. The following sections show the logic analyzer outputs and measured times:
 									</p>
-									<b>Context Switching</b>
+									<b>Boot Time</b>
 									<p>
-										Lorem Ipsum.
+										<a class="image"><img src="images/m1_boot_time.png"></a>
+										The boot time refers to the amount of time it takes for the RTOS to initialize and start.
+										<table>
+											<tr>
+                                                <td>Channel 0</td>
+												<td>Boot Time = 1.942 ms</td>
+											</tr>
+										</table>
+									</p>
+									<b>Dispatch and Context Switching</b>
+									<p>
+                                        <a class="image"><img src="images/m2_dispatch_and_cswitch.png"></a>
+										The dispatch time refers precisely to the dispatch function discussed above and measures the amount of time it takes to select a new task from the ReadyQueue to run. The context switching time is the time it takes to save the current context onto the stack, and restore a new context back into the registers. The time is the same for entering the kernel, or leaving the kernel.
+                                        <table>
+                                            <tr>
+                                                <td>Channel 0</td>
+                                                <td>Dispatch = 10.17 us</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Channel 1</td>
+                                                <td>Context Switch = 13 us</td>
+                                            </tr>
+                                        </table>
+									</p>
+									<b>Worst Case Interrupt Disabled Time</b>
+									<p>
+										<a class="image"><img src="images/m3_worst_case_interrupt_disabled_time.png"></a>
+                                        The worst case interrupt disabled time is measured as the longest time interrupts are disabled. This happens when a call to Task_Create occurs. We enter the kernel, create the task, and return back to the original task (if the original task still has the highest priority).
+                                        <table>
+                                            <tr>
+                                                <td>Channel 0</td>
+                                                <td>Worst Case Interrupt Disabled Time = 0.163 us</td>
+                                            </tr>
+                                        </table>
 									</p>
 									<b>Tasks</b>
 									<p>
-										Lorem Ipsum.
+										<a class="image"><img src="images/m4_tasks.png"></a>
+                                        The following table shows the average times for each of the actions that can take place on a task:
+                                        <table>
+                                            <tr>
+                                                <td>Channel 0</td>
+                                                <td>Task Create = 0.15 ms</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Channel 1</td>
+                                                <td>Task Sleep = 56.17 us</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Channel 2</td>
+                                                <td>Task Suspend = 23.58 us</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Channel 3</td>
+                                                <td>Task Resume = 24.33 us</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Channel 4</td>
+                                                <td>Task Terminate = 0.12 ms</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Not Displayed</td>
+                                                <td>Task GetArg = 0.12 us</td>
+                                            </tr>
+                                        </table>
 									</p>
 									<b>Mutexes</b>
 									<p>
-										Lorem Ipsum.
+										<a class="image"><img src="images/m5_mutex.png"></a>
+                                        The following table shows the average times for each of the actions that can take place on a mutex:
+                                        <table>
+                                            <tr>
+                                                <td>Channel 0</td>
+                                                <td>Mutex Lock = 20.5 us</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Channel 1</td>
+                                                <td>Mutex Unlock = 28.17 us</td>
+                                            </tr>
+                                        </table>
 									</p>
-									<b>Events</b>
-									<p>
-										Lorem Ipsum.
-									</p>
+                                    <b>Events</b>
+                                    <p>
+                                        <a class="image"><img src="images/m6_events.png"></a>
+                                        The following table shows the average times for each of the actions that can take place on an event:
+                                        <table>
+                                            <tr>
+                                                <td>Channel 0</td>
+                                                <td>Event Wait = 30 us</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Channel 1</td>
+                                                <td>Event Signal = 23 us</td>
+                                            </tr>
+                                        </table>
+                                    </p>
 								</section>
 
 								<section>
 									<header>
 										<h3>Future Improvements</h3>
 									</header>
-									<b>Returning to Interrupt Handler</b>
+									<h4>Returning to Interrupt Handler</h4>
 									<p>
 										Lorem Ipsum.
 									</p>
-									<b>Sleeping CPU during down-time</b>
+									<h4>Sleeping CPU during down-time</h4>
 									<p>
 										Lorem Ipsum.
 									</p>

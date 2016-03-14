@@ -3,7 +3,7 @@
 #include <util/delay.h>
 #include "os.h"
 //
-// EXPECTED RUNNING ORDER: 
+// EXPECTED RUNNING ORDER: P1, P2, P1
 //
 
 MUTEX mut1;

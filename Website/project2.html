@@ -446,7 +446,7 @@
                                             </tr>
                                             <tr>
                                                 <td>Results:</td>
-                                                <td>As shown in the screen capture below, our results are consistent with the message sequence charts expected running order of P1, P2, P3, P1, P2, P3. For zoomed in screenshots please refer to the appendix.</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the message sequence charts expected running order of P1, P2, P3, P1, P2, P3.</td>
                                             </tr>
                                         </table>
                                         <a class="image"><img src="images/tests/test5_full.png"></a>
@@ -545,29 +545,141 @@
 									</p>
 
 									<h4>Mutexes</h4>
+
+                                    <p>
+                                        Channel 0 is the trigger, Channel 1 is P1, Channel 2 is P2, Channel 3 is P3 (if existant).
+                                    </p>
+
 									<b>Test 1</b>
 									<p>
-										Lorem Ipsum.
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>This test shows the basic mutual exclusion case of a mutex. P1 locks and then sleeps in the critical section. P2 tries to lock but becomes blocked. When P1 unlocks (and transfers the lock), P2 may continue.</td>
+                                            </tr>
+                                        </table>
+                                        <p>
+                                            The message sequence chart is shown here:
+                                        </p>
+                                        <a class="image"><img src="images/tests_msc/test7.png"></a>
+                                        <table>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the message sequence charts expected running order of P1, P2, P1, P2.</td>
+                                            </tr>
+                                        </table>
+                                        <a class="image"><img src="images/tests/test7_full.png"></a>
 									</p>
+
 									<b>Test 2</b>
 									<p>
-										Lorem Ipsum.
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>This test shows the ownership case of a mutex. P1 locks and then sleeps in the critical section. P2 tries to unlock the mutex, then attempts to lock. If the lock succeeds, then ownership does not hold. So P2 should be blocked and P1 should continue to run.</td>
+                                            </tr>
+                                        </table>
+                                        <p>
+                                            The message sequence chart is shown here:
+                                        </p>
+                                        <a class="image"><img src="images/tests_msc/test8.png"></a>
+                                        <table>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the message sequence charts expected running order of P1, P2, P1.</td>
+                                            </tr>
+                                        </table>
+                                        <a class="image"><img src="images/tests/test8_full.png"></a>
 									</p>
+
 									<b>Test 3</b>
 									<p>
-										Lorem Ipsum.
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>This test shows the recursiveness case of a mutex. P1 locks the mutex twice then sleeps, P2 attempts to lock but is blocked. P1 then must unlock twice to transfer ownership to P2 and allow it to run.</td>
+                                            </tr>
+                                        </table>
+                                        <p>
+                                            The message sequence chart is shown here:
+                                        </p>
+                                        <a class="image"><img src="images/tests_msc/test9.png"></a>
+                                        <table>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the message sequence charts expected running order of P1, P2, P1, P2.</td>
+                                            </tr>
+                                        </table>
+                                        <a class="image"><img src="images/tests/test9_full.png"></a>
 									</p>
+
 									<b>Test 4</b>
 									<p>
-										Lorem Ipsum.
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>This case tests priority inheritence. P1 has the lowest priority, P2 has the highest, and P3 is in the middle. Tasks P2 and P3 sleep immediately, allowing P1 to lock the mutex. Then when P2 wakes up and attempts to lock the mutex, P1's priority is boosted and it is allowed to keep running.</td>
+                                            </tr>
+                                        </table>
+                                        <p>
+                                            The message sequence chart is shown here:
+                                        </p>
+                                        <a class="image"><img src="images/tests_msc/test10.png"></a>
+                                        <table>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the message sequence charts expected running order of P2, P3, P1, P2, P3, P1.</td>
+                                            </tr>
+                                        </table>
+                                        <a class="image"><img src="images/tests/test10_full.png"></a>
 									</p>
+
 									<b>Test 5</b>
 									<p>
-										Lorem Ipsum.
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>This case tests priority inheritence. P2 has a higher priority than P1. P2 sleeps which allows P1 to lock the mutex, then P1 sleeps, P2 attempts to lock the mutex but fails, which boosts P1's priority. Now when P1 unlocks it will be pre-empted because its priority will go back down.</td>
+                                            </tr>
+                                        </table>
+                                        <p>
+                                            The message sequence chart is shown here:
+                                        </p>
+                                        <a class="image"><img src="images/tests_msc/test11.png"></a>
+                                        <table>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the message sequence charts expected running order of P2, P1, P2, P1, P2.</td>
+                                            </tr>
+                                        </table>
+                                        <a class="image"><img src="images/tests/test11_full.png"></a>
 									</p>
+
 									<b>Test 6</b>
 									<p>
-										Lorem Ipsum.
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>This case tests priority inheritence and the first-come-first-served block on mutex queue. P3 has highest priority, Then P2, then P1. The lowest priority task P1 acquires the mutex, then P2 followed by P3 both become blocked on mutex. When P1 unlocks, it should transfer the mutex to P2 due to the FIFO nature of the queue. Then when P2 unlocks, P3 gets the mutex.</td>
+                                            </tr>
+                                        </table>
+                                        <p>
+                                            The message sequence chart is shown here:
+                                        </p>
+                                        <a class="image"><img src="images/tests_msc/test12.png"></a>
+                                        <table>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the message sequence charts expected running order of P3, P2, P1, P2, P3, P1, P2, P3.</td>
+                                            </tr>
+                                        </table>
+                                        <a class="image"><img src="images/tests/test12_full.png"></a>
 									</p>
 
 									<h4>Events</h4>
@@ -766,6 +878,15 @@
                                     </p>
 								</section>
 
+                                <section>
+                                    <header>
+                                        <h3>Conclusion</h3>
+                                    </header>
+                                    <p>
+
+                                    </p>
+                                </section>
+
 								<section>
 									<header>
 										<h3>References</h3>
@@ -775,6 +896,39 @@
                                         <li>The Atmel AVR 8-bit instruction set is available <a href="http://www.atmel.com/images/atmel-0856-avr-instruction-set-manual.pdf">here</a>.</li>
                                     </ul>
 								</section>
+
+                                <section>
+                                    <header>
+                                        <h3>Appendix</h3>
+                                    </header>
+                                    <p>
+                                        <h4>Initial Test 1 Zoomed Captures</h4>
+                                        <a class="image"><img src="images/tests/test1_1.png"></a>
+                                        <a class="image"><img src="images/tests/test1_2.png"></a>
+                                        <a class="image"><img src="images/tests/test1_3.png"></a>
+
+                                        <br>
+
+                                        <h4>Initial Test 2 Zoomed Captures</h4>
+                                        <a class="image"><img src="images/tests/test2_1.png"></a>
+                                        <a class="image"><img src="images/tests/test2_2.png"></a>
+                                        <a class="image"><img src="images/tests/test2_3.png"></a>
+
+                                        <br>
+
+                                        <h4>Initial Test 3 Zoomed Captures</h4>
+                                        <a class="image"><img src="images/tests/test3_1.png"></a>
+                                        <a class="image"><img src="images/tests/test3_2.png"></a>
+                                        <a class="image"><img src="images/tests/test3_3.png"></a>
+                                        <a class="image"><img src="images/tests/test3_4.png"></a>
+
+                                        <br>
+
+                                        <h4>Initial Test 4 Zoomed Captures</h4>
+                                        <a class="image"><img src="images/tests/test4_1.png"></a>
+                                        <a class="image"><img src="images/tests/test4_2.png"></a>
+                                    </p>
+                                </section>
 
 								<section>
 									<header>

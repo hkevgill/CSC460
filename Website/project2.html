@@ -37,10 +37,12 @@
 
 						<!-- Content -->
 							<article class="box post">
-								<a href="#" class="image featured"><img src="images/pic01.jpg" alt="" /></a>
+								
+								<a href="#" class="image featured"><img src="images/tron.jpg" alt="" /></a>
 								<header>
 									<h2>Project 2</h2>
 								</header>
+
 								<section>
 									<header>
 										<h3>Introduction</h3>
@@ -49,6 +51,7 @@
 										The goal of project 2 is to implement, and test a priority based, preemptive, multithreaded real time operating system (RTOS). This is done on the same microcontroller as in project 1, the ATMega 2560. The RTOS will have similar features to the pthread library including mutexes and priority inheritence.
 									</p>
 								</section>
+
 								<section>
 									<header>
 										<h3>Hardware</h3>
@@ -72,65 +75,235 @@
 										As you can see, the third byte is set to 0 when the task is initialized.
 									</p>
 								</section>
+
 								<section>
 									<header>
-										<h3>RTOS</h3>
+										<h3>RTOS Design</h3>
 									</header>
 
 									<h4>Booting, Context Switching and the Kernel</h4>
+									<b>RTOS Booting</b>
 									<p>
+										When the RTOS boots, it makes a one-time call to OS_Init, which initializes all of the important counts and memory allocations necessary for operation.
 
+										In this RTOS, threads are represented by "tasks". Each task is represented by a process descriptor, which contains all location and state information about each task. In addition, each process descriptor contains a memory "workspace" of 256 bytes for storing the register values and return address for context-switching. Memory for 16 (MAXTHREAD) of these processes is allocated upon initial booting of the RTOS. 
+
+										Likewise, memory is allocated for 8 Mutexes and 8 Events (both of which are covered in later sections).
+									</p>
+
+									<b>Timers and Interrupts</b>
+									<p>
+										Lorem Ipsum.
+									</p>
+
+									<b>The Kernel</b>
+									<p>
+										Lorem Ipsum.  
+									</p>
+
+									<b>a_main?</b>
+									<p>
+										Lorem Ipsum?  
 									</p>
 									
 									<h4>Priority Scheduling</h4>
+									<b>Dispatch</b>
 									<p>
-
+										Lorem Ipsum.
 									</p>
 
 									<h4>Tasks</h4>
+									<b>Overview</b>
 									<p>
+										As mentioned in RTOS Booting, each task is represented by a process descriptor...
+									</p>
+									<b>Task Next</b>
+									<p>
+										Task_Next sets the kernel request to NEXT and enters the kernel. The kernel simply sets the current state to READY, enqueues the current process into the ReadyQueue, and calls Dispatch.
+									</p>
+									<b>Task Create</b>
+									<p>
+										Task_Create is called with three parameters: a pointer to the function that is to run as the task, an integer value for the initial priority of the task, and an integer value for the task's "arg". 
+									</p>
 
+									<b>Task GetArg</b>
+									<p>
+										Lorem Ipsum.
+									</p>
+
+									<b>Task Suspend</b>
+									<p>
+										Lorem Ipsum.
+									</p>
+
+									<b>Task Resume</b>
+									<p>
+										Lorem Ipsum.
+									</p>
+
+									<b>Task Sleep</b>
+									<p>
+										Lorem Ipsum.
+									</p>
+
+									<b>Task Terminate</b>
+									<p>
+										Lorem Ipsum.
 									</p>
 
 									<h4>Mutexes and Priority Inheritence</h4>
+									<b>Overview</b>
 									<p>
+										Lorem Ipsum.
+									</p>
+									<b>Mutex Lock</b>
+									<p>
+										Lorem Ipsum.
+									</p>
 
+									<b>Mutex Unlock</b>
+									<p>
+										Lorem Ipsum.
 									</p>
 
 									<h4>Events</h4>
+									<b>Overview</b>
 									<p>
+										Lorem Ipsum.
+									</p>
+									<b>Event Wait</b>
+									<p>
+										Lorem Ipsum.
+									</p>
 
+									<b>Event Signal</b>
+									<p>
+										Lorem Ipsum.
 									</p>
 
 									<h4>Error Handling</h4>
+									<b>Recoverable Errors</b>
 									<p>
+										Lorem Ipsum.
+									</p>
 
+									<b>Unrecoverable Errors</b>
+									<p>
+										Lorem Ipsum.
 									</p>
 								</section>
+
 								<section>
 									<header>
 										<h3>Testing and Profiling</h3>
 									</header>
+									<h4>Task Termination</h4>
+									<b>Test 1</b>
 									<p>
+										Lorem Ipsum.
+									</p>
+									<b>Test 2</b>
+									<p>
+										Lorem Ipsum.
+									</p>
 
+									<h4>Suspend &amp; Resume</h4>
+									<b>Test 1</b>
+									<p>
+										Lorem Ipsum.
+									</p>
+									<b>Test 2</b>
+									<p>
+										Lorem Ipsum.
+									</p>
+
+									<h4>Task Sleep</h4>
+									<b>Test 1</b>
+									<p>
+										Lorem Ipsum.
+									</p>
+
+									<h4>Mutexes</h4>
+									<b>Test 1</b>
+									<p>
+										Lorem Ipsum.
+									</p>
+									<b>Test 2</b>
+									<p>
+										Lorem Ipsum.
+									</p>
+									<b>Test 3</b>
+									<p>
+										Lorem Ipsum.
+									</p>
+									<b>Test 4</b>
+									<p>
+										Lorem Ipsum.
+									</p>
+									<b>Test 5</b>
+									<p>
+										Lorem Ipsum.
+									</p>
+									<b>Test 6</b>
+									<p>
+										Lorem Ipsum.
+									</p>
+
+									<h4>Events</h4>
+									<b>Test 1</b>
+									<p>
+										Lorem Ipsum.
+									</p>
+									<b>Test 2</b>
+									<p>
+										Lorem Ipsum.
+									</p>
+									<b>Test 3</b>
+									<p>
+										Lorem Ipsum.
 									</p>
 								</section>
+
 								<section>
 									<header>
 										<h3>RTOS Timing Measurements</h3>
 									</header>
+									<b>Dispatch</b>
 									<p>
-
+										Lorem Ipsum.
+									</p>
+									<b>Context Switching</b>
+									<p>
+										Lorem Ipsum.
+									</p>
+									<b>Tasks</b>
+									<p>
+										Lorem Ipsum.
+									</p>
+									<b>Mutexes</b>
+									<p>
+										Lorem Ipsum.
+									</p>
+									<b>Events</b>
+									<p>
+										Lorem Ipsum.
 									</p>
 								</section>
+
 								<section>
 									<header>
 										<h3>Future Improvements</h3>
 									</header>
+									<b>Returning to Interrupt Handler</b>
 									<p>
-
+										Lorem Ipsum.
+									</p>
+									<b>Sleeping CPU during down-time</b>
+									<p>
+										Lorem Ipsum.
 									</p>
 								</section>
+
 								<section>
 									<header>
 										<h3>References</h3>
@@ -139,6 +312,7 @@
 										<li></li>
 									</ul>
 								</section>
+
 								<section>
 									<header>
 										<h3>Code</h3>
@@ -147,8 +321,8 @@
 										Download the project 2 source code <a href="http://www.roombatank.com/project2.zip">here</a>.
 									</p>
 								</section>
-							</article>
 
+							</article>
 					</div>
 				</div>
 

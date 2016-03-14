@@ -95,7 +95,7 @@
 									<p>
 										Two of the 16-bit PWM timers (Timer1 and Timer3) on the ATMega 2560 were used to control the flow of the RTOS. Both were configured in CTC (Clear Timer on Compare) mode with TOP values to control the rate at which their relative timer compare-vectors were set. Interrupt handlers were then created for the periodic interrupts that occurred.
 
-                                        Timer1 fires an interrupt every 10 ms. Its corresponding Interrupt Service Routine (ISR) checks the SleepQueue to see if any task has finished sleeping and if so will move it back to the ReadyQueue.
+                                        Timer1 fires an interrupt every 10 ms. Its corresponding Interrupt Service Routine (ISR) checks the SleepQueue to see if any task has finished sleeping and if so will move it back to the ReadyQueue. It also calls Task_Next so that tasks with the same priority are cooperatively sharing the CPU.
 
                                         Timer 3 is used as a real time clock to keep track of the amount of time that has passed since the RTOS booted. Timer3 fires an interrupt every second and increments a global overflow count. This timer is used to put tasks to sleep and wake them up using absolute time as discussed later in the Task Sleep section.
 									</p>
@@ -108,9 +108,12 @@
 									</p>
 										
 									<h4>Priority Scheduling</h4>
+                                    <p>
+                                        All active tasks have a priority from 0 (highest) to 10 (lowest). The task with the highest priority will be the task that runs next. If there are tasks with equal priority, they will execute cooperatively on a first-come-first-served basis.
+                                    </p>
 									<b>Dispatch</b>
 									<p>
-										Lorem Ipsum.
+										The Dispatch function is the scheduler. Every time dispatch is called, it takes the highest priority task from the ReadyQueue and sets it to become the next running task. The scheduler always picks a task whose state is READY, and who is not suspended.
 									</p>
 
 									<h4>Tasks</h4>

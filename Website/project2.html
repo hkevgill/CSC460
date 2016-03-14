@@ -161,16 +161,20 @@
 									<h4>Mutexes and Priority Inheritence</h4>
 									<b>Overview</b>
 									<p>
-										Lorem Ipsum.
+										A mutex is a resource that acts like a binary semaphore which tasks can lock and unlock. A mutex has 3 properties of ownership, recursiveness, and inheritence. All mutexes are stores in an array called Mutexes, and respresented by a struct with the fields: m (id), state, owner, and lockCount. A mutex has 3 states: DISABLED, FREE, and LOCKED.
 									</p>
+                                    <b>Mutex_Init</b>
+                                    <p>
+                                        When a mutex is initialized, the lockCount is set to 0, the state is set to FREE, the id is set to a number from 0 - 15, and the owner is set to NULL.
+                                    </p>
 									<b>Mutex_Lock</b>
 									<p>
-										Lorem Ipsum.
+										When a task calls Mutex_Lock(m), if the mutex is free, then the state is set to LOCKED, the lockCount is set to 1, and the owner is set to the calling tasks id. If the mutex is locked, and the calling task is the owner, then the lockCount is incremented as mutexes allow recursive locks. This does mean it must be unlocked the right number of times to become free. And if the mutex is locked and the calling task is not the owner, its state becomes BLOCKED_ON_MUTEX and it enters the WaitingQueue. When this happens, if the task that became blocked has a higher priority then the task with the mutex, the task with the mutex inherits the higher priority for the duration that it holds the mutex. This is a solution to the priority inversion problem where the high priority task could be pre-empted by a medium priority task.
 									</p>
 
 									<b>Mutex_Unlock</b>
 									<p>
-										Lorem Ipsum.
+										When a task calls Mutex_Unlock(m), If the lockCount is greater than 1, then it is decremented by one. If the lockCount is 1, and nobody is waiting on it, then the state it set to FREE, the owner is set to NULL, and the lockCount is set to 0. If the lockCount is 1, and there is a task waiting on the mutex, then in order to prevent barging, the lockCount will stay at 1, the state will stay locked, but ownership will be transferred to the task that is blocked on that mutex (and put back into the ready queue). The priority of the unlocking task will also be set back down to its original priority if it had inherited a higher priority. A task that is currently terminating may wish to unlock its mutexes, and if the state of the unlocking task is TERMINATED, all mutexes will be immediately unlocked, or have ownership transferred with lockCounts being set back to 1.
 									</p>
 
 									<h4>Events</h4>

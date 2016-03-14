@@ -153,9 +153,9 @@
 										Calling Task_Sleep will add the TICKS parameter you pass to it to the current count of Timer 3 (converted to TICKS), counting any overflow (above 100 TICKS) in a special variable. It then enters the kernel with the TICKS and overflow set to when the task should be "woken up". The kernel simply enqueues the task into the SleepQueue and calls Dispatch.
 									</p>
 
-									<b>Task Terminate</b>
+									<b>Task_Terminate</b>
 									<p>
-										Lorem Ipsum.
+										The process of terminating a task happens in the kernel function Kernel_Terminate_Task. There, all process descriptor variables are set to their default values, and the all mutexes that are held by the terminating task are freed.
 									</p>
 
 									<h4>Mutexes and Priority Inheritence</h4>

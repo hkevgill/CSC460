@@ -110,6 +110,26 @@
                                         Any system call (request) to the kernel will disable interrupts. Interrupts will then remain disabled until the kernel exits.
 									</p>
 
+                                    <p>
+                                        A list of all kernel requests are given here:
+
+                                        <ul>
+                                            <li>NONE</li>
+                                            <li>CREATE</li>
+                                            <li>NEXT</li>
+                                            <li>SLEEP</li>
+                                            <li>TERMINATE</li>
+                                            <li>SUSPEND</li>
+                                            <li>RESUME</li>
+                                            <li>MUTEX_INIT</li>
+                                            <li>MUTEX_LOCK</li>
+                                            <li>MUTEX_UNLOCK</li>
+                                            <li>EVENT_INIT</li>
+                                            <li>EVENT_WAIT</li>
+                                            <li>EVENT_SIGNAL</li>
+                                        </ul>
+                                    </p>
+
 									<h4>Priority Scheduling</h4>
                                     <p>
                                         All active tasks have a priority from 0 (highest) to 10 (lowest). The task with the highest priority will be the task that runs next. If there are tasks with equal priority, they will execute cooperatively on a first-come-first-served basis.

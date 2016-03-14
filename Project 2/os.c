@@ -208,6 +208,10 @@ static void Kernel_Suspend_Task() {
 			if (Process[i].p == Cp->pidAction) break;
 		}
 
+		if(i >= MAXTHREAD) {
+			return;
+		}
+
 		Process[i].suspended = 1;
 	}
 }
@@ -218,6 +222,10 @@ static unsigned int Kernel_Resume_Task() {
 	for(i = 0; i < MAXTHREAD; i++) {
 		if (Process[i].p == Cp->pidAction) break;
 	}
+
+	if(i >= MAXTHREAD) {
+			return 0;
+		}
 
 	if(Process[i].suspended == 1) {
 		Process[i].suspended = 0;

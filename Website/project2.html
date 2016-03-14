@@ -130,7 +130,7 @@
 									</p>
 									<b>Task_Create</b>
 									<p>    
-										Task_Create is called with three parameters: a pointer to the function that is to run as the task, an integer value for the initial priority of the task, and an integer value for the task's "arg". If the kernel is currently inactive, then Kernel_Create_Task will be called with these three parameters. Otherwise, variables in the current process' process descriptor will be set, and the program function will shift to the kernel. Upon hitting the "CREATE" case of the kernel, Kernel_Create_Task will immediately be called, which (if the MAXTHREAD hasn't been exceeded) locates an available DEAD process spot in the Process array that the new task can occupy. On finding this spot, Kernel_Create_Task_At is called with the original three parameters as well as the newly discovered free Process address. Kernel_Create_Task_At clears the contents of the new process' workspace, and inserts the address of the Task_Terminate at the bottom of the stack (in case the task returns, so the process slot can be freed). Above this, it inserts the return address of the function, and then skips the stack-pointer ahead 34 bytes (for saving and restoring context). Finally, the process descriptor variables are initialized, and the task is set to READY, and it is enqueued in the ReadyQueue.
+										Task_Create is called with three parameters: a pointer to the function that is to run as the task, an integer value for the initial priority of the task, and an integer value for the task's "arg". If the kernel is currently inactive, then Kernel_Create_Task will be called with these three parameters. Otherwise, variables in the current process' process descriptor will be set, and the program function will shift to the kernel. Upon hitting the "CREATE" case of the kernel, Kernel_Create_Task will immediately be called, which (if the MAXTHREAD hasn't been exceeded) locates an available DEAD process spot in the Process array that the new task can occupy. On finding this spot, Kernel_Create_Task_At is called with the original three parameters as well as the newly discovered free Process address. Kernel_Create_Task_At clears the contents of the new process' workspace, and inserts the address of the Task_Terminate at the bottom of the stack (in case the task returns, so the process slot can be freed). Above this, it inserts the return address of the function, and then skips the stack-pointer ahead 34 bytes (for saving and restoring context). Finally, the process descriptor variables are initialized, the task is set to READY, and it is enqueued in the ReadyQueue.
 									</p>
 
 									<b>Task_GetArg</b>
@@ -145,7 +145,7 @@
 
 									<b>Task_Resume</b>
 									<p>
-										Lorem Ipsum.
+										Resumption is nearly identical to Task_Suspend, except that it reverses its behaviour. The only relative difference is that if the current priority of the resumed task is greater than the priority of the current task, then the current task should be immediately preempted - so Dispatch is called in that case.
 									</p>
 
 									<b>Task_Sleep</b>

@@ -176,11 +176,11 @@
 									<h4>Events</h4>
 									<b>Overview</b>
 									<p>
-										An event is a resource that tasks can wait on and signal. An event has 3 states: INACTIVE, UNSIGNALLED, and SIGNALLED. Only one task can wait on an event at a time.
+										An event is a resource that tasks can wait on and signal. An event has 3 states: INACTIVE, UNSIGNALLED, and SIGNALLED. Only one task can wait on an event at a time. An event is represented by a struct with the fields state, e (id) and p (for the process that is waiting on the event if any). The structs are all stored in an array called Events.
 									</p>
                                     <b>Event_Init</b>
                                     <p>
-                                        When initialized, the state it set to UNSIGNALLED, and the id e is set to a number from 0 - 15.
+                                        When initialized, the state it set to UNSIGNALLED, the id e is set to a number from 0 - 15, and p is set to NULL.
                                     </p>
 									<b>Event_Wait</b>
 									<p>

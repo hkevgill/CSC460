@@ -364,6 +364,33 @@
 									<p>
 										Lorem Ipsum.
 									</p>
+
+                                    <div class=wsd wsd_style="modern-blue"><pre>
+                                    title Task Terminate (Test 5)
+                                        participant P1
+                                        participant P2
+                                        participant P3
+                                        participant Mutex1 as M1
+                                        participant Mutex2 as M2
+
+                                        P1->M1: [lock,
+                                        M1->P1: lock]
+                                        M1->M1: LOCKED
+                                        P1->M2: [lock, 
+                                        M2->P1: lock]
+                                        M2->M2: LOCKED
+                                        P1->P1: SLEEP
+                                        P2->M1: [lock, 
+                                        P2->P2: BLOCKED
+                                        P1->P1: TERMINATE
+                                        M1->M1: FREE
+                                        M1->P2: lock]
+                                        M1->M1: LOCKED
+                                        P2->P2: SUSPEND
+                                        P3->M2: [lock, 
+                                        M2->P3: lock]
+                                    </pre></div><script type="text/javascript" src="http://www.websequencediagrams.com/service.js"></script>
+
 									<b>Test 2</b>
 									<p>
 										Lorem Ipsum.

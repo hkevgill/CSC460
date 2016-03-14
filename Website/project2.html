@@ -176,8 +176,12 @@
 									<h4>Events</h4>
 									<b>Overview</b>
 									<p>
-										An event is a resource that tasks can wait on and signal. An event has 3 states: INACTIVE, UNSIGNALLED, and SIGNALLED. When initialized, the state it set to UNSIGNALLED. Only one task can wait on an event at a time. 
+										An event is a resource that tasks can wait on and signal. An event has 3 states: INACTIVE, UNSIGNALLED, and SIGNALLED. Only one task can wait on an event at a time.
 									</p>
+                                    <b>Event_Init</b>
+                                    <p>
+                                        When initialized, the state it set to UNSIGNALLED, and the id e is set to a number from 0 - 15.
+                                    </p>
 									<b>Event Wait</b>
 									<p>
 										When a task calls Event_Wait(e), the task will be blocked if nothing else is waiting on the event and if the event has not yet been signalled (The task's state will be changed to WAITING). If the event has already been signalled, then the event's state will be set back to UNSIGNALLED and the calling task will continue to execute.

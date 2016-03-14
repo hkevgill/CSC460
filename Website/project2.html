@@ -84,11 +84,11 @@
 									<h4>Booting, Context Switching, and the Kernel</h4>
 									<b>RTOS Booting</b>
 									<p>
-										When the RTOS boots, it makes a one-time call to OS_Init, which initializes all of the important counts and memory allocations necessary for operation.
+										When the RTOS boots, it makes a one-time call to OS_Init, which initializes the required memory for MAXTHREAD number of tasks, MAXMUTEX number of mutexes, and MAXEVENT number of events. The state of these 3 types of resources are all set to an inactive or dead state.
 
-										In this RTOS, threads are represented by "tasks". Each task is represented by a process descriptor, which contains all location and state information about each task. In addition, each process descriptor contains a memory "workspace" of 256 bytes for storing the register values and return address for context-switching. Memory for 16 (MAXTHREAD) of these processes is allocated upon initial booting of the RTOS. 
+                                        The RTOS then creates a task called a_main. a_main is an application level function with the highest priority. It will run after the RTOS has finished booting and create any necessary tasks, mutexes, and events through system calls to the running RTOS. 
 
-										Likewise, memory is allocated for 8 Mutexes and 8 Events (both of which are covered in later sections).
+                                        OS_Start is then called to change the state of the kernel to active. The kernel can then begin running by scheduling and dispatching the a_main task created earlier.
 									</p>
 
 									<b>Timers and Interrupts</b>
@@ -103,11 +103,6 @@
 										The kernel of the RTOS is itself a sort of "task" in that its context is saved to and restored from RAM in the same way as all of the processes. Its entire function body boils down to a switch statement that is invoked based on the current process' request state, which is set by an OS-level function.
 
 										Most of the kernel's switch statements call kernel-level functions that contain the actual implementation of task, mutex, and event actions. These functions are inaccessible to the application that is utilizing the RTOS, which gives the system a security "buffer", in that the RTOS code itself cannot be compromized by a regular user.
-									</p>
-
-									<b>a_main?</b>
-									<p>
-										Lorem Ipsum?  
 									</p>
 									
 									<h4>Priority Scheduling</h4>
@@ -127,6 +122,8 @@
 									</p>
 									<b>Task Create</b>
 									<p>
+                                        Threads are represented by "tasks". Each task is represented by a process descriptor, which contains all location and state information about each task. In addition, each process descriptor contains a memory "workspace" of 256 bytes for storing the register values and return address for context-switching. Memory for 16 (MAXTHREAD) of these processes is allocated upon initial booting of the RTOS.
+                                        
 										Task_Create is called with three parameters: a pointer to the function that is to run as the task, an integer value for the initial priority of the task, and an integer value for the task's "arg". 
 									</p>
 
@@ -212,7 +209,13 @@
 
 									<b>Unrecoverable Errors</b>
 									<p>
-										Lorem Ipsum.
+										Some errors can occur that will require the RTOS to be rebooted. These include:
+                                        <table>
+                                            <tr>
+                                                <td>Deadlock</td>
+                                                <td>If two tasks get into a deadlock due to the application designer's coding, the system must be restarted</td>
+                                            </tr>
+                                        </table>
 									</p>
 								</section>
 

@@ -17,8 +17,7 @@ extern void a_main();
 
 /**
   * This internal kernel function is the context switching mechanism.
-  * It is done in a "funny" way in that it consists two halves: the top half
-  * is called "Exit_Kernel()", and the bottom half is called "Enter_Kernel()".
+  * It consists two halves: the top half is called "Exit_Kernel()", and the bottom half is called "Enter_Kernel()".
   * When kernel calls this function, it starts the top half (i.e., exit). Right in
   * the middle, "Cp" is activated; as a result, Cp is running and the kernel is
   * suspended in the middle of this function. When Cp makes a system call,
@@ -27,26 +26,20 @@ extern void a_main();
   * After executing the bottom half, the context of Cp is saved and the context
   * of the kernel is restore. Hence, when this function returns, kernel is active
   * again, but Cp is not running any more. 
-  * (See file "switch.S" for details.)
+  * (See file "cswitch.S" for details.)
   */
 extern void CSwitch();
 extern void Exit_Kernel();    /* this is the same as CSwitch() */
 
-/* Prototype */
+/**
+  * Prototypes
+  */
 void Task_Terminate(void);
 static void Dispatch();
 static void Kernel_Unlock_Mutex();
 
 /** 
-  * This external function could be implemented in two ways:
-  *  1) as an external function call, which is called by Kernel API call stubs;
-  *  2) as an inline macro which maps the call into a "software interrupt";
-  *       as for the AVR processor, we could use the external interrupt feature,
-  *       i.e., INT0 pin.
-  *  Note: Interrupts are assumed to be disabled upon calling Enter_Kernel().
-  *     This is the case if it is implemented by software interrupt. However,
-  *     as an external function call, it must be done explicitly. When Enter_Kernel()
-  *     returns, then interrupts will be re-enabled by Enter_Kernel().
+  * Contained in cswitch.S, context switches to the kernel
   */ 
 extern void Enter_Kernel();
 
@@ -56,8 +49,16 @@ extern void Enter_Kernel();
   */
 static PD Process[MAXTHREAD];
 
+/**
+  * This table contains ALL mutexes. It doesn't matter what
+  * state a mutex is in.
+  */
 static MTX Mutex[MAXMUTEX];
 
+/**
+  * This table contains ALL events. It doesn't matter what
+  * state an event is in.
+  */
 static EVT Event[MAXEVENT];
 
 /**
@@ -85,32 +86,37 @@ volatile unsigned char *CurrentSp;
 /** 1 if kernel has been started; 0 otherwise. */
 volatile static unsigned int KernelActive;  
 
-/** number of tasks created so far */
-volatile static unsigned int Tasks;  
+/** number of active tasks */
+volatile static unsigned int Tasks; 
+
+ /** Keeps track of the process id's. Always goes up. */
 volatile static unsigned int pCount;
 
-// Number of mutexes created so far
+/** Number of mutexes created so far */
 volatile static unsigned int Mutexes;
 
+/** Number of events created so far */
 volatile static unsigned int Events;
 
-// Global tick overflow count
+/** Global tick overflow count */
 volatile unsigned int tickOverflowCount = 0;
 
+/** The ReadyQueue for tasks */
 volatile PD *ReadyQueue[MAXTHREAD];
 volatile int RQCount = 0;
 
+/** The SleepQueue for tasks */
 volatile PD *SleepQueue[MAXTHREAD];
 volatile int SQCount = 0;
 
+/** The WaitingQueue for tasks */
 volatile PD *WaitingQueue[MAXTHREAD];
 volatile int WQCount = 0;
 
 /**
- * When creating a new task, it is important to initialize its stack just like
- * it has called "Enter_Kernel()"; so that when we switch to it later, we
- * can just restore its execution context on its stack.
- * (See file "cswitch.S" for details.)
+ * Sets up a task's stack with Task_Terminate() at the bottom,
+ * The return address of the function
+ * and dummy data to be popped off when the task first runs
  */
 PID Kernel_Create_Task_At( volatile PD *p, voidfuncptr f, PRIORITY py, int arg ) {   
 	unsigned char *sp;
@@ -119,13 +125,7 @@ PID Kernel_Create_Task_At( volatile PD *p, voidfuncptr f, PRIORITY py, int arg )
 	int counter = 0;
 #endif
 
-	//Changed -2 to -1 to fix off by one error.
 	sp = (unsigned char *) &(p->workSpace[WORKSPACE-1]);
-
-
-
-	/*----BEGIN of NEW CODE----*/
-	//Initialize the workspace (i.e., stack) and PD here!
 
 	//Clear the contents of the workspace
 	memset(&(p->workSpace),0,WORKSPACE);
@@ -169,11 +169,8 @@ PID Kernel_Create_Task_At( volatile PD *p, voidfuncptr f, PRIORITY py, int arg )
 	Tasks++;
 	pCount++;
 
-	/*----END of NEW CODE----*/
-
 	p->state = READY;
 
-	// Add to ready queue
 	enqueueRQ(&p, &ReadyQueue, &RQCount);
 
 	return p->p;
@@ -197,6 +194,9 @@ static PID Kernel_Create_Task( voidfuncptr f, PRIORITY py, int arg ) {
 	return p;
 }
 
+/**
+  *  Suspend a task
+  */
 static void Kernel_Suspend_Task() {
 	int i;
 
@@ -216,6 +216,9 @@ static void Kernel_Suspend_Task() {
 	}
 }
 
+/**
+  *  Resume a task
+  */
 static unsigned int Kernel_Resume_Task() {
 	int i;
 
@@ -237,6 +240,9 @@ static unsigned int Kernel_Resume_Task() {
 	return 0;
 }
 
+/**
+  *  Terminate a task
+  */
 static void Kernel_Terminate_Task() {
 	Cp->inheritedPy = 0;
 	Cp->py = 0;
@@ -259,6 +265,9 @@ static void Kernel_Terminate_Task() {
 	Tasks--;
 }
 
+/**
+  *  Initialize a mutex
+  */
 MUTEX Kernel_Init_Mutex_At(volatile MTX *m) {
 	m->m = Mutexes;
 	m->state = FREE;
@@ -267,6 +276,9 @@ MUTEX Kernel_Init_Mutex_At(volatile MTX *m) {
 	return m->m;
 }
 
+/**
+  *  Find a free mutex to initialize
+  */
 static MUTEX Kernel_Init_Mutex() {
 	int x;
 
@@ -282,6 +294,9 @@ static MUTEX Kernel_Init_Mutex() {
 	return m;
 }
 
+/**
+  *  Lock a mutex
+  */
 static unsigned int Kernel_Lock_Mutex() {
 	int i,j;
 	MUTEX m = Cp->m;
@@ -320,6 +335,9 @@ static unsigned int Kernel_Lock_Mutex() {
 	return 1;
 }
 
+/**
+  *  Unlock a task
+  */
 static void Kernel_Unlock_Mutex() {
 	int i;
 	MUTEX m = Cp->m;
@@ -370,6 +388,7 @@ static void Kernel_Unlock_Mutex() {
 			Cp->inheritedPy = Cp->py;
 
 			// Turn on pin for newly running task
+			// For testing
 			if (Cp->p <= 1) {
 				enable_LED(PORTL2);
 			}
@@ -398,6 +417,9 @@ static void Kernel_Unlock_Mutex() {
 	}
 }
 
+/**
+  *  Initialize an event
+  */
 EVENT Kernel_Init_Event_At(volatile EVT *e) {
 	e->e = Events;
 	e->state = UNSIGNALLED;
@@ -408,6 +430,9 @@ EVENT Kernel_Init_Event_At(volatile EVT *e) {
 	return e->e;
 }
 
+/**
+  *  Find an event to initialize
+  */
 static EVENT Kernel_Init_Event() {
 	int x;
 
@@ -423,6 +448,9 @@ static EVENT Kernel_Init_Event() {
 	return e;
 }
 
+/**
+  *  Wait on an event
+  */
 static unsigned int Kernel_Wait_Event() {
 	int i;
 	unsigned int e = Cp->eSend;
@@ -450,6 +478,9 @@ static unsigned int Kernel_Wait_Event() {
 	return 0;
 }
 
+/**
+  *  Signal an event
+  */
 static void Kernel_Signal_Event() {
 	int i, j;
 	unsigned int e = Cp->eSend;
@@ -484,14 +515,10 @@ static void Kernel_Signal_Event() {
 }
 
 /**
-  * This internal kernel function is a part of the "scheduler". It chooses the 
+  * This internal kernel function is the "scheduler". It chooses the 
   * next task to run, i.e., Cp.
   */
 static void Dispatch() {
-	 /* find the next READY task
-	   * Note: if there is no READY task, then this will loop forever!.
-	   */
-
 	Cp = dequeueRQ(&ReadyQueue, &RQCount);
 
 	if (Cp == NULL) {
@@ -501,7 +528,7 @@ static void Dispatch() {
 	CurrentSp = Cp->sp;
 	Cp->state = RUNNING;
 
-	// Turn on pin for newly running task
+	// For testing
 	if (Cp->p <= 1) {
 		enable_LED(PORTL2);
 	}
@@ -536,6 +563,7 @@ static void Next_Kernel_Request() {
 
 		Exit_Kernel();    /* or CSwitch() */
 
+		// For testing
 		disable_LED(PORTL2);
 		disable_LED(PORTL5);
 		disable_LED(PORTL6);
@@ -551,7 +579,6 @@ static void Next_Kernel_Request() {
 			break;
 		case NEXT:
 		case NONE:
-			/* NONE could be caused by a timer interrupt */
 			Cp->state = READY;
 			enqueueRQ(&Cp, &ReadyQueue, &RQCount);
 			Dispatch();
@@ -605,7 +632,7 @@ static void Next_Kernel_Request() {
         		Dispatch();
         	}
         	
-        	// Turn on pin for newly running task
+        	// For testing
 			if (Cp->p <= 1) {
 				enable_LED(PORTL2);
 			}
@@ -621,7 +648,7 @@ static void Next_Kernel_Request() {
         	Kernel_Signal_Event();
         	break;
 		default:
-			/* Houston! we have a problem here! */
+			/* Houston! we have a problem! */
 			break;
 		}
 	} 
@@ -633,8 +660,7 @@ static void Next_Kernel_Request() {
   */
 
 /**
-  * This function initializes the RTOS and must be called before any other
-  * system calls.
+  * This function initializes the RTOS and must be called first
   */
 void OS_Init() {
 	int x;
@@ -645,7 +671,6 @@ void OS_Init() {
 	Events = 0;
 	pCount = 0;
 
-	//Reminder: Clear the memory for the task on creation.
 	for (x = 0; x < MAXTHREAD; x++) {
 		memset(&(Process[x]),0,sizeof(PD));
 		Process[x].state = DEAD;
@@ -665,24 +690,28 @@ void OS_Init() {
 }
 
 /**
-  * This function starts the RTOS after creating a few tasks.
+  * This function starts the RTOS after creating a_main
   */
 void OS_Start() {   
 	if ( (! KernelActive) && (Tasks > 0)) {
 		Disable_Interrupt();
-		/* we may have to initialize the interrupt vector for Enter_Kernel() here. */
 
-		/* here we go...  */
 		KernelActive = 1;
 		Next_Kernel_Request();
-		/* NEVER RETURNS!!! */
+		/* SHOULD NEVER GET HERE!!! */
 	}
 }
 
+/**
+  * Just quits
+  */
 void OS_Abort() {
-	exit(0);
+	exit(1);
 }
 
+/**
+  * Application level mutex init to setup system call
+  */
 MUTEX Mutex_Init() {
 	if(KernelActive) {
 		Disable_Interrupt();
@@ -692,6 +721,9 @@ MUTEX Mutex_Init() {
 	}
 }
 
+/**
+  * Application level mutex lock to setup system call
+  */
 void Mutex_Lock(MUTEX m) {
 	if(KernelActive) {
 		Disable_Interrupt();
@@ -702,6 +734,9 @@ void Mutex_Lock(MUTEX m) {
 	
 }
 
+/**
+  * Application level mutex unlock to setup system call
+  */
 void Mutex_Unlock(MUTEX m) {
 	if(KernelActive) {
 		Disable_Interrupt();
@@ -711,6 +746,9 @@ void Mutex_Unlock(MUTEX m) {
 	}
 }
 
+/**
+  * Application level event init to setup system call
+  */
 EVENT Event_Init() {
 	if(KernelActive) {
 		Disable_Interrupt();
@@ -720,6 +758,9 @@ EVENT Event_Init() {
 	}
 }
 
+/**
+  * Application level event wait to setup system call
+  */
 void Event_Wait(EVENT e) {
 	if(KernelActive) {
 		Disable_Interrupt();
@@ -729,6 +770,9 @@ void Event_Wait(EVENT e) {
 	}
 }
 
+/**
+  * Application level event signal to setup system call
+  */
 void Event_Signal(EVENT e) {
 	if(KernelActive) {
 		Disable_Interrupt();
@@ -739,7 +783,7 @@ void Event_Signal(EVENT e) {
 }
 
 /**
-  * 
+  * Application or kernel level task create to setup system call
   */
 PID Task_Create( voidfuncptr f, PRIORITY py, int arg){
 	unsigned int p;
@@ -760,7 +804,7 @@ PID Task_Create( voidfuncptr f, PRIORITY py, int arg){
 }
 
 /**
-  * The calling task gives up its share of the processor voluntarily.
+  * Application level task next to setup system call to give up CPU
   */
 void Task_Next() {
 	if (KernelActive) {
@@ -770,6 +814,9 @@ void Task_Next() {
 	}
 }
 
+/**
+  * Application level task sleep to setup system call
+  */
 void Task_Sleep(TICK t) {
 	if (KernelActive) {
 		Disable_Interrupt();
@@ -781,6 +828,9 @@ void Task_Sleep(TICK t) {
 	}
 }
 
+/**
+  * Application level task suspend to setup system call
+  */
 void Task_Suspend(PID p) {
 	if (KernelActive) {
 		Disable_Interrupt();
@@ -790,6 +840,9 @@ void Task_Suspend(PID p) {
 	}
 }
 
+/**
+  * Application level task resume to setup system call
+  */
 void Task_Resume(PID p) {
 	if (KernelActive) {
 		Disable_Interrupt();
@@ -800,7 +853,7 @@ void Task_Resume(PID p) {
 }
 
 /**
-  * The calling task terminates itself.
+  * Application level task terminate to setup system call
   */
 void Task_Terminate() {
 	if (KernelActive) {
@@ -811,60 +864,70 @@ void Task_Terminate() {
 	}
 }
 
+/**
+  * Application level task getarg to return intiial arg value
+  */
 int Task_GetArg(PID p) {
 	return (Cp->arg);
 }
 
+/**
+  * Setup pins and timers
+  */
 void setup() {
-	// pin 47
+	/** For testing */
+	/** pin 47 */
 	init_LED_PORTL_pin2();
 
-	// pin 43
+	/** pin 43 */
 	init_LED_PORTL_pin6();
 
-	// pin 44
+	/** pin 44 */
 	init_LED_PORTL_pin5();
 
-	// pin 49
+	/** pin 49 */
 	init_LED_PORTL_pin0();
 
-	// pin 48
+	/** pin 48 */
 	init_LED_PORTL_pin1();
 
-	// initialize Timer1 16 bit timer
+	/** initialize Timer1 16 bit timer */
 	Disable_Interrupt();
 
-	// Timer 1
-	TCCR1A = 0;                 // Set TCCR1A register to 0
-	TCCR1B = 0;                 // Set TCCR1B register to 0
+	/** Timer 1 */
+	TCCR1A = 0;                 /** Set TCCR1A register to 0 */
+	TCCR1B = 0;                 /** Set TCCR1B register to 0 */
 
-	TCNT1 = 0;                  // Initialize counter to 0
+	TCNT1 = 0;                  /** Initialize counter to 0 */
 
-	OCR1A = 624;                // Compare match register (TOP comparison value) [(16MHz/(100Hz*8)] - 1
+	OCR1A = 624;                /** Compare match register (TOP comparison value) [(16MHz/(100Hz*8)] - 1 */
 
-	TCCR1B |= (1 << WGM12);     // Turns on CTC mode (TOP is now OCR1A)
+	TCCR1B |= (1 << WGM12);     /** Turns on CTC mode (TOP is now OCR1A) */
 
-	TCCR1B |= (1 << CS12);      // Prescaler 256
+	TCCR1B |= (1 << CS12);      /** Prescaler 256 */
 
-	TIMSK1 |= (1 << OCIE1A);    // Enable timer compare interrupt
+	TIMSK1 |= (1 << OCIE1A);    /** Enable timer compare interrupt */
 
-	// Timer 3
-	TCCR3A = 0;                 // Set TCCR0A register to 0
-	TCCR3B = 0;                 // Set TCCR0B register to 0
+	/** Timer 3 */
+	TCCR3A = 0;                 /** Set TCCR0A register to 0 */
+	TCCR3B = 0;                 /** Set TCCR0B register to 0 */
 
-	TCNT3 = 0;                  // Initialize counter to 0
+	TCNT3 = 0;                  /** Initialize counter to 0 */
 
-	OCR3A = 62499;                // Compare match register (TOP comparison value) [(16MHz/(100Hz*8)] - 1
+	OCR3A = 62499;              /** Compare match register (TOP comparison value) [(16MHz/(100Hz*8)] - 1 */
 
-	TCCR3B |= (1 << WGM32);     // Turns on CTC mode (TOP is now OCR1A)
+	TCCR3B |= (1 << WGM32);     /** Turns on CTC mode (TOP is now OCR1A) */
 
-	TCCR3B |= (1 << CS32);      // Prescaler 1024
+	TCCR3B |= (1 << CS32);      /** Prescaler 1024 */
 
 	TIMSK3 = (1 << OCIE3A);
 
 	Enable_Interrupt();
 }
 
+/**
+  * ISR for timer1
+  */
 ISR(TIMER1_COMPA_vect) {
 
 	volatile int i;
@@ -883,13 +946,15 @@ ISR(TIMER1_COMPA_vect) {
 	Task_Next();
 }
 
+/**
+  * ISR for timer3
+  */
 ISR(TIMER3_COMPA_vect) {
 	tickOverflowCount += 1;
 }
 
 /**
-  * This function creates two cooperative tasks, "Ping" and "Pong". Both
-  * will run forever.
+  * This function boots the OS and creates the first task: a_main
   */
 void main() {
 	setup();

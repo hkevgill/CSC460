@@ -2,26 +2,26 @@
 #define _OS_H_
    
 #define MAXTHREAD     16
-#define WORKSPACE     256   // in bytes, per THREAD
+#define WORKSPACE     256   /** in bytes, per THREAD */
 #define MAXMUTEX      8
 #define MAXEVENT      8
-#define MSECPERTICK   10   // resolution of a system tick in milliseconds
-#define MINPRIORITY   10   // 0 is the highest priority, 10 the lowest
+#define MSECPERTICK   10   /** resolution of a system tick in milliseconds */
+#define MINPRIORITY   10   /** 0 is the highest priority, 10 the lowest */
 
 
 #ifndef NULL
-#define NULL          0   /* undefined */
+#define NULL          0   /** undefined */
 #endif
 
 #define Disable_Interrupt()     asm volatile ("cli"::)
 #define Enable_Interrupt()      asm volatile ("sei"::)
 
-typedef void (*voidfuncptr) (void);      /* pointer to void f(void) */
+typedef void (*voidfuncptr) (void);      /** pointer to void f(void) */
 
-typedef unsigned int PID;        // always non-zero if it is valid
-typedef unsigned int MUTEX;      // always non-zero if it is valid
+typedef unsigned int PID;        /** always non-zero if it is valid */
+typedef unsigned int MUTEX;      /** always non-zero if it is valid */
 typedef unsigned int PRIORITY;
-typedef unsigned int EVENT;      // always non-zero if it is valid
+typedef unsigned int EVENT;      /** always non-zero if it is valid */
 typedef unsigned int TICK;
 
 /**
@@ -38,7 +38,7 @@ typedef enum process_states {
 } PROCESS_STATES;
 
 /**
-  * This is the set of kernel requests, i.e., a request code for each system call.
+  * This is the set of kernel requests
   */
 typedef enum kernel_request_type {
     NONE = 0,

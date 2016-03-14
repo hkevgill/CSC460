@@ -29,7 +29,7 @@ void Ping() {
 
     for(;;){
         Mutex_Lock(portL6_Mutex);
-        toggle_LED(PORTL6);
+        // toggle_LED(PORTL6);
         Mutex_Unlock(portL6_Mutex);
 
         Event_Signal(e2);
@@ -47,7 +47,7 @@ void Pong() {
     int  x;
     for(;;) {
         Mutex_Lock(portL2_Mutex);
-        toggle_LED(PORTL2);
+        // toggle_LED(PORTL2);
         Mutex_Unlock(portL2_Mutex);
 
         Event_Signal(e1);

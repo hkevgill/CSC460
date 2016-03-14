@@ -1,15 +1,5 @@
 #include <avr/io.h>
 #include "LED_Test.h"
-/**
- * \file LED_Test.c
- * \brief Small set of test functions for controlling LEDs on a AT90USBKey
- * 
- * \mainpage Simple set of functions to control the state of the onboard
- *  LEDs on the AT90USBKey. 
- *
- * \author Alexander M. Hoole
- * \date October 2006
- */
 
 void init_LED_PORTL_pin0(void) {
     DDRL |= _BV(DDL0);
@@ -20,23 +10,22 @@ void init_LED_PORTL_pin1(void) {
 }
 
 void init_LED_PORTL_pin2(void) {
-    DDRL |= _BV(DDL2);  // Set DDL2 bit of the DDRL register
+    DDRL |= _BV(DDL2);
 }
 
 void init_LED_PORTL_pin5(void) {
-    DDRL |= _BV(DDL5);  // Set DDL5 bit of the DDRL register
+    DDRL |= _BV(DDL5);
 }
 
 void init_LED_PORTL_pin6(void) {
-    DDRL |= _BV(DDL6);  // Set DDL6 bit of the DDRL register
+    DDRL |= _BV(DDL6);
 }
 
 void init_LED_PORTL_pin7(void) {
-    DDRL |= _BV(DDL7);  // Set DDL6 bit of the DDRL register
+    DDRL |= _BV(DDL7);
 }
 
 void enable_LED(unsigned int mask) {
-    /* set pin 47 high to turn led on */
     PORTL |= _BV(mask);
 }
 

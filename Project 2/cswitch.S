@@ -1,9 +1,4 @@
 /*
- * Compile using:
- *   avr-gcc -c -O2 -mmcu=${CPU} -Wa,--gstabs -o switch.o switch.S
- */
-
-/*
   * Note:
   *
   * This code is based on "thread_swtch.S" by Brian S. Dean, and the
@@ -13,9 +8,7 @@
   *  Author:  Dr. Mantis Cheng, 28 September 2006.
   *
   *  ChangeLog: Modified by Alexander M. Hoole, October 2006.
-  *
-  *  !!!!!   This code has NEVER been tested.  !!!!!
-  *  !!!!!   Use at your own risk  !!!!
+  *             Modified by Kevin Gill and Chris Cook, February 2016
   */
 
 

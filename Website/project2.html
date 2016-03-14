@@ -145,12 +145,16 @@
 
 									<b>Task_Resume</b>
 									<p>
+<<<<<<< HEAD
                                         Task_Resume also takes in a process id to be resumed. It looks up the process to be resumed, and sets its suspended flag to 0. If the resumed task has a higher priority then the running task, Dispatch is called to pre-empt it.
+=======
+										Resumption is nearly identical to Task_Suspend, except that it reverses its behaviour. The only relative difference is that if the current priority of the resumed task is greater than the priority of the current task, then the current task should be immediately preempted - and Dispatch is called in that case.
+>>>>>>> b196d98c98985698cdfddb9299c5c2ae594f22d2
 									</p>
 
 									<b>Task_Sleep</b>
 									<p>
-										Lorem Ipsum.
+										Calling Task_Sleep will add the TICKS parameter you pass to it to the current count of Timer 3 (converted to TICKS), counting any overflow (above 100 TICKS) in a special variable. It then enters the kernel with the TICKS and overflow set to when the task should be "woken up". The kernel simply enqueues the task into the SleepQueue and calls Dispatch.
 									</p>
 
 									<b>Task Terminate</b>

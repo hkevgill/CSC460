@@ -81,7 +81,7 @@
 										<h3>RTOS Design</h3>
 									</header>
 
-									<h4>Booting, Context Switching and the Kernel</h4>
+									<h4>Booting, Context Switching, and the Kernel</h4>
 									<b>RTOS Booting</b>
 									<p>
 										When the RTOS boots, it makes a one-time call to OS_Init, which initializes all of the important counts and memory allocations necessary for operation.
@@ -93,7 +93,9 @@
 
 									<b>Timers and Interrupts</b>
 									<p>
-										Lorem Ipsum.
+										Two of the 16-bit PWM timers on the ATMega2560 were used to control the flow of the RTOS. Both were configured in CTC (Clear Timer on Compare) mode with TOP values to control the rate at which their relative timer compare-vectors were set. Interrupt handlers were then created for the periodic interrupts that occurred. 
+
+										For Timer 3, the OCR (Output Compare Register) was set so that an interrupt would fire every second, and increment a continuous count that tracks the number of seconds since the beginning of program execution. This count is necessary for properly sleeping tasks (explained in a later section). Timer 1 was set so that an interrupt would occur every 10ms, calling an ISR to periodically checki the SleepQueue for tasks that were due to be set READY again, dequeued from the SleepQueue, and enqueued into the ReadyQueue. This ISR would then also always call Task_Next.
 									</p>
 
 									<b>The Kernel</b>

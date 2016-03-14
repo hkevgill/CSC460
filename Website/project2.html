@@ -338,25 +338,90 @@
 
 								<section>
 									<header>
-										<h3>Testing and Profiling</h3>
+										<h3>Testing</h3>
 									</header>
 
+                                    <p>
+                                        RTOS testing was conducted using a USB logic analyzer. Testing was split into 6 distinct categories. These cateogories are the initial tests provided by Daniel, Task Termination, Suspension and Resumption, Sleeping, Mutexes and Priority Inheritence, and Events. Each category has multiple tests that attempt to isolate a specific piece of functionality. The tests provide good coverage of all the features implemented and give us reliability in our RTOS.
+                                    </p>
+
 									<h4>Initial Tests</h4>
+                                    <p>
+                                        Please note that for tests 1-3: Channel 0 is used as the trigger, and Channel 1 corresponds to P1, Channel 2 to P2, and channel 3 to P3.
+                                        <br>
+                                        And for test 4: Channel 0 corresponds to P0, Channel 1 to P1, Channel 2 to P2, Channel 3 to P3, and Channel 4 to the trigger.
+                                    </p>
 									<b>Test 1</b>
 									<p>
-										Lorem Ipsum.
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>Test 1 was provided by Daniel and has an expected running order of: P1, P2, P3, P1, P2, P3, P1. This task tests mutexes, events, sleeping, and priority inheritence.</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Description:</td>
+                                                <td>Tasks P1, P2, and P3 are created with priorities 1, 2, and 3 respectively. P1 sleeps, P2 sleeps, P3 locks a mutex and waits on an event. P1 attempts to lock the mutex but is blocked, boosting P3's priority, P2 signals the event, P3 resumes and unlocks the mutex (transferring ownership to P1) and lowering its priority back to normal, P1 pre-empts P3.</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the expected running order of P1, P2, P3, P1, P2, P3, P1. For zoomed in screenshots please refer to the appendix.</td>
+                                            </tr>
+                                        </table>
+                                        <a class="image"><img src="images/tests/test1_full.png"></a>
 									</p>
 									<b>Test 2</b>
 									<p>
-										Lorem Ipsum.
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>Test 2 was provided by Daniel and has an expected running order of: P1, P2, P3, P1, P2, P3, P1. This task tests mutexes, sleeping, and suspension and resumption.</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Description:</td>
+                                                <td>Tasks P1, P2, and P3 are created with priorities 1, 2, and 3 respectively. P1 sleeps, P2 sleeps, P3 locks a mutex and suspends itself, P1 attempts to lock the mutex but becomes blocked and boosts P3's priority, P2 resumes P3, P3 unlocks the mutex (and transfers ownership to P1), lowering its priority back to normal and is pre-empted by P1.</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the expected running order of P1, P2, P3, P1, P2, P3, P1. For zoomed in screenshots please refer to the appendix.</td>
+                                            </tr>
+                                        </table>
+                                        <a class="image"><img src="images/tests/test2_full.png"></a>
 									</p>
 									<b>Test 3</b>
 									<p>
-										Lorem Ipsum.
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>Test 3 was provided by Daniel and has an expected running order of: P1, P2, P3, P3, P2, P1, P3, P2, P3, P2, P1. This task performs an in-depth on mutexes and priority inheritence.</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Description:</td>
+                                                <td>Tasks P1, P2, and P3 are created with priorities 1, 2, and 3 respectively. P1 sleeps, P2 locks mutex 1 and sleeps, P3 sleeps, P3 wake ups and locks mutex 2 and sleeps, P2 wakes up and tries to lock mutex 2 but is blocked, which boosts P3's priority. P1 wakes up and tries to lock mutex 1 but is blocked and boosts P2's priority, P3 wakes up and unlocks mutex 2 (transferring ownership to P2) and lowering its priority back to normal, P2 pre-empts P3 and then sleeps, P3 being the only available task runs until P2 wakes up again, P2 unlocks both mutexes (transferring ownership of mutex 1 to P1) and lowering its priority back to normal, and allows P1 to run.</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the expected running order of P1, P2, P3, P3, P2, P1, P3, P2, P3, P2, P1. For zoomed in screenshots please refer to the appendix.</td>
+                                            </tr>
+                                        </table>
+                                        <a class="image"><img src="images/tests/test3_full.png"></a>
 									</p>
 									<b>Test 4</b>
 									<p>
-										Lorem Ipsum.
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>Test 2 was provided by Daniel and has an expected running order of: P0, P1, P2, P3, TIMER, P0, P1, P2. This task tests event waits and using a timer interrupt to send a signal.</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Description:</td>
+                                                <td>Tasks P0, P1, P2, and P3 are created with priorities 0, 1, 2, and 3 respectively. P0 waits on evt3, P1 waits on waits on evt1, P2 waits on evt2, and P3 being the only ready task becomes running. After 0.1 second, Timer3 triggers an interrupt to signal evt1, which wakes up P0, P0 then signals evt2 and evt1 and then waits on evt3 again, which allows P1 to run and P1 in turn waits on evt1 again, allowing P2 to run forever.</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the expected running order of P0, P1, P2, P3, TIMER, P0, P1, P2. For zoomed in screenshots please refer to the appendix.</td>
+                                            </tr>
+                                        </table>
+                                        <a class="image"><img src="images/tests/test4_full.png"></a>
 									</p>
 
 									<h4>Task Termination</h4>

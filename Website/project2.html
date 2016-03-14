@@ -410,7 +410,7 @@
 										<table>
                                             <tr>
                                                 <td>Objective:</td>
-                                                <td>Test 2 was provided by Daniel and has an expected running order of: P0, P1, P2, P3, TIMER, P0, P1, P2. This task tests event waits and using a timer interrupt to send a signal.</td>
+                                                <td>Test 4 was provided by Daniel and has an expected running order of: P0, P1, P2, P3, TIMER, P0, P1, P2. This task tests event waits and using a timer interrupt to send a signal.</td>
                                             </tr>
                                             <tr>
                                                 <td>Description:</td>
@@ -425,17 +425,59 @@
 									</p>
 
 									<h4>Task Termination</h4>
+                                    <p>
+                                        Test 1 has Channel 0 as the trigger, Channel 1 as P1, Channel 2 as P2, and Channel 3 as P3.
+                                        <br>
+                                        Test 2 has Channel 0 as the trigger, Channel 1 as P1 - P14, Channel 2 as P15, and Channel 3 as P16.
+                                    </p>
 									<b>Test 1</b>
 									<p>
-										Lorem Ipsum.
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>Test 1 creates 3 tasks. It tests that when a task terminates, all resources it had, including mutexes are freed (or transferred) and allowed to be used by other tasks.</td>
+                                            </tr>
+                                        </table>
+                                        <p>
+                                            The message sequence chart is shown here:
+                                        </p>
+                                        <a class="image"><img src="images/tests_msc/test5.png"></a>
+                                        <table>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the message sequence charts expected running order of P1, P2, P3, P1, P2, P3. For zoomed in screenshots please refer to the appendix.</td>
+                                            </tr>
+                                        </table>
+                                        <a class="image"><img src="images/tests/test5_full.png"></a>
 									</p>
                                     
 									<b>Test 2</b>
 									<p>
-										Lorem Ipsum.
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>Test 2 creates has a_main (which is P0) create 15 other tasks. P0 then terminates. P1 - P14 also terminate, P15 creates P16 and then terminates, P16 runs forever. This illustrates that the RTOS can reuse dead threads by creating a total of 17 tasks.</td>
+                                            </tr>
+                                        </table>
+                                        <p>
+                                            The message sequence chart is shown here:
+                                        </p>
+                                        <a class="image"><img src="images/tests_msc/test6.png"></a>
+                                        <table>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the message sequence charts expected running order of P1, ..., P15, P16. For zoomed in screenshots please refer to the appendix.</td>
+                                            </tr>
+                                        </table>
+                                        <a class="image"><img src="images/tests/test6_full.png"></a>
 									</p>
 
 									<h4>Suspend &amp; Resume</h4>
+                                    <p>
+                                        
+                                    </p>
 									<b>Test 1</b>
 									<p>
 										Lorem Ipsum.

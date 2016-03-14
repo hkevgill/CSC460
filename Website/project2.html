@@ -457,7 +457,7 @@
 										<table>
                                             <tr>
                                                 <td>Objective:</td>
-                                                <td>Test 2 creates has a_main (which is P0) create 15 other tasks. P0 then terminates. P1 - P14 also terminate, P15 creates P16 and then terminates, P16 runs forever. This illustrates that the RTOS can reuse dead threads by creating a total of 17 tasks.</td>
+                                                <td>Test 2 creates a_main (which is P0) create 15 other tasks. P0 then terminates. P1 - P14 also terminate, P15 creates P16 and then terminates, P16 runs forever. This illustrates that the RTOS can reuse dead threads by creating a total of 17 tasks.</td>
                                             </tr>
                                         </table>
                                         <p>
@@ -468,7 +468,7 @@
                                             </tr>
                                             <tr>
                                                 <td>Results:</td>
-                                                <td>As shown in the screen capture below, our results are consistent with the message sequence charts expected running order of P1, ..., P15, P16. For zoomed in screenshots please refer to the appendix.</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the message sequence charts expected running order of P1, ..., P15, P16.</td>
                                             </tr>
                                         </table>
                                         <a class="image"><img src="images/tests/test6_full.png"></a>
@@ -476,21 +476,72 @@
 
 									<h4>Suspend &amp; Resume</h4>
                                     <p>
-                                        
+                                        Channel 0 is the trigger, Channel 1 is P1, and Channel 2 is P2.
                                     </p>
 									<b>Test 1</b>
 									<p>
-										Lorem Ipsum.
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>The objective of this test is for P1 to sleep, P2 to suspend P1, then have P2 resume 1, in which case P1 will pre-empt and continue running, showing suspend and resume work.</td>
+                                            </tr>
+                                        </table>
+                                        <p>
+                                            The message sequence chart is shown here:
+                                        </p>
+                                        <a class="image"><img src="images/tests_msc/test14.png"></a>
+                                        <table>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the message sequence charts expected running order of P1, P2, P2, P1.</td>
+                                            </tr>
+                                        </table>
+                                        <a class="image"><img src="images/tests/test14_full.png"></a>
 									</p>
 									<b>Test 2</b>
 									<p>
-										Lorem Ipsum.
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>The objective of this test is to show that even though P2 is suspended, it still receives the mutex when P1 unlocks and enters the ready state.</td>
+                                            </tr>
+                                        </table>
+                                        <p>
+                                            The message sequence chart is shown here:
+                                        </p>
+                                        <a class="image"><img src="images/tests_msc/test15.png"></a>
+                                        <table>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the message sequence charts expected running order of P1, P2, P3, P1, P2.</td>
+                                            </tr>
+                                        </table>
+                                        <a class="image"><img src="images/tests/test15_full.png"></a>
 									</p>
 
 									<h4>Task Sleep</h4>
 									<b>Test 1</b>
 									<p>
-										Lorem Ipsum.
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>Test 1 creates P1, P2, and P3 with priorities 1, 2, and 3 respectively. P1 sleeps for 5 ticks, P2 sleeps for 2 ticks, P3 sleeps for 1 tick, P3 then wakes up, P2 then wakes up and pre-empts, P1 then wakes up and pre-empts</td>
+                                            </tr>
+                                        </table>
+                                        <p>
+                                            The message sequence chart is shown here:
+                                        </p>
+                                        <a class="image"><img src="images/tests_msc/test13.png"></a>
+                                        <table>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the message sequence charts expected running order of P1, P2, P3, P3, P2, P1.</td>
+                                            </tr>
+                                        </table>
+                                        <a class="image"><img src="images/tests/test13_full.png"></a>
 									</p>
 
 									<h4>Mutexes</h4>
@@ -520,17 +571,73 @@
 									</p>
 
 									<h4>Events</h4>
+                                    <p>
+                                        Channel 0 corresponds to the trigger, Channel 1 to P1, and Channel 2 to P2
+                                    </p>
 									<b>Test 1</b>
 									<p>
-										Lorem Ipsum.
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>This test showcases the basic event wait and signal case. P1 waits on an event, P2 signals, P1 resumes.</td>
+                                            </tr>
+                                        </table>
+                                        <p>
+                                            The message sequence chart is shown here:
+                                        </p>
+                                        <a class="image"><img src="images/tests_msc/test16.png"></a>
+                                        <table>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the message sequence charts expected running order of P1, P2, P1.</td>
+                                            </tr>
+                                        </table>
+                                        <a class="image"><img src="images/tests/test16_full.png"></a>
 									</p>
+
 									<b>Test 2</b>
 									<p>
-										Lorem Ipsum.
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>This test shows that if P1 signals an event, then P2 reaches that event, it will set the flag back to 0 and continue running because the signal has already been sent.</td>
+                                            </tr>
+                                        </table>
+                                        <p>
+                                            The message sequence chart is shown here:
+                                        </p>
+                                        <a class="image"><img src="images/tests_msc/test17.png"></a>
+                                        <table>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the message sequence charts expected running order of P1, P2.</td>
+                                            </tr>
+                                        </table>
+                                        <a class="image"><img src="images/tests/test17_full.png"></a>
 									</p>
+
 									<b>Test 3</b>
 									<p>
-										Lorem Ipsum.
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>This test shows that only one task can wait on an event at a time. P1 will wait on an event, then P2 will call Event_Wait on the same event but continue running.</td>
+                                            </tr>
+                                        </table>
+                                        <p>
+                                            The message sequence chart is shown here:
+                                        </p>
+                                        <a class="image"><img src="images/tests_msc/test18.png"></a>
+                                        <table>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the screen capture below, our results are consistent with the message sequence charts expected running order of P1, P2.</td>
+                                            </tr>
+                                        </table>
+                                        <a class="image"><img src="images/tests/test18_full.png"></a>
 									</p>
 								</section>
 

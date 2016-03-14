@@ -4,7 +4,8 @@
 #include "os.h"
 //
 // EXPECTED RUNNING ORDER: P1, ..., P15, P16
-//
+// Test 6
+
 void Task_P16();
 
 void Idle() {

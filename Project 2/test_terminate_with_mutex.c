@@ -5,6 +5,7 @@
 //
 // EXPECTED RUNNING ORDER: P1, P2, P3, P1, P2, P3
 //
+// Test 5
 
 MUTEX mut1;
 MUTEX mut2;

@@ -396,9 +396,9 @@
 									<header>
 										<h3>Future Improvements</h3>
 									</header>
-									<h4>Returning to Interrupt Handler</h4>
+									<h4>Improve Interrupt Service Routine</h4>
 									<p>
-										Lorem Ipsum.
+										Currently the interrupt service routine (ISR) fires every 10 ms to check the SleepQueue and potentially dispatch a new task. Currently if a new task is dispatched, the ISR does not finish its execution and leaves a return address on the stack. One improvement to this is to instead use the eijmp (extended indirect jump) instruction to leave the ISR and enter the kernel without leaving a return address on the stack. This would slightly improve performance and make sure the ISR finishes its execution.
 									</p>
 									<h4>Reduce CPU Power Consumption</h4>
                                     <p>
@@ -406,7 +406,7 @@
                                     </p>
                                     <h4>Improving Core RTOS Performance</h4>
                                     <p>
-                                        Lorem Ipsum.
+                                        Other cleanup and improvements for this RTOS is to improve the queue data structure. Currently, either one of dequeue or queue is an O(n) operation, while the other is O(1). They can both be made O(1) operations by revising the queueing/dequeueing strategy or using a hash table instead.
                                     </p>
 								</section>
 

@@ -100,7 +100,9 @@
 
 									<b>The Kernel</b>
 									<p>
-										The Kernel of the RTOS is itself a sort of "task" in that its context is saved and restored to flash memory in the same way as all of the processes. Its entire function body is a switch statement that ... invoked based on state variables that are set by OS-level functions.
+										The kernel of the RTOS is itself a sort of "task" in that its context is saved to and restored from RAM in the same way as all of the processes. Its entire function body boils down to a switch statement that is invoked based on the current process' request state, which is set by an OS-level function.
+
+										Most of the kernel's switch statements call kernel-level functions that contain the actual implementation of task, mutex, and event actions. These functions are inaccessible to the application that is utilizing the RTOS, which gives the system a security "buffer", in that the RTOS code itself cannot be compromized by a regular user.
 									</p>
 
 									<b>a_main?</b>

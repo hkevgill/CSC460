@@ -288,7 +288,7 @@
                                     </p>
 									<b>Mutex_Lock</b>
 									<p>
-										When a task calls Mutex_Lock(m), if the mutex is free, then the state is set to LOCKED, the lockCount is set to 1, and the owner is set to the calling tasks id. If the mutex is locked, and the calling task is the owner, then the lockCount is incremented as mutexes allow recursive locks. This does mean it must be unlocked the right number of times to become free. And if the mutex is locked and the calling task is not the owner, its state becomes BLOCKED_ON_MUTEX and it enters the WaitingQueue. When this happens, if the task that became blocked has a higher priority then the task with the mutex, the task with the mutex inherits the higher priority for the duration that it holds the mutex. This is a solution to the priority inversion problem where the high priority task could be pre-empted by a medium priority task.
+										When a task calls Mutex_Lock(m), if the mutex is free, then the state is set to LOCKED, the lockCount is set to 1, and the owner is set to the calling tasks id. If the mutex is locked, and the calling task is the owner, then the lockCount is incremented as mutexes allow recursive locks. This does mean it must be unlocked the right number of times to become free. And if the mutex is locked and the calling task is not the owner, its state becomes BLOCKED_ON_MUTEX and it enters the WaitingQueue. When this happens, if the task that became blocked has a higher priority then the task with the mutex, the task with the mutex inherits the higher priority for the duration that it holds the mutex. This is a solution to the priority inversion problem where the high priority task could be pre-empted by a medium priority task. The WaitingQueue functions as a first-come-first-served queue.
 									</p>
 
 									<b>Mutex_Unlock</b>
@@ -307,12 +307,12 @@
                                     </p>
 									<b>Event_Wait</b>
 									<p>
-										When a task calls Event_Wait(e), the task will be blocked if nothing else is waiting on the event and if the event has not yet been signalled (The task's state will be changed to WAITING). If the event has already been signalled, then the event's state will be set back to UNSIGNALLED and the calling task will continue to execute.
+										When a task calls Event_Wait(e), the task will be blocked if nothing else is waiting on the event and if the event has not yet been signalled (The task's state will be changed to WAITING). If the event has already been signalled, then the event's state will be set back to UNSIGNALLED and the calling task will continue to execute. Tasks that are in the WAITING state are enqueued back into the ReadyQueue but will never be dispatched until their state is set back to READY. If a different task is already waiting on the event, then the calling task will continue to execute.
 									</p>
 
 									<b>Event_Signal</b>
 									<p>
-										Any running task can signal an event. If a task is waiting on that event, the waiting task's state is set back to READY and the events state goes back to UNSIGNALLED. If no task is waiting on the event, then the state of the event is simply set to SIGNALLED as events record one signal and drop any subsequent signals.
+										Any running task can signal an event. If a task is waiting on that event, the waiting task's state is set back to READY and the event's state goes back to UNSIGNALLED. If no task is waiting on the event, then the state of the event is simply set to SIGNALLED as events record one signal and drop any subsequent signals.
 									</p>
 
 									<h4>Error Handling</h4>
@@ -408,7 +408,7 @@
 										<table>
                                             <tr>
                                                 <td>Objective:</td>
-                                                <td>Test 3 was provided by Daniel and has an expected running order of: P1, P2, P3, P3, P2, P1, P3, P2, P3, P2, P1. This task performs an in-depth on mutexes and priority inheritence.</td>
+                                                <td>Test 3 was provided by Daniel and has an expected running order of: P1, P2, P3, P3, P2, P1, P3, P2, P3, P2, P1. This test performs an in-depth test on mutexes and priority inheritence.</td>
                                             </tr>
                                             <tr>
                                                 <td>Description:</td>
@@ -473,7 +473,7 @@
 										<table>
                                             <tr>
                                                 <td>Objective:</td>
-                                                <td>Test 2 creates a_main (which is P0) create 15 other tasks. P0 then terminates. P1 - P14 also terminate, P15 creates P16 and then terminates, P16 runs forever. This illustrates that the RTOS can reuse dead threads by creating a total of 17 tasks.</td>
+                                                <td>Test 2 creates a_main (which is P0) which creates 15 other tasks. P0 then terminates. P1 - P14 also terminate, P15 creates P16 and then terminates, P16 runs forever. This illustrates that the RTOS can reuse dead threads by creating a total of 17 tasks.</td>
                                             </tr>
                                         </table>
                                         <p>
@@ -809,7 +809,7 @@
                                         <table>
                                             <tr>
                                                 <td>Channel 0</td>
-                                                <td>Worst Case Interrupt Disabled Time = 0.163 &mu;s</td>
+                                                <td>Worst Case Interrupt Disabled Time = 0.163 ms</td>
                                             </tr>
                                         </table>
 									</p>

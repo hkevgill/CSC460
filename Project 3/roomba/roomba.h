@@ -32,7 +32,4 @@ void Roomba_Init(void);
 
 void Roomba_Drive(int16_t velocity, int16_t radius);
 
-void Roomba_Send_Byte(uint8_t);
-void Roomba_UART_Transmit(void);
-
 #endif /* ROOMBA_H_ */

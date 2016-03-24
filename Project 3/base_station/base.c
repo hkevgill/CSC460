@@ -18,7 +18,7 @@ void Idle() {
 }
 
 void Send() {
-    char *b = '1529876';
+    char *b = '1529165';
     for(;;) {
         PORTL ^= _BV(PORTL6);
         Bluetooth_Send_String(&b);

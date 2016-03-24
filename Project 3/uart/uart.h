@@ -1,33 +1,16 @@
-/**
- * @file   uart.c
- * @author Justin Tanner
- * @date   Sat Nov 22 21:32:03 2008
- *
- * @brief  UART Driver targetted for the AT90USB1287
- *
- */
+#ifndef USB_UART_H_
+#define UART_H_
 
-#ifndef __UART_H__
-#define __UART_H__
-
-#include <avr/interrupt.h>
 #include <stdint.h>
-#define F_CPU 8000000UL
 
-typedef enum _uart_bps
-{
-	UART_19200,
-	UART_38400,
-	UART_57600,
-	UART_DEFAULT,
-} UART_BPS;
+void Roomba_UART_Init(void);
+void Roomba_Send_Byte(uint8_t);
+void Roomba_Receive_Byte(void);
+void Roomba_Send_String(char*);
 
-#define UART_BUFFER_SIZE    32
+void Bluetooth_UART_Init(void);
+void Bluetooth_Send_Byte(uint8_t);
+void Bluetooth_Receive_Byte(void);
+void Bluetooth_Send_String(char*);
 
-void uart_init(UART_BPS bitrate);
-void uart_putchar(uint8_t byte);
-uint8_t uart_get_byte(int index);
-uint8_t uart_bytes_received(void);
-void uart_reset_receive(void);
-
-#endif
+#endif /* USB_UART_H_ */

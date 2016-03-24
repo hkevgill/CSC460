@@ -1,5 +1,7 @@
+#define F_CPU 16000000
+#include <util/delay.h>
 #include "uart.h"
-
+#include <string.h>
 #include <avr/io.h>
 
 void Roomba_UART_Init(){   
@@ -38,7 +40,7 @@ void Roomba_Send_String(char *string_out){
 
 void Bluetooth_UART_Init(){   
     // Set baud rate to 19.2k
-    UBRR1 = 0x33;
+    UBRR1 = 103;
     
     // Enable receiver, transmitter
     UCSR1B = (1<<RXEN1) | (1<<TXEN1);
@@ -65,7 +67,13 @@ unsigned char Bluetooth_Receive_Byte(){
 }
 
 void Bluetooth_Send_String(char *string_out){
+    // int i;
+    // for (i=0; i<strlen(*string_out); i++) {
+    //     Bluetooth_Send_Byte(string_out[i]);
+    // }
+
     for(; *string_out; string_out++){
+        _delay_ms(4);
         Bluetooth_Send_Byte(*string_out);
     }
 }

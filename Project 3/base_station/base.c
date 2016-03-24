@@ -18,14 +18,20 @@ void Idle() {
 }
 
 void Send() {
-    Bluetooth_Send_Byte(1);
+    char *b = '1529876';
+    for(;;) {
+        PORTL ^= _BV(PORTL6);
+        Bluetooth_Send_String(&b);
 
-    Task_Terminate();
+        _delay_ms(1000);
+    }
 }
 
 // Application level main function
 // Creates the required tasks and then terminates
 void a_main() {
+    DDRL |= _BV(DDL6);
+
     Bluetooth_UART_Init();
 
     Task_Create(Send, 1, 1);

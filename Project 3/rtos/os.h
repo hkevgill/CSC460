@@ -33,7 +33,7 @@ typedef enum process_states {
     RUNNING,
     SLEEPING,
     BLOCKED_ON_MUTEX,
-    WAITING,
+    WAITING_ON_EVENT,
     TERMINATED
 } PROCESS_STATES;
 

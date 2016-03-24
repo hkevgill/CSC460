@@ -598,7 +598,7 @@ static void Next_Kernel_Request() {
         case EVENT_WAIT:
         	waiting = Kernel_Wait_Event();
         	if (waiting) {
-				Cp->state = WAITING;
+				Cp->state = WAITING_ON_EVENT;
         		enqueueRQ(&Cp, &ReadyQueue, &RQCount);
         		Dispatch();
         	}

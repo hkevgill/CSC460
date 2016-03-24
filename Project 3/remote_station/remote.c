@@ -3,7 +3,9 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
-#include "os.h"
+#include "../roomba/roomba.h"
+#include "../roomba/roomba_sci.h"
+#include "../rtos/os.h"
 
 unsigned int portL2_Mutex;
 unsigned int portL6_Mutex;

@@ -1,4 +1,4 @@
-#include "Usb_UART.h"
+#include "uart.h"
 
 #include <avr/io.h>
 
@@ -23,7 +23,7 @@ void Roomba_Send_Byte(uint8_t data_out){
     UDR3 = data_out;
 }
 
-void Roomba_Receive_Byte(){      
+unsigned char Roomba_Receive_Byte(){      
     // Wait for data to be received
     while(!( UCSR3A & (1<<RXC3)));
     // Get and return data from buffer
@@ -57,7 +57,7 @@ void Bluetooth_Send_Byte(uint8_t data_out){
     UDR1 = data_out;
 }
 
-void Bluetooth_Receive_Byte(){      
+unsigned char Bluetooth_Receive_Byte(){      
     // Wait for data to be received
     while(!( UCSR1A & (1<<RXC1)));
     // Get and return data from buffer

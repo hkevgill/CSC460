@@ -29,17 +29,15 @@ void a_main() {
 
     IdlePID = Task_Create(Idle, MINPRIORITY, 1);
 
-    // LED
-    // DDRL |= _BV(DDL6);
-
     Bluetooth_UART_Init();
     Roomba_UART_Init();
+
     Roomba_Init();
 
     for(;;) {
-        Roomba_Drive(100,DRIVE_STRAIGHT);
+        Roomba_Drive(50,DRIVE_STRAIGHT);
         _delay_ms(5000);
-        Roomba_Drive(-100,DRIVE_STRAIGHT);
+        Roomba_Drive(-50,DRIVE_STRAIGHT);
         _delay_ms(5000);
     }
 

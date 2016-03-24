@@ -8,6 +8,9 @@
 #include "../uart/uart.h" 
 
 void Roomba_Init(){
+    
+	_delay_ms(2100);
+   
     // Wake Roomba from sleep
     DDRA |= (1<<PA3);
     PORTA |= (1<<PA3);

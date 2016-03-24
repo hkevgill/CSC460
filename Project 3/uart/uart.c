@@ -67,13 +67,8 @@ unsigned char Bluetooth_Receive_Byte(){
 }
 
 void Bluetooth_Send_String(char *string_out){
-    // int i;
-    // for (i=0; i<strlen(*string_out); i++) {
-    //     Bluetooth_Send_Byte(string_out[i]);
-    // }
-
     for(; *string_out; string_out++){
-        _delay_ms(4);
+        _delay_ms(10);
         Bluetooth_Send_Byte(*string_out);
     }
 }

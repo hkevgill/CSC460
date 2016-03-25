@@ -40,9 +40,9 @@ typedef enum servo_states {
 // Queue globals
 #define QSize 	10
 
-// int servoQueue[QSize];
-// int servoFront;
-// int servoRear;
+int servoQueue[QSize];
+int servoFront;
+int servoRear;
 
 int laserQueue[QSize];
 int laserFront;
@@ -109,7 +109,6 @@ void Idle() {
 
 // ------------------------------ LASER TASK ------------------------------ //
 void Laser_Task() {
-	uint8_t r_byte = 0;
 	for(;;) {
 		Mutex_Lock(laserMutex);
 		if(!buffer_isEmpty(&laserFront, &laserRear)) {
@@ -128,46 +127,62 @@ void Laser_Task() {
 
 // ------------------------------ SERVO TASK ------------------------------ //
 void Servo_Task() {
-	// uint8_t r_byte = 0;
-	// for(;;) {
-	// 	Mutex_Lock(laserMutex);
-	// 	if(!buffer_isEmpty(&laserFront, &laserRear)) {
-	// 		laserState = buffer_dequeue(laserQueue, &laserFront, &laserRear);
-	// 		if (laserState == ON) {
-	// 			enablePORTL6();
-	// 		}
-	// 		else {
-	// 			disablePORTL6();
-	// 		}
-	// 	}
-	// 	Mutex_Unlock(laserMutex);
-	// 	Task_Sleep(10);
-	// }
-	for(;;){
-		continue;
+	for(;;) {
+		Mutex_Lock(servoMutex);
+		if(!buffer_isEmpty(&servoFront, &servoRear)) {
+			servXState = buffer_dequeue(servoQueue, &servoFront, &servoRear);
+			if(!buffer_isEmpty(&servoFront, &servoRear)) {
+				servYState = buffer_dequeue(servoQueue, &servoFront, &servoRear);
+
+				// TEST CODE--------------
+				// if (servYState > 100) {
+				// 	enablePORTL6();
+				// }
+				// else {
+				// 	disablePORTL6();
+				// }
+				// TEST CODE--------------
+			}
+		}
+		Mutex_Unlock(servoMutex);
+		Task_Sleep(10);
 	}
 }
 
 // ------------------------------ BLUETOOTH RECIEVE ------------------------------ //
 void Bluetooth_Receive() {
 	uint8_t flag;
-	uint8_t data;
+	uint8_t laser_data;
+	uint16_t servo_data;
+	uint8_t servo_data1;
+	uint8_t servo_data2;
+
+
 	for(;;){
 		if(( UCSR1A & (1<<RXC1))) {
 			flag = Bluetooth_Receive_Byte();
 
 			if (flag == LASER){
 				Mutex_Lock(laserMutex);
-				data = Bluetooth_Receive_Byte();
-				buffer_enqueue(data, laserQueue, &laserFront, &laserRear);
+				laser_data = Bluetooth_Receive_Byte();
+				buffer_enqueue(laser_data, laserQueue, &laserFront, &laserRear);
 				Mutex_Unlock(laserMutex);
 			}
 
 			if (flag == SERVO){
 				Mutex_Lock(servoMutex);
-				data = Bluetooth_Receive_Byte();
-				buffer_enqueue(data, laserQueue, &laserFront, &laserRear);
-				Mutex_Unlock(laserMutex);
+				
+				servo_data1 = Bluetooth_Receive_Byte();
+				servo_data2 = Bluetooth_Receive_Byte();
+				servo_data = (servo_data1<<8) | (servo_data2);
+				buffer_enqueue(servo_data, servoQueue, &servoFront, &servoRear);
+
+				servo_data1 = Bluetooth_Receive_Byte();
+				servo_data2 = Bluetooth_Receive_Byte();
+				servo_data = (servo_data1<<8) | (servo_data2);
+				buffer_enqueue(servo_data, servoQueue, &servoFront, &servoRear);
+				
+				Mutex_Unlock(servoMutex);
 			}
 		}
 		Task_Sleep(5);
@@ -185,6 +200,8 @@ void a_main() {
 	// Initialize Queues
 	laserFront = 0;
 	laserRear = 0;
+	servoFront = 0;
+	servoRear = 0;
 
 	// Initialize Mutexes
 	laserMutex = Mutex_Init();
@@ -193,7 +210,7 @@ void a_main() {
 	// Initialize Bluetooth and Roomba UART
 	Bluetooth_UART_Init();
 	Roomba_UART_Init();
-	Roomba_Init();
+	// Roomba_Init();
 
 	// Create Tasks
 	IdlePID = Task_Create(Idle, MINPRIORITY, 1);
@@ -201,7 +218,7 @@ void a_main() {
 
 	BluetoothReceivePID = Task_Create(Bluetooth_Receive, 1, 3);
 	LaserTaskPID = Task_Create(Laser_Task, 1, 3);
-	ServoTaskPID = Task_Create(Servo_Task, 1, 3);
+	// ServoTaskPID = Task_Create(Servo_Task, 1, 3);
 
 	Task_Terminate();
 }

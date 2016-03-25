@@ -9,9 +9,11 @@
 
 unsigned int IdlePID;
 
-uint8_t x, y = 0;
+uint16_t x, y = 0;
 
 uint8_t LASER = 0;
+uint8_t SERVO = 1;
+
 uint8_t laser = 0;
 uint8_t previousLaser = 0;
 
@@ -39,7 +41,8 @@ void JoystickTask() {
 
         while((ADCSRA)&(1<<ADSC));    //WAIT UNTIL CONVERSION IS COMPLETE
 
-        x = ADC
+        x = ADC;
+        x = 1.75*x + 600;
 
         // Read y
         ADMUX = (ADMUX & 0xE0); // Channel 8
@@ -52,6 +55,13 @@ void JoystickTask() {
         while((ADCSRA)&(1<<ADSC));    //WAIT UNTIL CONVERSION IS COMPLETE
 
         y = ADC;
+        y = 1.75*y + 600;
+
+        Bluetooth_Send_Byte(SERVO);
+        Bluetooth_Send_Byte(x>>8);
+        Bluetooth_Send_Byte(x);
+        Bluetooth_Send_Byte(y>>8);
+        Bluetooth_Send_Byte(y);
 
         Task_Sleep(10);
     }
@@ -86,7 +96,7 @@ void a_main() {
     InitADC();
 
     // Task_Create(Send, 5, 1);
-    Task_Create(JoystickTask, 1, 1);
+    // Task_Create(JoystickTask, 1, 1);
     Task_Create(LaserTask, 1, 1);
     IdlePID = Task_Create(Idle, MINPRIORITY, 1);
 

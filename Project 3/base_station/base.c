@@ -9,7 +9,11 @@
 
 unsigned int IdlePID;
 
-int x, y = 0;
+uint8_t x, y = 0;
+
+uint8_t LASER = 0;
+uint8_t laser = 0;
+uint8_t previousLaser = 0;
 
 // An idle task that runs when there is nothing else to do
 // Could be changed later to put CPU into low power state
@@ -18,22 +22,12 @@ void Idle() {
     }
 }
 
-void Send() {
-    char *b = '1529165';
-    for(;;) {
-        PORTL ^= _BV(PORTL6);
-        Bluetooth_Send_String(&b);
-
-        _delay_ms(1000);
-    }
-}
-
 void InitADC() {
     ADMUX |= (1<<REFS0);
     ADCSRA|=(1<<ADEN)|(1<<ADPS0)|(1<<ADPS1)|(1<<ADPS2); //ENABLE ADC, PRESCALER 128
 }
 
-void ReadJoystick() {
+void JoystickTask() {
     for(;;) {
 
         // Read x
@@ -45,7 +39,7 @@ void ReadJoystick() {
 
         while((ADCSRA)&(1<<ADSC));    //WAIT UNTIL CONVERSION IS COMPLETE
 
-        x = (ADC);
+        x = ADC
 
         // Read y
         ADMUX = (ADMUX & 0xE0); // Channel 8
@@ -63,6 +57,25 @@ void ReadJoystick() {
     }
 }
 
+void LaserTask() {
+    DDRB |= (0<<DDB1);
+    PORTB |= (1<<PORTB1);
+    for(;;) {
+        // Read laser
+        laser = (PINB & _BV(PB1)) ? 0 : 1;
+
+        if (laser != previousLaser) {
+            Bluetooth_Send_Byte(LASER);
+            Bluetooth_Send_Byte(laser);
+
+            previousLaser = laser;
+        }
+
+        // Sleep 100 ms
+        Task_Sleep(10);
+    }
+}
+
 // Application level main function
 // Creates the required tasks and then terminates
 void a_main() {
@@ -73,7 +86,8 @@ void a_main() {
     InitADC();
 
     // Task_Create(Send, 5, 1);
-    Task_Create(ReadJoystick, 1, 1);
+    Task_Create(JoystickTask, 1, 1);
+    Task_Create(LaserTask, 1, 1);
     IdlePID = Task_Create(Idle, MINPRIORITY, 1);
 
     Task_Terminate();

@@ -86,7 +86,7 @@ void JoystickTask() {
         while((ADCSRA)&(1<<ADSC));    //WAIT UNTIL CONVERSION IS COMPLETE
 
         x = ADC;
-        x = 1.75*x + 600;
+        x = 0.458*x + 140;
 
         Mutex_Lock(bluetooth_mutex);
 

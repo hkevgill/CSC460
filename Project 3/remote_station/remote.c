@@ -9,17 +9,22 @@
 
 uint8_t LASER = 0;
 uint8_t SERVO = 1;
-uint8_t SCREEN = 2;
+uint8_t LIGHT = 2;
+uint8_t SCREEN = 3;
 
 uint8_t IdlePID;
 uint8_t RoombaTestPID;
+uint8_t BluetoothSendPID;
 uint8_t BluetoothReceivePID;
 uint8_t LaserTaskPID;
 uint8_t ServoTaskPID;
+uint8_t LightSensorTaskPID;
 
 int laserState;
 int servXState;
 int servYState;
+
+uint16_t photocellReading;
 
 // An idle task that runs when there is nothing else to do
 // Could be changed later to put CPU into low power state
@@ -88,6 +93,13 @@ void enablePORTL6() {
 void disablePORTL6() {
 	PORTL &= ~_BV(PORTL6);
 }
+// ------------------------------ TOGGLE PORTL2 ------------------------------ /
+void enablePORTL2() {
+	PORTL |= _BV(PORTL2);
+}
+void disablePORTL2() {
+	PORTL &= ~_BV(PORTL2);
+}
 
 // ------------------------------ ROOMBA TEST ------------------------------ //
 void Roomba_Test() {
@@ -99,6 +111,15 @@ void Roomba_Test() {
 	}
 }
 
+
+// ******************************************************************* //
+// ****************************** TASKS ****************************** //
+// ******************************************************************* //
+
+void ADC_init() {
+	ADMUX |= (1<<REFS0);
+	ADCSRA |= (1<<ADEN) | (1<<ADPS0) | (1<<ADPS1) | (1<<ADPS2);
+}
 
 // ------------------------------ IDLE TASK ------------------------------ //
 void Idle() {
@@ -149,6 +170,45 @@ void Servo_Task() {
 	}
 }
 
+// ------------------------------ LIGHT SENSOR TASK ------------------------------ //
+void LightSensor_Task() {
+	for(;;) {
+		// Read photocell
+		ADMUX = (ADMUX & 0xE0);
+
+		ADMUX = (ADMUX | 0x07); // Channel 7
+
+		ADCSRB |= (0<<MUX5);
+
+		ADCSRA |= (1<<ADSC); // Start conversion
+
+		while((ADCSRA)&(1<<ADSC));    //WAIT UNTIL CONVERSION IS COMPLETE
+
+		photocellReading = ADC;
+
+		if (photocellReading >= 500) {
+			enablePORTL2();
+		}
+		if (photocellReading < 500) {
+			disablePORTL2();
+		}
+
+		Task_Sleep(15);
+	}
+}
+
+// ------------------------------ BLUETOOTH SEND ------------------------------ //
+void Bluetooth_Send() {
+	for(;;) {
+		// SEND LIGHT SENSOR DATA
+		Bluetooth_Send_Byte(LIGHT);
+		Bluetooth_Send_Byte(photocellReading>>8);
+		Bluetooth_Send_Byte(photocellReading);
+
+		Task_Sleep(10);
+	}
+}
+
 // ------------------------------ BLUETOOTH RECIEVE ------------------------------ //
 void Bluetooth_Receive() {
 	uint8_t flag;
@@ -194,8 +254,9 @@ void Bluetooth_Receive() {
 // Creates the required tasks and then terminates
 void a_main() {
 
-	// Initialize PORTL6
+	// Initialize LEDS
 	DDRL |= _BV(DDL6);
+	DDRL |= _BV(DDL2);
 
 	// Initialize Queues
 	laserFront = 0;
@@ -211,14 +272,20 @@ void a_main() {
 	Bluetooth_UART_Init();
 	Roomba_UART_Init();
 	// Roomba_Init();
+	ADC_init();
+
+	// Initialize Values
+	photocellReading = 0;
 
 	// Create Tasks
 	IdlePID = Task_Create(Idle, MINPRIORITY, 1);
-	RoombaTestPID = Task_Create(Roomba_Test, 9, 2);
+	// RoombaTestPID = Task_Create(Roomba_Test, 9, 2);
 
+	BluetoothSendPID = Task_Create(Bluetooth_Send, 1, 3);
 	BluetoothReceivePID = Task_Create(Bluetooth_Receive, 1, 3);
 	LaserTaskPID = Task_Create(Laser_Task, 1, 3);
 	// ServoTaskPID = Task_Create(Servo_Task, 1, 3);
+	LightSensorTaskPID = Task_Create(LightSensor_Task, 1, 3);
 
 	Task_Terminate();
 }

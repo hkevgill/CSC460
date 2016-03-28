@@ -176,7 +176,7 @@ void Servo_Task() {
 			servXState = buffer_dequeue(servoQueue, &servoFront, &servoRear);
 
 			// TEST CODE--------------
-			OCR4A = servXState / 4;
+			OCR4A = servXState;
 			// TEST CODE--------------
 		}
 		Mutex_Unlock(servoMutex);

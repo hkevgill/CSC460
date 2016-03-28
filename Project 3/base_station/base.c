@@ -9,6 +9,9 @@
 
 unsigned int IdlePID;
 
+MUTEX bluetooth_mutex;
+MUTEX ls_mutex;
+
 uint16_t x, y = 0;
 uint16_t photocellReading;
 
@@ -85,26 +88,15 @@ void JoystickTask() {
         x = ADC;
         x = 1.75*x + 600;
 
-        // Read y
-        ADMUX = (ADMUX & 0xE0);
-        ADMUX |= (1<<MUX0); // Channel 9
-
-        ADCSRB |= (1<<MUX5);
-
-        ADCSRA |= (1<<ADSC); // Start conversion
-
-        while((ADCSRA)&(1<<ADSC));    //WAIT UNTIL CONVERSION IS COMPLETE
-
-        y = ADC;
-        y = 1.75*y + 600;
+        Mutex_Lock(bluetooth_mutex);
 
         Bluetooth_Send_Byte(SERVO);
         Bluetooth_Send_Byte(x>>8);
         Bluetooth_Send_Byte(x);
-        Bluetooth_Send_Byte(y>>8);
-        Bluetooth_Send_Byte(y);
 
-        Task_Sleep(10);
+        Mutex_Unlock(bluetooth_mutex);
+
+        Task_Sleep(20);
     }
 }
 
@@ -116,17 +108,21 @@ void LaserTask() {
         laser = (PINB & _BV(PB1)) ? 0 : 1;
 
         if (laser != previousLaser) {
+            Mutex_Lock(bluetooth_mutex);
+
             Bluetooth_Send_Byte(LASER);
             Bluetooth_Send_Byte(laser);
 
-            previousLaser = laser;
+            Mutex_Unlock(bluetooth_mutex);
 
-            // if (laser == 1) {
-            //     PORTL |= _BV(PORTL6);
-            // }
-            // else {
-            //     PORTL &= ~_BV(PORTL6);
-            // }
+            if(laser == 1) {
+                PORTL |= _BV(PORTL6);
+            }
+            else {
+                PORTL &= ~_BV(PORTL6);
+            }
+
+            previousLaser = laser;
         }
 
         // Sleep 100 ms
@@ -135,12 +131,12 @@ void LaserTask() {
 }
 
 void bluetoothReceive() {
-    uint8_t flag;
-    uint16_t ls_data;
-    uint8_t ls_data1;
-    uint8_t ls_data2;
 
     for(;;) {
+        uint8_t flag;
+        uint16_t ls_data;
+        uint8_t ls_data1;
+        uint8_t ls_data2;
         if(( UCSR1A & (1<<RXC1))) {
             flag = Bluetooth_Receive_Byte();
 
@@ -149,26 +145,23 @@ void bluetoothReceive() {
                 ls_data2 = Bluetooth_Receive_Byte();
                 ls_data = (ls_data1<<8) | (ls_data2);
 
+                Mutex_Lock(ls_mutex);
                 buffer_enqueue(ls_data, lSQueue, &lSFront, &lSRear);
+                Mutex_Unlock(ls_mutex);
             }
         }
 
-        Task_Sleep(10);
+        Task_Sleep(15);
     }
 }
 
 void screenTask() {
     for(;;) {
+        Mutex_Lock(ls_mutex);
         uint16_t lSState = buffer_dequeue(lSQueue, &lSFront, &lSRear);
+        Mutex_Unlock(ls_mutex);
 
-        if(lSState >= 500) {
-            PORTL |= _BV(PORTL6);
-        }
-        if(lSState < 500) {
-            PORTL &= ~_BV(PORTL6);
-        }
-
-        Task_Sleep(10);
+        Task_Sleep(15);
     }
 }
 
@@ -177,15 +170,17 @@ void screenTask() {
 void a_main() {
     DDRL |= _BV(DDL6);
 
+    bluetooth_mutex = Mutex_Init();
+    ls_mutex = Mutex_Init();
+
     Bluetooth_UART_Init();
 
-    // InitADC();
+    InitADC();
 
-    // Task_Create(Send, 5, 1);
-    // Task_Create(JoystickTask, 1, 1);
-    Task_Create(screenTask, 1, 1);
-    Task_Create(LaserTask, 1, 1);
-    Task_Create(bluetoothReceive, 1, 1);
+    Task_Create(JoystickTask, 2, 1);
+    Task_Create(screenTask, 2, 1);
+    Task_Create(LaserTask, 2, 1);
+    Task_Create(bluetoothReceive, 2, 1);
     IdlePID = Task_Create(Idle, MINPRIORITY, 1);
 
     Task_Terminate();

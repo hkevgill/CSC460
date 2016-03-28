@@ -21,8 +21,8 @@ uint8_t ServoTaskPID;
 uint8_t LightSensorTaskPID;
 
 int laserState;
-int servXState;
-int servYState;
+int servoState;
+int lastServoState;
 
 uint16_t photocellReading;
 
@@ -154,6 +154,7 @@ void Idle() {
 void Laser_Task() {
 	for(;;) {
 		Mutex_Lock(laserMutex);
+
 		if(!buffer_isEmpty(&laserFront, &laserRear)) {
 			laserState = buffer_dequeue(laserQueue, &laserFront, &laserRear);
 			if (laserState == ON) {
@@ -163,6 +164,7 @@ void Laser_Task() {
 				disablePORTL6();
 			}
 		}
+
 		Mutex_Unlock(laserMutex);
 		Task_Sleep(10);
 	}
@@ -172,13 +174,26 @@ void Laser_Task() {
 void Servo_Task() {
 	for(;;) {
 		Mutex_Lock(servoMutex);
-		if(!buffer_isEmpty(&servoFront, &servoRear)) {
-			servXState = buffer_dequeue(servoQueue, &servoFront, &servoRear);
 
-			// TEST CODE--------------
-			OCR4A = servXState;
-			// TEST CODE--------------
+		if(!buffer_isEmpty(&servoFront, &servoRear)) {
+			servoState = buffer_dequeue(servoQueue, &servoFront, &servoRear);
 		}
+
+		if (servoState > 380 && lastServoState <= 610) {
+			if (servoState > 550) {
+					lastServoState = lastServoState + 3;
+			}
+			lastServoState = lastServoState + 1;
+			OCR4A = lastServoState;
+		}
+		else if (servoState < 370 && lastServoState >= 140) {
+			if (servoState < 200) {
+				lastServoState = lastServoState - 3;
+			}
+			lastServoState = lastServoState - 1;
+			OCR4A = lastServoState;
+		}
+
 		Mutex_Unlock(servoMutex);
 		Task_Sleep(3);
 	}
@@ -231,7 +246,6 @@ void Bluetooth_Receive() {
 	uint8_t servo_data1;
 	uint8_t servo_data2;
 
-
 	for(;;){
 		if(( UCSR1A & (1<<RXC1))) {
 			flag = Bluetooth_Receive_Byte();
@@ -251,6 +265,13 @@ void Bluetooth_Receive() {
 				servo_data1 = Bluetooth_Receive_Byte();
 				servo_data2 = Bluetooth_Receive_Byte();
 				servo_data = (servo_data1<<8) | (servo_data2);
+
+				// TEST CODE --------- breaking
+				if(servo_data < 5){
+					OCR4A = 170;
+				}
+				// -------------------
+
 				buffer_enqueue(servo_data, servoQueue, &servoFront, &servoRear);
 				
 				Mutex_Unlock(servoMutex);
@@ -293,6 +314,8 @@ void a_main() {
 
 	// Initialize Values
 	photocellReading = 0;
+	servoState = 375;
+	lastServoState = 375;
 
 	// Create Tasks
 	IdlePID = Task_Create(Idle, MINPRIORITY, 1);

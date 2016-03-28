@@ -12,13 +12,15 @@ unsigned int IdlePID;
 MUTEX bluetooth_mutex;
 MUTEX ls_mutex;
 
-uint16_t x, y = 0;
+int x, y = 0;
 uint16_t photocellReading;
 
 uint8_t LASER = 0;
 uint8_t SERVO = 1;
 uint8_t LS = 2;
 uint8_t SCREEN = 3;
+
+int servoState = 375;
 
 uint8_t laser = 0;
 uint8_t previousLaser = 0;
@@ -86,17 +88,36 @@ void JoystickTask() {
         while((ADCSRA)&(1<<ADSC));    //WAIT UNTIL CONVERSION IS COMPLETE
 
         x = ADC;
-        x = 0.458*x + 140;
+        x = (0.458*x) + 140;
 
         Mutex_Lock(bluetooth_mutex);
 
-        Bluetooth_Send_Byte(SERVO);
-        Bluetooth_Send_Byte(x>>8);
-        Bluetooth_Send_Byte(x);
+        if ((x - servoState > 0 && x > 380) || (x < 370 && x - servoState < 0)) {
+
+            if (x > 135 && x < 145) {
+                PORTL |= _BV(PORTL6);
+            }
+
+
+            Bluetooth_Send_Byte(SERVO);
+            Bluetooth_Send_Byte(x>>8);
+            Bluetooth_Send_Byte(x);
+
+            servoState = x;
+        }
+        else if (x <= 380 && x >= 370) {
+            x = 375;
+            servoState = 375;
+            Bluetooth_Send_Byte(SERVO);
+            Bluetooth_Send_Byte(x>>8);
+            Bluetooth_Send_Byte(x);
+        }
 
         Mutex_Unlock(bluetooth_mutex);
 
         Task_Sleep(20);
+
+        PORTL &= ~_BV(PORTL6);
     }
 }
 
@@ -149,6 +170,9 @@ void bluetoothReceive() {
                 buffer_enqueue(ls_data, lSQueue, &lSFront, &lSRear);
                 Mutex_Unlock(ls_mutex);
             }
+            // else if(flag == SERVO) {
+
+            // }
         }
 
         Task_Sleep(15);

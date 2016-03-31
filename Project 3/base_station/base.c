@@ -12,7 +12,7 @@ unsigned int IdlePID;
 MUTEX bluetooth_mutex;
 MUTEX ls_mutex;
 
-int x, y = 0;
+int x, y = 375;
 uint16_t photocellReading;
 
 uint8_t LASER = 0;
@@ -85,32 +85,35 @@ void JoystickTask() {
 
         ADCSRA |= (1<<ADSC); // Start conversion
 
-        while((ADCSRA)&(1<<ADSC));    //WAIT UNTIL CONVERSION IS COMPLETE
+        while((ADCSRA)&(1<<ADSC));    // wait until conversion is complete
 
         x = ADC;
+
         x = (0.458*x) + 140;
 
         Mutex_Lock(bluetooth_mutex);
 
-        if ((x - servoState > 0 && x > 380) || (x < 370 && x - servoState < 0)) {
+        if ((x - servoState > 0 && x >= 380) || (x < 370 && x - servoState < 0)) {
 
-            if (x > 135 && x < 145) {
-                PORTL |= _BV(PORTL6);
-            }
-
+            uint8_t x1 = x>>8;
+            uint8_t x2 = x;
 
             Bluetooth_Send_Byte(SERVO);
-            Bluetooth_Send_Byte(x>>8);
-            Bluetooth_Send_Byte(x);
+            Bluetooth_Send_Byte(x1);
+            Bluetooth_Send_Byte(x2);
 
             servoState = x;
         }
-        else if (x <= 380 && x >= 370) {
+        else if ((x <= 380) && (x >= 370)) {
             x = 375;
             servoState = 375;
+
+            uint8_t x1 = x>>8;
+            uint8_t x2 = x;
+
             Bluetooth_Send_Byte(SERVO);
-            Bluetooth_Send_Byte(x>>8);
-            Bluetooth_Send_Byte(x);
+            Bluetooth_Send_Byte(x1);
+            Bluetooth_Send_Byte(x2);
         }
 
         Mutex_Unlock(bluetooth_mutex);

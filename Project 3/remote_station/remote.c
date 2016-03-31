@@ -100,6 +100,13 @@ void enablePORTL2() {
 void disablePORTL2() {
 	PORTL &= ~_BV(PORTL2);
 }
+// ------------------------------ TOGGLE PORTL5 ------------------------------ /
+void enablePORTL5() {
+	PORTL |= _BV(PORTL5);
+}
+void disablePORTL5() {
+	PORTL &= ~_BV(PORTL5);
+}
 // ------------------------------ TOGGLE PORTH3 ------------------------------ /
 void enablePORTH3() {
 	PORTL |= _BV(PORTH3);
@@ -179,18 +186,18 @@ void Servo_Task() {
 			servoState = buffer_dequeue(servoQueue, &servoFront, &servoRear);
 		}
 
-		if (servoState > 380 && lastServoState <= 610) {
+		if (servoState > 380 && (lastServoState <= 610)) {
 			if (servoState > 550) {
-					lastServoState = lastServoState + 3;
+					lastServoState += 3;
 			}
-			lastServoState = lastServoState + 1;
+			lastServoState += 1;
 			OCR4A = lastServoState;
 		}
-		else if (servoState < 370 && lastServoState >= 140) {
-			if (servoState < 200) {
-				lastServoState = lastServoState - 3;
+		else if (servoState < 370) {
+			if (servoState < 1) {
+				lastServoState -= 3;
 			}
-			lastServoState = lastServoState - 1;
+			lastServoState -= 1;
 			OCR4A = lastServoState;
 		}
 
@@ -220,6 +227,7 @@ void LightSensor_Task() {
 		}
 		if (photocellReading < 500) {
 			disablePORTL2();
+			disablePORTL5(); // TEST
 		}
 
 		Task_Sleep(10);
@@ -255,25 +263,19 @@ void Bluetooth_Receive() {
 
 				laser_data = Bluetooth_Receive_Byte();
 				buffer_enqueue(laser_data, laserQueue, &laserFront, &laserRear);
-				
+
 				Mutex_Unlock(laserMutex);
 			}
 
 			else if (flag == SERVO){
 				Mutex_Lock(servoMutex);
-
+				
 				servo_data1 = Bluetooth_Receive_Byte();
 				servo_data2 = Bluetooth_Receive_Byte();
-				servo_data = (servo_data1<<8) | (servo_data2);
-
-				// TEST CODE --------- breaking
-				if(servo_data < 5){
-					OCR4A = 170;
-				}
-				// -------------------
+				servo_data = ( ((servo_data1)<<8) | (servo_data2) );
 
 				buffer_enqueue(servo_data, servoQueue, &servoFront, &servoRear);
-				
+
 				Mutex_Unlock(servoMutex);
 			}
 
@@ -293,6 +295,7 @@ void a_main() {
 	// Initialize Ports
 	DDRL |= _BV(DDL6);
 	DDRL |= _BV(DDL2);
+	DDRL |= _BV(DDL5);
 	DDRH |= _BV(DDH3);
 
 	// Initialize Queues

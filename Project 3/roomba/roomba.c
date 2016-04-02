@@ -12,6 +12,7 @@ void Roomba_Init(){
 	_delay_ms(2100);
    
     // Wake Roomba from sleep
+    // Pin 25
     DDRA |= (1<<PA3);
     PORTA |= (1<<PA3);
     

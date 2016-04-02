@@ -11,14 +11,17 @@ unsigned int IdlePID;
 
 MUTEX bluetooth_mutex;
 MUTEX ls_mutex;
+MUTEX adc_mutex;
 
 int x, y = 375;
+int rx, ry;
 uint16_t photocellReading;
 
 uint8_t LASER = 0;
 uint8_t SERVO = 1;
 uint8_t LS = 2;
 uint8_t SCREEN = 3;
+uint8_t ROOMBA = 4;
 
 int servoState = 375;
 
@@ -78,6 +81,8 @@ void InitADC() {
 void JoystickTask() {
     for(;;) {
 
+        Mutex_Lock(adc_mutex);
+
         // Read x
         ADMUX = (ADMUX & 0xE0); // Channel 8
 
@@ -90,6 +95,8 @@ void JoystickTask() {
         x = ADC;
 
         x = (0.458*x) + 140;
+
+        Mutex_Unlock(adc_mutex);
 
         Mutex_Lock(bluetooth_mutex);
 
@@ -119,8 +126,6 @@ void JoystickTask() {
         Mutex_Unlock(bluetooth_mutex);
 
         Task_Sleep(20);
-
-        PORTL &= ~_BV(PORTL6);
     }
 }
 
@@ -139,12 +144,12 @@ void LaserTask() {
 
             Mutex_Unlock(bluetooth_mutex);
 
-            if(laser == 1) {
-                PORTL |= _BV(PORTL6);
-            }
-            else {
-                PORTL &= ~_BV(PORTL6);
-            }
+            // if(laser == 1) {
+            //     PORTL |= _BV(PORTL6);
+            // }
+            // else {
+            //     PORTL &= ~_BV(PORTL6);
+            // }
 
             previousLaser = laser;
         }
@@ -182,6 +187,34 @@ void bluetoothReceive() {
     }
 }
 
+void switchMode() {
+    int mode = 0;
+
+    for(;;) {
+        Mutex_Lock(adc_mutex);
+
+        // Read lcd button
+        ADMUX = (ADMUX & 0xE0); // Channel 0
+
+        ADCSRB |= (0<<MUX5);
+
+        ADCSRA |= (1<<ADSC); // Start conversion
+
+        while((ADCSRA)&(1<<ADSC));    // wait until conversion is complete
+
+        mode = ADC;
+
+        // Read select
+        if (mode < 150) {
+            PORTL ^= _BV(PORTL6);
+        }
+
+        Mutex_Unlock(adc_mutex);
+
+        Task_Sleep(10);
+    }
+}
+
 void screenTask() {
     for(;;) {
         Mutex_Lock(ls_mutex);
@@ -192,6 +225,74 @@ void screenTask() {
     }
 }
 
+void RoombaTask() {
+    char command = 'B';
+
+    for(;;) {
+        Mutex_Lock(adc_mutex);
+        // Read rx
+        ADMUX = (ADMUX & 0xE0); // Channel 8
+
+        ADCSRB |= (1<<MUX5);
+
+        ADCSRA |= (1<<ADSC); // Start conversion
+
+        while((ADCSRA)&(1<<ADSC));    // wait until conversion is complete
+
+        rx = ADC;
+
+        // Read ry
+        ADMUX = (ADMUX & 0xE0); // Channel 9
+
+        ADMUX |= (1<<MUX0);
+
+        ADCSRB |= (1<<MUX5);
+
+        ADCSRA |= (1<<ADSC); // Start conversion
+
+        while((ADCSRA)&(1<<ADSC));    // wait until conversion is complete
+
+        ry = ADC;
+
+        Mutex_Unlock(adc_mutex);
+
+        if ((ry > 700) && (rx > 300) && (rx < 700)) {
+            command = 'B';
+        }
+        else if ((ry < 300) && (rx > 300) && (rx < 700)) {
+            command = 'G';
+        }
+        else if ((rx > 700) && (ry > 300) && (ry < 700)) {
+            command = 'D';
+        }
+        else if ((rx < 300) && (ry > 300) && (ry < 700)) {
+            command = 'E';
+        }
+        else if ((ry > 700) && (rx > 700)) {
+            command = 'A';
+        }
+        else if ((ry > 700) && (rx < 300)) {
+            command = 'C';
+        }
+        else if ((ry < 300) && (rx > 700)) {
+            command = 'F';
+        }
+        else if ((ry < 300) && (rx < 300)) {
+            command = 'H';
+        }
+        else {
+            command = 'X';
+        }
+
+        // PORTL ^= _BV(PORTL6);
+
+        Bluetooth_Send_Byte(ROOMBA);
+        Bluetooth_Send_Byte(command);
+
+        Task_Sleep(20);
+    }
+}
+
 // Application level main function
 // Creates the required tasks and then terminates
 void a_main() {
@@ -199,14 +300,18 @@ void a_main() {
 
     bluetooth_mutex = Mutex_Init();
     ls_mutex = Mutex_Init();
+    adc_mutex = Mutex_Init();
 
     Bluetooth_UART_Init();
 
     InitADC();
 
-    Task_Create(JoystickTask, 2, 1);
+
+    // Task_Create(ServoTask, 2, 1);
     Task_Create(screenTask, 2, 1);
     Task_Create(LaserTask, 2, 1);
+    Task_Create(RoombaTask, 2, 1);
+    // Task_Create(switchMode, 2, 1);
     Task_Create(bluetoothReceive, 2, 1);
     IdlePID = Task_Create(Idle, MINPRIORITY, 1);
 

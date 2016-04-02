@@ -11,9 +11,11 @@ uint8_t LASER = 0;
 uint8_t SERVO = 1;
 uint8_t PHOTO = 2;
 uint8_t SCREEN = 3;
+uint8_t ROOMBA = 4;
 
 uint8_t IdlePID;
 uint8_t RoombaTestPID;
+uint8_t RoombaTaskPID;
 uint8_t BluetoothSendPID;
 uint8_t BluetoothReceivePID;
 uint8_t LaserTaskPID;
@@ -23,6 +25,7 @@ uint8_t LightSensorTaskPID;
 int laserState;
 int servoState;
 int lastServoState;
+char roombaState;
 
 uint16_t photocellReading;
 
@@ -52,6 +55,10 @@ int servoRear;
 int laserQueue[QSize];
 int laserFront;
 int laserRear;
+
+int roombaQueue[QSize];
+int roombaFront;
+int roombaRear;
 
 // Mutexes
 MUTEX laserMutex;
@@ -222,15 +229,60 @@ void LightSensor_Task() {
 
 		photocellReading = ADC;
 
-		if (photocellReading >= 500) {
-			enablePORTL2();
-		}
-		if (photocellReading < 500) {
-			disablePORTL2();
-			disablePORTL5(); // TEST
-		}
+		// if (photocellReading >= 500) {
+		// 	enablePORTL2();
+		// }
+		// if (photocellReading < 500) {
+		// 	disablePORTL2();
+		// 	disablePORTL5(); // TEST
+		// }
 
 		Task_Sleep(10);
+	}
+}
+
+// ------------------------------ ROOMBA TASK ------------------------------ //
+void Roomba_Task() {
+	for(;;) {
+		roombaState = NULL;
+		roombaState = buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
+
+		// if(roombaState) {
+		// 	enablePORTL2();
+		// }
+
+		if (!strcmp(roombaState, 'B')) {
+			enablePORTL2();
+		}
+
+		switch(roombaState) {
+			case 'A':
+				break;
+			case 'B':
+				Roomba_Drive(100,DRIVE_STRAIGHT);
+				enablePORTL2();
+				break;
+			case 'C':
+				break;
+			case 'D':
+				Roomba_Drive(25,IN_PLACE_CCW);
+				break;
+			case 'E':
+				Roomba_Drive(25,IN_PLACE_CW);
+				break;
+			case 'F':
+				break;
+			case 'G':
+				Roomba_Drive(-100,DRIVE_STRAIGHT);
+				disablePORTL2();
+				break;
+			case 'H':
+				break;
+			case 'X':
+				Roomba_Drive(0,0);
+		}
+
+		Task_Sleep(50);
 	}
 }
 
@@ -249,10 +301,14 @@ void Bluetooth_Send() {
 // ------------------------------ BLUETOOTH RECIEVE ------------------------------ //
 void Bluetooth_Receive() {
 	uint8_t flag;
+
 	uint8_t laser_data;
+
 	uint16_t servo_data;
 	uint8_t servo_data1;
 	uint8_t servo_data2;
+
+	char roomba_data;
 
 	for(;;){
 		if(( UCSR1A & (1<<RXC1))) {
@@ -267,16 +323,21 @@ void Bluetooth_Receive() {
 				Mutex_Unlock(laserMutex);
 			}
 
-			else if (flag == SERVO){
-				Mutex_Lock(servoMutex);
-				
-				servo_data1 = Bluetooth_Receive_Byte();
-				servo_data2 = Bluetooth_Receive_Byte();
-				servo_data = ( ((servo_data1)<<8) | (servo_data2) );
+			// else if (flag == SERVO){
+			// 	Mutex_Lock(servoMutex);
 
-				buffer_enqueue(servo_data, servoQueue, &servoFront, &servoRear);
+			// 	servo_data1 = Bluetooth_Receive_Byte();
+			// 	servo_data2 = Bluetooth_Receive_Byte();
+			// 	servo_data = ( ((servo_data1)<<8) | (servo_data2) );
 
-				Mutex_Unlock(servoMutex);
+			// 	buffer_enqueue(servo_data, servoQueue, &servoFront, &servoRear);
+
+			// 	Mutex_Unlock(servoMutex);
+			// }
+
+			else if (flag == ROOMBA) {
+				roomba_data = Bluetooth_Receive_Byte();
+				buffer_enqueue(roomba_data, roombaQueue, &roombaFront, &roombaRear);
 			}
 
 			else {
@@ -303,6 +364,8 @@ void a_main() {
 	laserRear = 0;
 	servoFront = 0;
 	servoRear = 0;
+	roombaFront = 0;
+	roombaRear = 0;
 
 	// Initialize Mutexes
 	laserMutex = Mutex_Init();
@@ -313,7 +376,7 @@ void a_main() {
 	Roomba_UART_Init();
 	ADC_init();
 	Servo_Init();
-	// Roomba_Init();
+	Roomba_Init();
 
 	// Initialize Values
 	photocellReading = 0;
@@ -321,13 +384,13 @@ void a_main() {
 	lastServoState = 375;
 
 	// Create Tasks
-	IdlePID = Task_Create(Idle, MINPRIORITY, 1);
-	BluetoothReceivePID = Task_Create(Bluetooth_Receive, 1, 3);
-	BluetoothSendPID = Task_Create(Bluetooth_Send, 2, 3);
-	LaserTaskPID = Task_Create(Laser_Task, 2, 3);
-	LightSensorTaskPID = Task_Create(LightSensor_Task, 2, 3);
-	ServoTaskPID = Task_Create(Servo_Task, 2, 3);
-	// RoombaTestPID = Task_Create(Roomba_Test, 9, 2);
+	IdlePID 				= Task_Create(Idle, MINPRIORITY, 1);
+	BluetoothReceivePID 	= Task_Create(Bluetooth_Receive, 1, 3);
+	BluetoothSendPID 		= Task_Create(Bluetooth_Send, 2, 3);
+	LaserTaskPID 			= Task_Create(Laser_Task, 2, 3);
+	LightSensorTaskPID 		= Task_Create(LightSensor_Task, 2, 3);
+	// ServoTaskPID 			= Task_Create(Servo_Task, 2, 3);
+	RoombaTaskPID 			= Task_Create(Roomba_Task, 2, 2);
 
 	Task_Terminate();
 }

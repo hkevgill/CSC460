@@ -229,13 +229,12 @@ void LightSensor_Task() {
 
 		photocellReading = ADC;
 
-		// if (photocellReading >= 500) {
-		// 	enablePORTL2();
-		// }
-		// if (photocellReading < 500) {
-		// 	disablePORTL2();
-		// 	disablePORTL5(); // TEST
-		// }
+		if (photocellReading >= 60) {
+			enablePORTL2();
+		}
+		if (photocellReading < 60) {
+			disablePORTL2();
+		}
 
 		Task_Sleep(10);
 	}
@@ -243,46 +242,39 @@ void LightSensor_Task() {
 
 // ------------------------------ ROOMBA TASK ------------------------------ //
 void Roomba_Task() {
+	roombaState = NULL;
 	for(;;) {
-		roombaState = NULL;
 		roombaState = buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
 
-		// if(roombaState) {
-		// 	enablePORTL2();
-		// }
-
-		if (!strcmp(roombaState, 'B')) {
-			enablePORTL2();
+		if(roombaState == 'A') {
+			Roomba_Drive(ROOMBA_SPEED,TURN_RADIUS); // Forward-Left
+		}
+		else if(roombaState == 'B') {
+			Roomba_Drive(ROOMBA_SPEED,DRIVE_STRAIGHT); // Forward
+		}
+		else if(roombaState == 'C') {
+			Roomba_Drive(ROOMBA_SPEED,-TURN_RADIUS); // Forward-Right
+		}
+		else if(roombaState == 'D') {
+			Roomba_Drive(ROOMBA_TURN,IN_PLACE_CCW); // Left
+		}
+		else if(roombaState == 'E') {
+			Roomba_Drive(ROOMBA_TURN,IN_PLACE_CW); // Right
+		}
+		else if(roombaState == 'F') {
+			Roomba_Drive(-ROOMBA_SPEED,TURN_RADIUS); // Backward-left
+		}
+		else if(roombaState == 'G') {
+			Roomba_Drive(-ROOMBA_SPEED,DRIVE_STRAIGHT); // Backward
+		}
+		else if(roombaState == 'H') {
+			Roomba_Drive(-ROOMBA_SPEED,-TURN_RADIUS); // Backward-right
+		}
+		else if(roombaState == 'X') {
+			Roomba_Drive(0,0); // Stop
 		}
 
-		switch(roombaState) {
-			case 'A':
-				break;
-			case 'B':
-				Roomba_Drive(100,DRIVE_STRAIGHT);
-				enablePORTL2();
-				break;
-			case 'C':
-				break;
-			case 'D':
-				Roomba_Drive(25,IN_PLACE_CCW);
-				break;
-			case 'E':
-				Roomba_Drive(25,IN_PLACE_CW);
-				break;
-			case 'F':
-				break;
-			case 'G':
-				Roomba_Drive(-100,DRIVE_STRAIGHT);
-				disablePORTL2();
-				break;
-			case 'H':
-				break;
-			case 'X':
-				Roomba_Drive(0,0);
-		}
-
-		Task_Sleep(50);
+		Task_Sleep(20);
 	}
 }
 
@@ -375,7 +367,7 @@ void a_main() {
 	Bluetooth_UART_Init();
 	Roomba_UART_Init();
 	ADC_init();
-	Servo_Init();
+	// Servo_Init();
 	Roomba_Init();
 
 	// Initialize Values

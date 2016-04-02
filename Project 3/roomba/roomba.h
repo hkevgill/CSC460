@@ -22,8 +22,10 @@
 #define SENSOR_SUB_2    2
 #define SENSOR_SUB_3    3
 
-
 // Data special cases
+#define ROOMBA_SPEED	250
+#define ROOMBA_TURN		150
+#define TURN_RADIUS		400
 #define DRIVE_STRAIGHT  32768
 #define IN_PLACE_CW     -1
 #define IN_PLACE_CCW     1

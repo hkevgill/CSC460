@@ -14,6 +14,8 @@
 #define FULL_MODE       132
 #define POWER           133
 #define DRIVE           137
+#define PLAY            141
+#define SONG            140
 
 // Sensors
 #define GET_SENSOR_DATA 142
@@ -33,5 +35,9 @@
 void Roomba_Init(void);
 
 void Roomba_Drive(int16_t velocity, int16_t radius);
+
+void Roomba_Play(uint8_t song);
+
+void Roomba_Song(uint8_t n);
 
 #endif /* ROOMBA_H_ */

@@ -155,7 +155,6 @@ void Servo_Init() {
     ICR4 = 4999;
 
     OCR4A = 375; // 90 Degrees
-
 }
 
 // ------------------------------ IDLE TASK ------------------------------ //
@@ -248,7 +247,7 @@ void Set_Photocell_Threshold() {
 
 // ------------------------------ LIGHT SENSOR TASK ------------------------------ //
 void LightSensor_Task() {
-	int i = 1;
+	int i = 0;
 
 	for(;;) {
 		// Read photocell
@@ -264,11 +263,22 @@ void LightSensor_Task() {
 
 		photocellReading = ADC;
 
-		if (photocellReading >= (photoThreshold + 30)) {
+		if (photocellReading >= (photoThreshold + 50)) {
 			enablePORTL2();
+			Roomba_Play(0);
+			disablePORTL6();
+			OS_Abort();
 		}
 		else {
 			disablePORTL2();
+		}
+
+		if(i % 5 == 0) {
+			Set_Photocell_Threshold();
+			i = 0;
+		}
+		else {
+			i++;
 		}
 
 		Task_Sleep(10);
@@ -403,6 +413,7 @@ void a_main() {
 	ADC_init();
 	// Servo_Init();
 	Roomba_Init();
+	Roomba_Song(0); // Initialize song 0
 
 	// Evaluate light
 	Set_Photocell_Threshold();

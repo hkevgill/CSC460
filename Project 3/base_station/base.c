@@ -256,28 +256,28 @@ void RoombaTask() {
 
         Mutex_Unlock(adc_mutex);
 
-        if ((ry > 700) && (rx > 300) && (rx < 700)) {
+        if ((ry > 750) && (rx > 250) && (rx < 750)) {
             command = 'B';
         }
-        else if ((ry < 300) && (rx > 300) && (rx < 700)) {
+        else if ((ry < 250) && (rx > 250) && (rx < 750)) {
             command = 'G';
         }
-        else if ((rx > 700) && (ry > 300) && (ry < 700)) {
+        else if ((rx > 750) && (ry > 250) && (ry < 750)) {
             command = 'D';
         }
-        else if ((rx < 300) && (ry > 300) && (ry < 700)) {
+        else if ((rx < 250) && (ry > 250) && (ry < 750)) {
             command = 'E';
         }
-        else if ((ry > 700) && (rx > 700)) {
+        else if ((ry > 750) && (rx > 750)) {
             command = 'A';
         }
-        else if ((ry > 700) && (rx < 300)) {
+        else if ((ry > 750) && (rx < 250)) {
             command = 'C';
         }
-        else if ((ry < 300) && (rx > 700)) {
+        else if ((ry < 250) && (rx > 750)) {
             command = 'F';
         }
-        else if ((ry < 300) && (rx < 300)) {
+        else if ((ry < 250) && (rx < 250)) {
             command = 'H';
         }
         else {

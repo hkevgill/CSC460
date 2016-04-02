@@ -28,6 +28,7 @@ int lastServoState;
 char roombaState;
 
 uint16_t photocellReading;
+uint16_t photoThreshold;
 
 // An idle task that runs when there is nothing else to do
 // Could be changed later to put CPU into low power state
@@ -213,8 +214,42 @@ void Servo_Task() {
 	}
 }
 
+void Set_Photocell_Threshold() {
+	uint16_t photo1;
+	uint16_t photo2;
+	uint16_t photo3;
+
+	ADMUX = (ADMUX & 0xE0);
+
+	ADMUX = (ADMUX | 0x07); // Channel 7
+
+	ADCSRB |= (0<<MUX5);
+
+	ADCSRA |= (1<<ADSC); // Start conversion
+
+	while((ADCSRA)&(1<<ADSC));    //WAIT UNTIL CONVERSION IS COMPLETE
+
+	photo1 = ADC;
+
+	ADCSRA |= (1<<ADSC); // Start conversion
+
+	while((ADCSRA)&(1<<ADSC));    //WAIT UNTIL CONVERSION IS COMPLETE
+
+	photo2 = ADC;
+
+	ADCSRA |= (1<<ADSC); // Start conversion
+
+	while((ADCSRA)&(1<<ADSC));    //WAIT UNTIL CONVERSION IS COMPLETE
+
+	photo3 = ADC;
+
+	photoThreshold = (photo1 + photo2 + photo3) / 3;
+}
+
 // ------------------------------ LIGHT SENSOR TASK ------------------------------ //
 void LightSensor_Task() {
+	int i = 1;
+
 	for(;;) {
 		// Read photocell
 		ADMUX = (ADMUX & 0xE0);
@@ -229,10 +264,10 @@ void LightSensor_Task() {
 
 		photocellReading = ADC;
 
-		if (photocellReading >= 60) {
+		if (photocellReading >= (photoThreshold + 30)) {
 			enablePORTL2();
 		}
-		if (photocellReading < 60) {
+		else {
 			disablePORTL2();
 		}
 
@@ -340,7 +375,6 @@ void Bluetooth_Receive() {
 	}
 }
 
-
 // Application level main function
 // Creates the required tasks and then terminates
 void a_main() {
@@ -370,19 +404,22 @@ void a_main() {
 	// Servo_Init();
 	Roomba_Init();
 
+	// Evaluate light
+	Set_Photocell_Threshold();
+
 	// Initialize Values
 	photocellReading = 0;
 	servoState = 375;
 	lastServoState = 375;
 
 	// Create Tasks
-	IdlePID 				= Task_Create(Idle, MINPRIORITY, 1);
-	BluetoothReceivePID 	= Task_Create(Bluetooth_Receive, 1, 3);
-	BluetoothSendPID 		= Task_Create(Bluetooth_Send, 2, 3);
-	LaserTaskPID 			= Task_Create(Laser_Task, 2, 3);
-	LightSensorTaskPID 		= Task_Create(LightSensor_Task, 2, 3);
-	// ServoTaskPID 			= Task_Create(Servo_Task, 2, 3);
-	RoombaTaskPID 			= Task_Create(Roomba_Task, 2, 2);
+	IdlePID 					= Task_Create(Idle, MINPRIORITY, 1);
+	BluetoothReceivePID 		= Task_Create(Bluetooth_Receive, 1, 3);
+	BluetoothSendPID 			= Task_Create(Bluetooth_Send, 2, 3);
+	LaserTaskPID 				= Task_Create(Laser_Task, 2, 3);
+	LightSensorTaskPID 			= Task_Create(LightSensor_Task, 2, 3);
+	// ServoTaskPID 				= Task_Create(Servo_Task, 2, 3);
+	RoombaTaskPID 				= Task_Create(Roomba_Task, 2, 2);
 
 	Task_Terminate();
 }

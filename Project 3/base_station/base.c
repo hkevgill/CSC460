@@ -22,11 +22,15 @@ uint8_t SERVO = 1;
 uint8_t LS = 2;
 uint8_t SCREEN = 3;
 uint8_t ROOMBA = 4;
+uint8_t MODE = 5;
 
 int servoState = 375;
 
 uint8_t laser = 0;
 uint8_t previousLaser = 0;
+
+uint8_t mode = 0;
+uint8_t previousMode = 0;
 
 #define MAX 10
 
@@ -129,6 +133,29 @@ void JoystickTask() {
     }
 }
 
+void SwitchTask() {
+    int mode = 0;
+    DDRL |= (0<<DDL1);
+    PORTL |= (1<<PORTL1);
+    for(;;) {
+        // Read button
+        mode = (PINL & _BV(PL1)) ? 0 : 1;
+
+        if(mode != previousMode) {
+            Mutex_Lock(bluetooth_mutex);
+
+            Bluetooth_Send_Byte(MODE);
+
+            Mutex_Unlock(bluetooth_mutex);
+
+            previousMode = laser;
+        }
+
+        // Sleep 100 ms
+        Task_Sleep(20);
+    }
+}
+
 void LaserTask() {
     DDRB |= (0<<DDB1);
     PORTB |= (1<<PORTB1);
@@ -143,13 +170,6 @@ void LaserTask() {
             Bluetooth_Send_Byte(laser);
 
             Mutex_Unlock(bluetooth_mutex);
-
-            // if(laser == 1) {
-            //     PORTL |= _BV(PORTL6);
-            // }
-            // else {
-            //     PORTL &= ~_BV(PORTL6);
-            // }
 
             previousLaser = laser;
         }
@@ -184,34 +204,6 @@ void bluetoothReceive() {
         }
 
         Task_Sleep(15);
-    }
-}
-
-void switchMode() {
-    int mode = 0;
-
-    for(;;) {
-        Mutex_Lock(adc_mutex);
-
-        // Read lcd button
-        ADMUX = (ADMUX & 0xE0); // Channel 0
-
-        ADCSRB |= (0<<MUX5);
-
-        ADCSRA |= (1<<ADSC); // Start conversion
-
-        while((ADCSRA)&(1<<ADSC));    // wait until conversion is complete
-
-        mode = ADC;
-
-        // Read select
-        if (mode < 150) {
-            PORTL ^= _BV(PORTL6);
-        }
-
-        Mutex_Unlock(adc_mutex);
-
-        Task_Sleep(10);
     }
 }
 
@@ -284,8 +276,6 @@ void RoombaTask() {
             command = 'X';
         }
 
-        // PORTL ^= _BV(PORTL6);
-
         Bluetooth_Send_Byte(ROOMBA);
         Bluetooth_Send_Byte(command);
 
@@ -311,9 +301,9 @@ void a_main() {
     Task_Create(screenTask, 2, 1);
     Task_Create(LaserTask, 2, 1);
     Task_Create(RoombaTask, 2, 1);
-    // Task_Create(switchMode, 2, 1);
     Task_Create(bluetoothReceive, 2, 1);
     IdlePID = Task_Create(Idle, MINPRIORITY, 1);
+    Task_Create(SwitchTask, 2, 2);
 
     Task_Terminate();
 }

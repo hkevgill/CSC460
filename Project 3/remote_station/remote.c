@@ -21,9 +21,6 @@ uint8_t BluetoothReceivePID;
 uint8_t LaserTaskPID;
 uint8_t ServoTaskPID;
 uint8_t LightSensorTaskPID;
-uint8_t VirtualWallTaskPID;
-uint8_t AvoidTaskPID;
-uint8_t BumperTaskPID;
 uint8_t GetSensorDataTaskPID;
 
 int laserState;
@@ -70,7 +67,6 @@ int roombaRear;
 // Mutexes
 MUTEX laserMutex;
 MUTEX servoMutex;
-MUTEX roombaMutex;
 MUTEX sensorMutex;
 
 // ------------------------------ IS FULL ------------------------------ //
@@ -291,179 +287,111 @@ void LightSensor_Task() {
 	}
 }
 
+// ------------------------------ GET SENSOR DATA ------------------------------ //
 void Get_Sensor_Data() {
 	for(;;) {
 		Roomba_QueryList(7, 13);
 
-		while(!(UCSR3A & (1<<RXC3)));
+		// while(!(UCSR3A & (1<<RXC3)));
+		Task_Sleep(2);
 		bumpState = Roomba_Receive_Byte();
-		while(!(UCSR3A & (1<<RXC3)));
+		// while(!(UCSR3A & (1<<RXC3)));
+		Task_Sleep(2);
 		wallState = Roomba_Receive_Byte();
 
-		Task_Sleep(20);
+		Task_Sleep(16);
 	}
 }
 
-// ------------------------------ VIRTUAL WALL TASK ------------------------------ //
-void VirtualWall_Task() {
-	for(;;) {
-		if(wallState) {
-			enablePORTL2();
-			Task_Suspend(RoombaTaskPID);
-			Task_Resume(AvoidTaskPID);
-		}
-		else {
-			disablePORTL2();
-		}
+// ------------------------------ REVERSE ------------------------------ //
+void Reverse() {
+	buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
 
-		Task_Sleep(20);
+	if(roombaState == 'F') {
+		Roomba_Drive(ROOMBA_SPEED,TURN_RADIUS); // Forward-Left
+	}
+	else if(roombaState == 'G') {
+		Roomba_Drive(ROOMBA_SPEED,DRIVE_STRAIGHT); // Forward
+	}
+	else if(roombaState == 'H') {
+		Roomba_Drive(ROOMBA_SPEED,-TURN_RADIUS); // Forward-Right
+	}
+	else if(roombaState == 'E') {
+		Roomba_Drive(ROOMBA_TURN,IN_PLACE_CCW); // Left
+	}
+	else if(roombaState == 'D') {
+		Roomba_Drive(ROOMBA_TURN,IN_PLACE_CW); // Right
+	}
+	else if(roombaState == 'A') {
+		Roomba_Drive(-ROOMBA_SPEED,TURN_RADIUS); // Backward-left
+	}
+	else if(roombaState == 'B') {
+		Roomba_Drive(-ROOMBA_SPEED,DRIVE_STRAIGHT); // Backward
+	}
+	else if(roombaState == 'C') {
+		Roomba_Drive(-ROOMBA_SPEED,-TURN_RADIUS); // Backward-right
+	}
+	else if(roombaState == 'X') {
+		Roomba_Drive(-ROOMBA_SPEED,DRIVE_STRAIGHT); // Backward
+	}
+}
+
+// ------------------------------ BUMP BACK ------------------------------ //
+void Bump_Back() {
+	buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
+	Roomba_Drive(-ROOMBA_SPEED,DRIVE_STRAIGHT); // Backward
+}
+
+// ------------------------------ MANUAL DRIVE ------------------------------ //
+void Manual_Drive() {
+	roombaState = buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
+
+	if(roombaState == 'A') {
+		Roomba_Drive(ROOMBA_SPEED,TURN_RADIUS); // Forward-Left
+	}
+	else if(roombaState == 'B') {
+		Roomba_Drive(ROOMBA_SPEED,DRIVE_STRAIGHT); // Forward
+	}
+	else if(roombaState == 'C') {
+		Roomba_Drive(ROOMBA_SPEED,-TURN_RADIUS); // Forward-Right
+	}
+	else if(roombaState == 'D') {
+		Roomba_Drive(ROOMBA_TURN,IN_PLACE_CCW); // Left
+	}
+	else if(roombaState == 'E') {
+		Roomba_Drive(ROOMBA_TURN,IN_PLACE_CW); // Right
+	}
+	else if(roombaState == 'F') {
+		Roomba_Drive(-ROOMBA_SPEED,TURN_RADIUS); // Backward-left
+	}
+	else if(roombaState == 'G') {
+		Roomba_Drive(-ROOMBA_SPEED,DRIVE_STRAIGHT); // Backward
+	}
+	else if(roombaState == 'H') {
+		Roomba_Drive(-ROOMBA_SPEED,-TURN_RADIUS); // Backward-right
+	}
+	else if(roombaState == 'X') {
+		Roomba_Drive(0,0); // Stop
 	}
 }
 
 // ------------------------------ ROOMBA TASK ------------------------------ //
 void Roomba_Task() {
-	roombaState = NULL;
 	for(;;) {
-		Mutex_Lock(roombaMutex);
+		wallState = 0;
+		bumpState = 0;
 
 		if(wallState) {
-			buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
-
-			if(roombaState == 'F') {
-				Roomba_Drive(ROOMBA_SPEED,TURN_RADIUS); // Forward-Left
-			}
-			else if(roombaState == 'G') {
-				Roomba_Drive(ROOMBA_SPEED,DRIVE_STRAIGHT); // Forward
-			}
-			else if(roombaState == 'H') {
-				Roomba_Drive(ROOMBA_SPEED,-TURN_RADIUS); // Forward-Right
-			}
-			else if(roombaState == 'E') {
-				Roomba_Drive(ROOMBA_TURN,IN_PLACE_CCW); // Left
-			}
-			else if(roombaState == 'D') {
-				Roomba_Drive(ROOMBA_TURN,IN_PLACE_CW); // Right
-			}
-			else if(roombaState == 'A') {
-				Roomba_Drive(-ROOMBA_SPEED,TURN_RADIUS); // Backward-left
-			}
-			else if(roombaState == 'B') {
-				Roomba_Drive(-ROOMBA_SPEED,DRIVE_STRAIGHT); // Backward
-			}
-			else if(roombaState == 'C') {
-				Roomba_Drive(-ROOMBA_SPEED,-TURN_RADIUS); // Backward-right
-			}
-			else if(roombaState == 'X') {
-				Roomba_Drive(-ROOMBA_SPEED,DRIVE_STRAIGHT); // Backward
-			}
+			Reverse();
 		}
 		else if(bumpState >= 1 && bumpState <= 3) {
-			buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
-
-			Roomba_Drive(-ROOMBA_SPEED,DRIVE_STRAIGHT); // Backward
+			Bump_Back();
 		}
 		else {
-			roombaState = buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
-
-			if(roombaState == 'A') {
-				Roomba_Drive(ROOMBA_SPEED,TURN_RADIUS); // Forward-Left
-			}
-			else if(roombaState == 'B') {
-				Roomba_Drive(ROOMBA_SPEED,DRIVE_STRAIGHT); // Forward
-			}
-			else if(roombaState == 'C') {
-				Roomba_Drive(ROOMBA_SPEED,-TURN_RADIUS); // Forward-Right
-			}
-			else if(roombaState == 'D') {
-				Roomba_Drive(ROOMBA_TURN,IN_PLACE_CCW); // Left
-			}
-			else if(roombaState == 'E') {
-				Roomba_Drive(ROOMBA_TURN,IN_PLACE_CW); // Right
-			}
-			else if(roombaState == 'F') {
-				Roomba_Drive(-ROOMBA_SPEED,TURN_RADIUS); // Backward-left
-			}
-			else if(roombaState == 'G') {
-				Roomba_Drive(-ROOMBA_SPEED,DRIVE_STRAIGHT); // Backward
-			}
-			else if(roombaState == 'H') {
-				Roomba_Drive(-ROOMBA_SPEED,-TURN_RADIUS); // Backward-right
-			}
-			else if(roombaState == 'X') {
-				Roomba_Drive(0,0); // Stop
-			}
+			Manual_Drive();
 		}
-
-		Mutex_Unlock(roombaMutex);
-		Task_Sleep(20);
-	}
-}
-
-// ------------------------------ AVOID TASK ------------------------------ //
-void Avoid_Task() {
-	for(;;) {
-		Mutex_Lock(roombaMutex);
-
-		buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
-
-		if(roombaState == 'F') {
-			Roomba_Drive(ROOMBA_SPEED,TURN_RADIUS); // Forward-Left
-		}
-		else if(roombaState == 'G') {
-			Roomba_Drive(ROOMBA_SPEED,DRIVE_STRAIGHT); // Forward
-		}
-		else if(roombaState == 'H') {
-			Roomba_Drive(ROOMBA_SPEED,-TURN_RADIUS); // Forward-Right
-		}
-		else if(roombaState == 'E') {
-			Roomba_Drive(ROOMBA_TURN,IN_PLACE_CCW); // Left
-		}
-		else if(roombaState == 'D') {
-			Roomba_Drive(ROOMBA_TURN,IN_PLACE_CW); // Right
-		}
-		else if(roombaState == 'A') {
-			Roomba_Drive(-ROOMBA_SPEED,TURN_RADIUS); // Backward-left
-		}
-		else if(roombaState == 'B') {
-			Roomba_Drive(-ROOMBA_SPEED,DRIVE_STRAIGHT); // Backward
-		}
-		else if(roombaState == 'C') {
-			Roomba_Drive(-ROOMBA_SPEED,-TURN_RADIUS); // Backward-right
-		}
-		else if(roombaState == 'X') {
-			Roomba_Drive(-ROOMBA_SPEED,DRIVE_STRAIGHT); // Backward
-		}
-
-		Mutex_Unlock(roombaMutex);
 
 		Task_Sleep(20);
-		buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
-		Task_Sleep(20);
-		buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
-		Task_Sleep(20);
-		buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
-		Task_Sleep(20);
-		buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
-
-		Task_Resume(RoombaTaskPID);
-		Task_Suspend(AvoidTaskPID);
-	}
-}
-
-// ------------------------------ AVOID TASK ------------------------------ //
-void Bumper_Task() {
-	for(;;) {
-		if(bumpState >= 1 && bumpState <= 3) {
-			Task_Suspend(RoombaTaskPID);
-
-			Roomba_Drive(-ROOMBA_SPEED,DRIVE_STRAIGHT); // Backward
-
-			Task_Sleep(20);
-			Task_Resume(RoombaTaskPID);
-			buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
-		}
-
-		Task_Sleep(10);
 	}
 }
 
@@ -482,9 +410,7 @@ void Bluetooth_Send() {
 // ------------------------------ BLUETOOTH RECIEVE ------------------------------ //
 void Bluetooth_Receive() {
 	uint8_t flag;
-
 	uint8_t laser_data;
-
 	uint16_t servo_data;
 	uint8_t servo_data1;
 	uint8_t servo_data2;
@@ -550,7 +476,6 @@ void a_main() {
 	// Initialize Mutexes
 	laserMutex = Mutex_Init();
 	servoMutex = Mutex_Init();
-	roombaMutex = Mutex_Init();
 	sensorMutex = Mutex_Init();
 
 	// Initialize Bluetooth and Roomba UART
@@ -569,6 +494,7 @@ void a_main() {
 	lastServoState = 375;
 	wallState = 0;
 	bumpState = 0;
+	roombaState = NULL;
 
 	// Create Tasks
 	IdlePID 					= Task_Create(Idle, MINPRIORITY, 1);
@@ -578,12 +504,7 @@ void a_main() {
 	LightSensorTaskPID 			= Task_Create(LightSensor_Task, 2, 3);
 	// ServoTaskPID 				= Task_Create(Servo_Task, 2, 3);
 	RoombaTaskPID 				= Task_Create(Roomba_Task, 2, 2);
-	// VirtualWallTaskPID 			= Task_Create(VirtualWall_Task, 2, 2);
-	// AvoidTaskPID 				= Task_Create(Avoid_Task, 2, 2);
-	// BumperTaskPID 				= Task_Create(Bumper_Task, 2, 2);
-	GetSensorDataTaskPID 		= Task_Create(Get_Sensor_Data, 3, 2);
-
-	Task_Suspend(AvoidTaskPID);
+	GetSensorDataTaskPID 		= Task_Create(Get_Sensor_Data, 2, 2);
 
 	Task_Terminate();
 }

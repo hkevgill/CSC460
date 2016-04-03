@@ -24,10 +24,12 @@ void Roomba_Init(){
     Roomba_Send_Byte(START);
 
     // set Roomba to safe mode
-    Roomba_Send_Byte(SAFE_MODE);  
+    Roomba_Send_Byte(SAFE_MODE); 
+
+    Roomba_Song(0); // Initialize song 0 
 }
 
-void Roomba_Drive(int16_t velocity, int16_t radius){    
+void Roomba_Drive(int16_t velocity, int16_t radius) {    
     Roomba_Send_Byte(DRIVE);
     Roomba_Send_Byte(velocity>>8);
     Roomba_Send_Byte(velocity);
@@ -38,6 +40,11 @@ void Roomba_Drive(int16_t velocity, int16_t radius){
 void Roomba_Play(uint8_t song) {
 	Roomba_Send_Byte(PLAY);
 	Roomba_Send_Byte(song);
+}
+
+void Roomba_Sensors(uint8_t packet_id) {
+	Roomba_Send_Byte(SENSORS);
+	Roomba_Send_Byte(packet_id);
 }
 
 void Roomba_Song(uint8_t n) {

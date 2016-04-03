@@ -21,11 +21,13 @@ uint8_t BluetoothReceivePID;
 uint8_t LaserTaskPID;
 uint8_t ServoTaskPID;
 uint8_t LightSensorTaskPID;
+uint8_t VirtualWallTaskPID;
 
 int laserState;
 int servoState;
 int lastServoState;
 char roombaState;
+int wallState;
 
 uint16_t photocellReading;
 uint16_t photoThreshold;
@@ -285,6 +287,26 @@ void LightSensor_Task() {
 	}
 }
 
+// ------------------------------ VIRTUAL WALL TASK ------------------------------ //
+void VirtualWall_Task() {
+	for(;;) {
+		Roomba_Sensors(13);
+
+		if(UCSR3A & (1<<RXC3)) {
+			wallState = Roomba_Receive_Byte();
+		
+			if(wallState) {
+				enablePORTL2();
+			}
+			else {
+				disablePORTL2();
+			}
+		}
+
+		Task_Sleep(30);
+	}
+}
+
 // ------------------------------ ROOMBA TASK ------------------------------ //
 void Roomba_Task() {
 	roombaState = NULL;
@@ -413,7 +435,6 @@ void a_main() {
 	ADC_init();
 	// Servo_Init();
 	Roomba_Init();
-	Roomba_Song(0); // Initialize song 0
 
 	// Evaluate light
 	Set_Photocell_Threshold();
@@ -422,6 +443,7 @@ void a_main() {
 	photocellReading = 0;
 	servoState = 375;
 	lastServoState = 375;
+	wallState = 0;
 
 	// Create Tasks
 	IdlePID 					= Task_Create(Idle, MINPRIORITY, 1);
@@ -431,6 +453,7 @@ void a_main() {
 	LightSensorTaskPID 			= Task_Create(LightSensor_Task, 2, 3);
 	// ServoTaskPID 				= Task_Create(Servo_Task, 2, 3);
 	RoombaTaskPID 				= Task_Create(Roomba_Task, 2, 2);
+	VirtualWallTaskPID 			= Task_Create(VirtualWall_Task, 2, 2);
 
 	Task_Terminate();
 }

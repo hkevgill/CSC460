@@ -12,6 +12,7 @@ uint8_t SERVO = 1;
 uint8_t PHOTO = 2;
 uint8_t SCREEN = 3;
 uint8_t ROOMBA = 4;
+uint8_t MODE = 5;
 
 uint8_t IdlePID;
 uint8_t RoombaTestPID;
@@ -465,6 +466,18 @@ void Bluetooth_Receive() {
 			else if (flag == ROOMBA) {
 				roomba_data = Bluetooth_Receive_Byte();
 				buffer_enqueue(roomba_data, roombaQueue, &roombaFront, &roombaRear);
+			}
+
+			else if (flag == MODE) {
+				if(AUTO == 1){
+					AUTO = 0;
+					while(!buffer_isEmpty(&roombaFront,&roombaRear)) {
+						buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
+					}
+				}
+				else {
+					AUTO = 1;
+				}
 			}
 
 			else {

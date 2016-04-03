@@ -33,6 +33,8 @@ int bumpState;
 uint16_t photocellReading;
 uint16_t photoThreshold;
 
+int AUTO;
+
 // An idle task that runs when there is nothing else to do
 // Could be changed later to put CPU into low power state
 
@@ -371,20 +373,42 @@ void Manual_Drive() {
 	}
 }
 
+// ------------------------------ AUTO DRIVE ------------------------------ //
+void Auto_Drive() {
+	Roomba_Drive(50,DRIVE_STRAIGHT);
+}
+
 // ------------------------------ ROOMBA TASK ------------------------------ //
 void Roomba_Task() {
 	for(;;) {
 		if(wallState) {
 			buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
 			Reverse();
+
+			if(AUTO==1) {
+				Task_Sleep(20);
+				buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
+				Roomba_Drive(ROOMBA_SPEED*2, IN_PLACE_CCW);
+			}
 		}
 		else if(bumpState >= 1 && bumpState <= 3) {
 			buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
 			Bump_Back();
+
+			if(AUTO==1) {
+				Task_Sleep(20);
+				buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
+				Roomba_Drive(ROOMBA_SPEED*2, IN_PLACE_CCW);
+			}
 		}
 		else {
-			roombaState = buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
-			Manual_Drive();
+			if(AUTO==1) {
+				Auto_Drive();
+			}
+			else {
+				roombaState = buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
+				Manual_Drive();
+			}
 		}
 
 		Task_Sleep(20);
@@ -491,6 +515,7 @@ void a_main() {
 	wallState = 0;
 	bumpState = 0;
 	roombaState = 'X';
+	AUTO = 0;
 
 	// Create Tasks
 	IdlePID 					= Task_Create(Idle, MINPRIORITY, 1);

@@ -29,6 +29,7 @@
 #define ROOMBA_SPEED	250
 #define ROOMBA_TURN		150
 #define TURN_RADIUS		400
+#define AUTOTURN_RADIUS	350
 #define DRIVE_STRAIGHT  32768
 #define IN_PLACE_CW     -1
 #define IN_PLACE_CCW     1

@@ -17,6 +17,7 @@
 #define SONG            140
 #define PLAY            141
 #define SENSORS         142
+#define QUERYLIST       149
 
 // Sensors
 #define SENSOR_ALL_DATA 0

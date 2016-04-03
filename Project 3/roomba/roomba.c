@@ -47,6 +47,13 @@ void Roomba_Sensors(uint8_t packet_id) {
 	Roomba_Send_Byte(packet_id);
 }
 
+void Roomba_QueryList(uint8_t packet1, uint8_t packet2) {
+    Roomba_Send_Byte(QUERYLIST);
+    Roomba_Send_Byte(2);
+    Roomba_Send_Byte(packet1);
+    Roomba_Send_Byte(packet2);
+}
+
 void Roomba_Song(uint8_t n) {
 	Roomba_Send_Byte(SONG);
 	Roomba_Send_Byte(n);  // Song 0

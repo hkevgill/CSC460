@@ -217,6 +217,7 @@ void Servo_Task() {
 	}
 }
 
+// ------------------------------ SET PHOTOCELL THRESHOLD ------------------------------ //
 void Set_Photocell_Threshold() {
 	uint16_t photo1;
 	uint16_t photo2;
@@ -299,14 +300,12 @@ void Get_Sensor_Data() {
 		Task_Sleep(2);
 		wallState = Roomba_Receive_Byte();
 
-		Task_Sleep(16);
+		Task_Sleep(20);
 	}
 }
 
 // ------------------------------ REVERSE ------------------------------ //
 void Reverse() {
-	buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
-
 	if(roombaState == 'F') {
 		Roomba_Drive(ROOMBA_SPEED,TURN_RADIUS); // Forward-Left
 	}
@@ -338,14 +337,11 @@ void Reverse() {
 
 // ------------------------------ BUMP BACK ------------------------------ //
 void Bump_Back() {
-	buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
 	Roomba_Drive(-ROOMBA_SPEED,DRIVE_STRAIGHT); // Backward
 }
 
 // ------------------------------ MANUAL DRIVE ------------------------------ //
 void Manual_Drive() {
-	roombaState = buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
-
 	if(roombaState == 'A') {
 		Roomba_Drive(ROOMBA_SPEED,TURN_RADIUS); // Forward-Left
 	}
@@ -378,16 +374,16 @@ void Manual_Drive() {
 // ------------------------------ ROOMBA TASK ------------------------------ //
 void Roomba_Task() {
 	for(;;) {
-		wallState = 0;
-		bumpState = 0;
-
 		if(wallState) {
+			buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
 			Reverse();
 		}
 		else if(bumpState >= 1 && bumpState <= 3) {
+			buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
 			Bump_Back();
 		}
 		else {
+			roombaState = buffer_dequeue(roombaQueue, &roombaFront, &roombaRear);
 			Manual_Drive();
 		}
 
@@ -494,7 +490,7 @@ void a_main() {
 	lastServoState = 375;
 	wallState = 0;
 	bumpState = 0;
-	roombaState = NULL;
+	roombaState = 'X';
 
 	// Create Tasks
 	IdlePID 					= Task_Create(Idle, MINPRIORITY, 1);

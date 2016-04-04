@@ -1388,6 +1388,14 @@
 			margin: 0 auto;
 		}
 
+		.image.medium {
+			width: 600px;
+			height: auto;
+			display: block;
+			margin: 0 0 2em 0;
+			margin: 0 auto;
+		}
+
 		.image img {
 			display: block;
 			width: 100%;

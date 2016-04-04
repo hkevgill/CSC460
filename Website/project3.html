@@ -73,7 +73,7 @@
 										<h3>Hardware</h3>
 									</header>
 									<h4>iRobot Roomba Create 2</h4>
-									<a class="image paragraph"><img src="images/irobot-roomba.jpg"></a>
+									<a class="image medium"><img src="images/irobot-roomba.jpg"></a>
 									<br>
 									<p>
 										The iRobot Roomba Create 2 is a mobile programmable robot that allows sounds, movements, and additional sensors and actuators to be added and customized.
@@ -93,12 +93,14 @@
 										The base station is connected to bluetooth, and two joysticks. Bluetooth provides bidirectional communication and is used to communicate with the remote station over UART. One of the joysticks is used to control the Roomba, with its pushbutton to fire the laser. The second joystick is purely used for the pushbutton to change the remote station's state from manual to semi-autonomous and vice versa. This is illustrated in the base station's block diagram:
                                         <br>
                                         <br>
-										<a class="image paragraph"><img src="images/project3/Block_Base.png"></a>
+										<a class="image medium"><img src="images/project3/Block_Base.png"></a>
 									</p>
                                     <b>Remote Station</b>
                                     <p>
                                         The remote station is connected to bluetooth, the laser, the photocell array, and the Roomba, which it is mounted on. The laser emits a bright beam when the pin is set high. The photocell is read to obtain a value and determine if it has been shot, and the connection to the Roomba allows the remote station to send the Roomba commands, and receive sensor data back. The block diagram below shows the architecture of the remote station.
-                                        <a class="image paragraph"><img src="images/project3/Block_Remote.png"></a> 
+                                        <br>
+                                        <br>
+                                        <a class="image medium"><img src="images/project3/Block_Remote.png"></a> 
                                     </p>
                                     <h4>Phase 1: Manual Control</h4>
                                     <p>
@@ -108,13 +110,13 @@
                                     <p>
                                         The Fire FSM takes data from a pushbutton and turns the laser on if the state of the pushbutton is down, or off if the state is up. The following shows the connection of sensors to actuators and the finite state machine (FSM).
                                     </p>
-                                    <a class="image paragraph"><img src="images/project3/Flow_Fire.png"></a>
+                                    <a class="image medium"><img src="images/project3/Flow_Fire.png"></a>
                                     <a class="image paragraph"><img src="images/project3/FSM_Fire.png"></a>
                                     <b>Photocell</b>
 									<p>
 										The photocell sensor array detects spikes in light to determine if it has been shot. Every 0.5 seconds it will update a threshold value. This threshold value is the amount of light coming from the room plus a small value. If this threshold is exceeded, then we can determine that the tank has been shot. Being shot puts the Roomba into a dead state where it can't move or shoot. This is illustrated in the diagrams below.
 									</p>
-                                    <a class="image paragraph"><img src="images/project3/Flow_Photocell.png"></a>
+                                    <a class="image medium"><img src="images/project3/Flow_Photocell.png"></a>
                                     <a class="image paragraph"><img src="images/project3/FSM_Photocell.png"></a>
                                     <b>Movement</b>
                                     <p>
@@ -163,7 +165,7 @@
                                         </table>
                                         The movement FSM then interprets each of these commands and tells the Roomba to drive in that direction. This FSM is shown below:
                                     </p>
-                                    <a class="image paragraph"><img src="images/project3/Flow_Movement1.png"></a>
+                                    <a class="image medium"><img src="images/project3/Flow_Movement1.png"></a>
                                     <a class="image paragraph"><img src="images/project3/FSM_Movement1.png"></a>
                                     <b>Communication</b>
                                     <p>
@@ -176,7 +178,7 @@
 										Phase 2 uses the subsumption architecture. In this robotics architecture, sensors may cause the system to have different behaviour based on their state. This is accomplished by decomposing the overall behaviour into sub-behaviours. These sub-behaviours implement a degree of behavioral competence. The more important behaviours are then able to subsume less important behaviours. This can be seen from the high-level representation of our system's motor control logic:
                                         <br>
                                         <br>
-										<a class="image paragraph"><img src="images/project3/Flow_Motor.png"></a>
+										<a class="image medium"><img src="images/project3/Flow_Motor.png"></a>
 										In the above representation, four separate FSM's govern the Roomba's motor behaviour. However, there is a subsumption hierarchy that determines which logic is actually in command. In our system, the order is: 
 										<i>Laser Detection > IR Boundary Detection > Obstacle Avoidance > Movement</i>.
 									</p>
@@ -188,7 +190,7 @@
 									<p>
 										The Movement FSM was updated to include a pushbutton input that toggles the state of AUTO between 1 and 0. In addition to the functionality from Phase 1, the system now only continues forward when AUTO is set to 1. The change can be seen in the following diagrams:
 									</p>
-									<a class="image paragraph"><img src="images/project3/Flow_Movement2.png"></a>
+									<a class="image medium"><img src="images/project3/Flow_Movement2.png"></a>
 									<a class="image paragraph"><img src="images/project3/FSM_Movement2.png"></a>
 									<b>IR-Wall Detection</b>
 									<p>
@@ -233,13 +235,13 @@
                                         </table>
                                         The movement FSM then interprets each of these commands and tells the Roomba to drive in that direction. If the Roomba is currently in autonomous mode (ie: AUTO = 1), the Roomba will then briefly turn in place. This FSM is shown below:
 									</p>
-									<a class="image paragraph"><img src="images/project3/Flow_IR_Boundary.png"></a>
+									<a class="image medium"><img src="images/project3/Flow_IR_Boundary.png"></a>
 									<a class="image paragraph"><img src="images/project3/FSM_IR_Boundary.png"></a>
 									<b>Obstacle Avoidance</b>
 									<p>
 										The Obstacle Avoidance FSM takes Roomba sensor data and determines if an obstacle has been hit by the Roomba's front bumpers. If this is the case, the Roomba will drive backwards for 200ms. In addition, if the Roomba is currently in autonomous mode (ie: AUTO = 1), the Roomba will then briefly turn in place. This FSM is shown below:
 									</p>
-									<a class="image paragraph"><img src="images/project3/Flow_Obstacle.png"></a>
+									<a class="image medium"><img src="images/project3/Flow_Obstacle.png"></a>
 									<a class="image paragraph"><img src="images/project3/FSM_Obstacle.png"></a>
 
                                     <h4>Task Decomposition</h3>
@@ -615,14 +617,26 @@
                                     <p>
                                         One of the joysticks only has the digital pushbutton pin connected.
                                         <br><br>
-                                        <a class="image paragraph"><img src="images/project3/fritz_project3_base_bb.png"></a>
+                                        <a class="image medium"><img src="images/project3/fritz_project3_base_bb.png"></a>
                                     </p>
-                                    <h4>Base Station Wiring Diagram</h4>
+                                    <h4>Remote Station Wiring Diagram</h4>
                                     <p>
                                         The four wires left unplugged are for attaching to the Roomba.
                                         <br>
                                         <br>
-                                        <a class="image paragraph"><img src="images/project3/fritz_project3_remote_bb.png"></a>
+                                        <a class="image medium"><img src="images/project3/fritz_project3_remote_bb.png"></a>
+                                    </p>
+                                    <h4>Base Station</h4>
+                                    <p>
+                                        <a class="image medium"><img src="images/project3/base_station.jpg"></a>
+                                    </p>
+                                    <h4>Remote Station</h4>
+                                    <p>
+                                        <a class="image medium"><img src="images/project3/remote_station.jpg"></a>
+                                    </p>
+                                    <h4>Remote Station Mounted</h4>
+                                    <p>
+                                        <a class="image medium"><img src="images/project3/remote_station_mounted.jpg"></a>
                                     </p>
                                 </section>
 

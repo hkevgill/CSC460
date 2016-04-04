@@ -50,6 +50,7 @@
 										<li> <a href="#Design">Design</a> </li>
 										<li> <a href="#Implementation">Implementation</a> </li>
 										<li> <a href="#Testing">Testing</a> </li>
+                                        <li> <a href="#Discussion">Discussion</a> </li>
 										<li> <a href="#Conclusion">Conclusion</a> </li>
 										<li> <a href="#References">References</a> </li>
 										<li> <a href="#Code">Code</a> </li>
@@ -162,6 +163,11 @@
                                     </p>
                                     <a class="image paragraph"><img src="images/project3/Flow_Movement1.png"></a>
                                     <a class="image paragraph"><img src="images/project3/FSM_Movement1.png"></a>
+                                    <b>Communication</b>
+                                    <p>
+                                        The base station needs to communicate with the remote station, and the remote station needs to communicate with both the base station and the Roomba. This is done through UART communication over USB and bluetooth. All stations can send data and receive data. This is shown in the FSM below:
+                                    </p>
+                                    <a class="image paragraph"><img src="images/project3/FSM_Bluetooth.png"></a>
 									<h4>Phase 2: Semi-Autonomous Control</h4>
 									<b>"Semi-Autonomous"</b>
 									<p>
@@ -230,6 +236,9 @@
 										<i>VAMP ABOUT NEW REQUIREMENTS</i>
 										<a class="image paragraph"><img src="images/project3/Flow_Motor.png"></a>
 									</p>
+                                    <h4>Task Decomposition</h3>
+                                    <p>The above functionality is broken down into tasks that will run on the RTOS. Each task has its own scheduling parameters (priority and frequency).</p>
+                                    <b>Base Station Tasks</b>
 								</section>
 
 								<section id="Implementation">
@@ -333,6 +342,15 @@
 										Your browser does not support the video tag.
 									</video>
 								</section>
+
+                                <section id="Discussion">
+                                    <header>
+                                        <h3>Discussion</h3>
+                                    </header>
+                                    <p>
+                                        Discuss...
+                                    </p>
+                                </section>
 
 								<section id="Conclusion">
 									<header>

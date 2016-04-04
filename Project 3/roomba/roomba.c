@@ -7,6 +7,9 @@
 #include <util/delay.h> 
 #include "../uart/uart.h" 
 
+/**
+  * Wakes Roomba from sleep and sets it to safe mode
+  */
 void Roomba_Init(){
     
 	_delay_ms(2100);
@@ -29,6 +32,9 @@ void Roomba_Init(){
     Roomba_Song(0); // Initialize song 0 
 }
 
+/**
+  * Tells the roomba to drive with the given velocity and radius
+  */
 void Roomba_Drive(int16_t velocity, int16_t radius) {    
     Roomba_Send_Byte(DRIVE);
     Roomba_Send_Byte(velocity>>8);
@@ -37,16 +43,25 @@ void Roomba_Drive(int16_t velocity, int16_t radius) {
     Roomba_Send_Byte(radius);   
 }
 
+/**
+  * Plays the song corresponding to a song # from 0-4
+  */
 void Roomba_Play(uint8_t song) {
 	Roomba_Send_Byte(PLAY);
 	Roomba_Send_Byte(song);
 }
 
+/**
+  * Requests a packet from the Roomba about a specific sensor
+  */
 void Roomba_Sensors(uint8_t packet_id) {
 	Roomba_Send_Byte(SENSORS);
 	Roomba_Send_Byte(packet_id);
 }
 
+/**
+  * Requests multiple packets from the Roomba
+  */
 void Roomba_QueryList(uint8_t packet1, uint8_t packet2) {
     Roomba_Send_Byte(QUERYLIST);
     Roomba_Send_Byte(2);
@@ -54,6 +69,9 @@ void Roomba_QueryList(uint8_t packet1, uint8_t packet2) {
     Roomba_Send_Byte(packet2);
 }
 
+/**
+  * Loads a song onto the Roomba
+  */
 void Roomba_Song(uint8_t n) {
 	Roomba_Send_Byte(SONG);
 	Roomba_Send_Byte(n);  // Song 0

@@ -52,7 +52,9 @@ typedef enum servo_states {
     FULL_FORWARD
 } SERVO_STATES;
 
-// Queue globals
+/**
+  * Queue globals
+  */
 #define QSize 	10
 
 int servoQueue[QSize];
@@ -72,17 +74,23 @@ MUTEX laserMutex;
 MUTEX servoMutex;
 MUTEX sensorMutex;
 
-// ------------------------------ IS FULL ------------------------------ //
+/**
+  * Returns 1 if the buffer is full.
+  */
 int buffer_isFull(int *front, int *rear) {
   return (*rear == (*front - 1) % QSize);
 }
 
-// ------------------------------ IS EMPTY ------------------------------ //
+/**
+  * Returns 1 if the buffer is empty.
+  */
 int buffer_isEmpty(int *front, int *rear) {
   return (*rear == *front);
 }
 
-// ------------------------------ ENQUEUE ------------------------------ //
+/**
+  * Enqueues the value into the specified buffer.
+  */
 void buffer_enqueue(int val, int *queue, int *front, int *rear) {
   if (buffer_isFull(front, rear)) {
     return;
@@ -91,7 +99,9 @@ void buffer_enqueue(int val, int *queue, int *front, int *rear) {
   *rear = (*rear + 1) % QSize;
 }
 
-// ------------------------------ DEQUEUE ------------------------------ //
+/**
+  * Dequeues the value from the specified buffer and returns it.
+  */
 int buffer_dequeue(int *queue, int *front, int *rear){
   if (buffer_isEmpty(front, rear)) {
     return -1;
@@ -101,61 +111,79 @@ int buffer_dequeue(int *queue, int *front, int *rear){
   return result;
 }
 
-// ------------------------------ TOGGLE PORTL6 ------------------------------ /
+/**
+  * Sets PORTL6 to high.
+  */
 void enablePORTL6() {
 	PORTL |= _BV(PORTL6);
 }
+/**
+  * Sets PORTL6 to low.
+  */
 void disablePORTL6() {
 	PORTL &= ~_BV(PORTL6);
 }
-// ------------------------------ TOGGLE PORTL2 ------------------------------ /
+
+/**
+  * Sets PORTL2 to high.
+  */
 void enablePORTL2() {
 	PORTL |= _BV(PORTL2);
 }
+/**
+  * Sets PORTL2 to low.
+  */
 void disablePORTL2() {
 	PORTL &= ~_BV(PORTL2);
 }
-// ------------------------------ TOGGLE PORTL5 ------------------------------ /
+
+/**
+  * Sets PORTL5 to high.
+  */
 void enablePORTL5() {
 	PORTL |= _BV(PORTL5);
 }
+/**
+  * Sets PORTL5 to low.
+  */
 void disablePORTL5() {
 	PORTL &= ~_BV(PORTL5);
 }
-// ------------------------------ TOGGLE PORTH3 ------------------------------ /
+
+/**
+  * Sets PORTH3 to high.
+  */
 void enablePORTH3() {
 	PORTL |= _BV(PORTH3);
 }
+/**
+  * Sets PORTH3 to low.
+  */
 void disablePORTH3() {
 	PORTL &= ~_BV(PORTH3);
 }
-
-// ------------------------------ ROOMBA TEST ------------------------------ //
-void Roomba_Test() {
-	for(;;) {
-		Roomba_Drive(75,DRIVE_STRAIGHT);
-		_delay_ms(5000);
-		Roomba_Drive(-75,DRIVE_STRAIGHT);
-		_delay_ms(5000);
-	}
-}
-
 
 // ******************************************************************* //
 // ****************************** TASKS ****************************** //
 // ******************************************************************* //
 
+/**
+  * Initializes A to D conversion.
+  */
 void ADC_init() {
 	ADMUX |= (1<<REFS0);
 	ADCSRA |= (1<<ADEN) | (1<<ADPS0) | (1<<ADPS1) | (1<<ADPS2);
 }
 
+/**
+  * Initializes Timer4 to control the servo. Timer4 is configured as phase and frequency PWM mode with a prescaler of 64 and non-inverted PWM. OCR4A=375 Then sets the servo to the middle. 0 degrees = 125, 90 degrees = 375, and 180 degrees= 625.
+  */
 void Servo_Init() {
 	// Setup ports and timers
     DDRA = 0xFF; // All output
     PORTA = 0;
 
-    // Configure timer/counter1 as phase and frequency PWM mode
+    // Configure timer/counter4 as phase and frequency PWM mode
     TCNT4 = 0;
     TCCR4A = (1<<COM4A1) | (1<<COM4B1) | (1<<WGM41);  //NON Inverted PWM
     TCCR4B |= (1<<WGM43) | (1<<WGM42) | (1<<CS41) | (1<<CS40); //PRESCALER=64 MODE 14 (FAST PWM)
@@ -164,14 +192,18 @@ void Servo_Init() {
     OCR4A = 375; // 90 Degrees
 }
 
-// ------------------------------ IDLE TASK ------------------------------ //
+/**
+  * Idle task to run when nothing else is ready.
+  */
 void Idle() {
 	for(;;) {
 		continue;
 	}
 }
 
-// ------------------------------ LASER TASK ------------------------------ //
+/**
+  * Checks the laserQueue, if something is available to dequeue, do it and turn the laser state on or off depending on the value.
+  */
 void Laser_Task() {
 	for(;;) {
 		Mutex_Lock(laserMutex);
@@ -191,7 +223,9 @@ void Laser_Task() {
 	}
 }
 
-// ------------------------------ SERVO TASK ------------------------------ //
+/**
+  * Slowly move the servo to the desired goal (servoState). If the servo is in the deadzone, do not move.
+  */
 void Servo_Task() {
 	for(;;) {
 		Mutex_Lock(servoMutex);
@@ -220,7 +254,9 @@ void Servo_Task() {
 	}
 }
 
-// ------------------------------ SET PHOTOCELL THRESHOLD ------------------------------ //
+/**
+  * Takes three readings from the photocells and averages them to get a threshold for what the room is currently like.
+  */
 void Set_Photocell_Threshold() {
 	uint16_t photo1;
 	uint16_t photo2;
@@ -253,7 +289,9 @@ void Set_Photocell_Threshold() {
 	photoThreshold = (photo1 + photo2 + photo3) / 3;
 }
 
-// ------------------------------ LIGHT SENSOR TASK ------------------------------ //
+/**
+  * Sample the lightsensor and if a spike is detected, then the roomba is hit and it is time to die. Every half a second also recalculate the threshold value to account for the roomba moving between light and dark places.
+  */
 void LightSensor_Task() {
 	int i = 0;
 
@@ -291,7 +329,9 @@ void LightSensor_Task() {
 	}
 }
 
-// ------------------------------ GET SENSOR DATA ------------------------------ //
+/**
+  * Get the bumper and virtual wall data packets from the Roomba.
+  */
 void Get_Sensor_Data() {
 	for(;;) {
 		Roomba_QueryList(7, 13);
@@ -307,7 +347,9 @@ void Get_Sensor_Data() {
 	}
 }
 
-// ------------------------------ REVERSE ------------------------------ //
+/**
+  * Do the opposite of the Roombas current state.
+  */
 void Reverse() {
 	if(roombaState == 'F') {
 		Roomba_Drive(ROOMBA_SPEED,TURN_RADIUS); // Forward-Left
@@ -338,12 +380,16 @@ void Reverse() {
 	}
 }
 
-// ------------------------------ BUMP BACK ------------------------------ //
+/**
+  * Drive straight backwards
+  */
 void Bump_Back() {
 	Roomba_Drive(-ROOMBA_SPEED,DRIVE_STRAIGHT); // Backward
 }
 
-// ------------------------------ MANUAL DRIVE ------------------------------ //
+/**
+  * Drive in the direction the joystick is pointing.
+  */
 void Manual_Drive() {
 	if(roombaState == 'A') {
 		Roomba_Drive(ROOMBA_SPEED,TURN_RADIUS); // Forward-Left
@@ -374,12 +420,16 @@ void Manual_Drive() {
 	}
 }
 
-// ------------------------------ AUTO DRIVE ------------------------------ //
+/**
+  * Auto mode, Drive straight forward.
+  */
 void Auto_Drive() {
 	Roomba_Drive(ROOMBA_SPEED,DRIVE_STRAIGHT);
 }
 
-// ------------------------------ ROOMBA TASK ------------------------------ //
+/**
+  * Determine what movement to make based on sensors, and whether it is in manual or auto mode.
+  */
 void Roomba_Task() {
 	for(;;) {
 		if(wallState) {
@@ -416,7 +466,9 @@ void Roomba_Task() {
 	}
 }
 
-// ------------------------------ BLUETOOTH SEND ------------------------------ //
+/**
+  * Send the photocell reading back to the base station.
+  */
 void Bluetooth_Send() {
 	for(;;) {
 		// SEND LIGHT SENSOR DATA
@@ -428,7 +480,9 @@ void Bluetooth_Send() {
 	}
 }
 
-// ------------------------------ BLUETOOTH RECIEVE ------------------------------ //
+/**
+  * Receive the joystick, laser, and mode data from the base station over bluetooth.
+  */
 void Bluetooth_Receive() {
 	uint8_t flag;
 	uint8_t laser_data;
@@ -488,8 +542,9 @@ void Bluetooth_Receive() {
 	}
 }
 
-// Application level main function
-// Creates the required tasks and then terminates
+/**
+  * Application level main function. Creates the required tasks and then terminates
+  */
 void a_main() {
 
 	// Initialize Ports

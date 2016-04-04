@@ -38,16 +38,23 @@ int lSQueue[MAX];
 int lSFront = 0;
 int lSRear = 0;
 
-// ------------------------------ isFull ------------------------------ //
+/**
+  * Return 1 if the buffer is full.
+  */
 int buffer_isFull(int *front, int *rear) {
   return *rear == (*front - 1) & MAX;
 }
 
+/**
+  * Return 1 if the buffer is empty.
+  */
 int buffer_isEmpty(int *front, int *rear) {
   return *rear == *front;
 }
 
-// ------------------------------ Enqueue ------------------------------ //
+/**
+  * Enqueues the value into the specified buffer.
+  */
 void buffer_enqueue(int val, int *queue, int *front, int *rear){
   if(buffer_isFull(front, rear)) {
     return;
@@ -57,7 +64,9 @@ void buffer_enqueue(int val, int *queue, int *front, int *rear){
   *rear = (*rear + 1) % MAX;
 }
 
-// ------------------------------ Dequeue ------------------------------ //
+/**
+  * Dequeues the value from the specified buffer and returns it.
+  */
 int buffer_dequeue(int *queue, int *front, int *rear) {
   if(buffer_isEmpty(front, rear)) {
     return -1;
@@ -70,18 +79,25 @@ int buffer_dequeue(int *queue, int *front, int *rear) {
   return result;
 }
 
-// An idle task that runs when there is nothing else to do
-// Could be changed later to put CPU into low power state
+/**
+  * Idle task to run when nothing else is ready.
+  */
 void Idle() {
     for(;;) {
     }
 }
 
+/**
+  * Initializes A to D conversion.
+  */
 void InitADC() {
     ADMUX |= (1<<REFS0);
     ADCSRA|=(1<<ADEN)|(1<<ADPS0)|(1<<ADPS1)|(1<<ADPS2); //ENABLE ADC, PRESCALER 128
 }
 
+/**
+  * Reads x from the joystick and sends it over bluetooth to the remote station.
+  */
 void JoystickTask() {
     for(;;) {
 
@@ -133,6 +149,9 @@ void JoystickTask() {
     }
 }
 
+/**
+  * Reads a digital button and if it has changed, send a byte to the remote station.
+  */
 void SwitchTask() {
     int mode = 0;
     DDRL |= (0<<DDL1);
@@ -156,6 +175,9 @@ void SwitchTask() {
     }
 }
 
+/**
+  * Read the digital pin for the laser pushbutton and if it has changed, send the data to the remote station.
+  */
 void LaserTask() {
     DDRB |= (0<<DDB1);
     PORTB |= (1<<PORTB1);
@@ -179,6 +201,9 @@ void LaserTask() {
     }
 }
 
+/**
+  * Receives the lightsensor data from the remote station over bluetooth.
+  */
 void bluetoothReceive() {
 
     for(;;) {
@@ -217,6 +242,9 @@ void screenTask() {
     }
 }
 
+/**
+  * Reads x and y from the joystick and maps them to commands to send to the remote station for control over the Roomba.
+  */
 void RoombaTask() {
     char command = 'B';
 
@@ -283,8 +311,9 @@ void RoombaTask() {
     }
 }
 
-// Application level main function
-// Creates the required tasks and then terminates
+/**
+  * Application level main function. Creates the required tasks and then terminates
+  */
 void a_main() {
     DDRL |= _BV(DDL6);
 

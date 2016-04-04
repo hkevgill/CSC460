@@ -263,6 +263,11 @@
                                                 <td>2, 10ms</td>
                                             </tr>
                                             <tr>
+                                                <td>screenTask</td>
+                                                <td>Checks if any data is ready to be displayed on the LCD</td>
+                                                <td>2, 15ms</td>
+                                            </tr>
+                                            <tr>
                                                 <td>bluetoothReceive</td>
                                                 <td>Receives incoming data from the remote station</td>
                                                 <td>2, 15ms</td>
@@ -336,7 +341,7 @@
                                     </p>
                                     <h4>UART</h4>
                                     <p>
-                                        The UART library is used to transfer data across bluetooth, and to and from the Roomba. There are four commands for bluetooth and the Roomba and they are: UART_Init, Send_Byte, Receive_Byte, and Send_String.
+                                        The UART library is used to transfer data across bluetooth, and to and from the Roomba. There are four commands for bluetooth and the Roomba and they are: UART_Init, Send_Byte, Receive_Byte, and Send_String. Bluetooth uses UART1 and the Roomba uses UART3. The first byte sent over bluetooth is always a flag indicating which actuator the data is meant for, then the remaining data is sent. The Roomba functions similarly with the first byte usually being a special opcode define in the OI.
                                     </p>
                                     <b>UART_Init</b>
                                     <p>
@@ -382,12 +387,42 @@
                                     <p>
                                         Roomba_Song loads a song onto the Roomba by sending the song number, 6 notes, and the duration each note should be played in 1/64ths of a second.
                                     </p>
+                                    <h4>Queues</h4>
+                                    <p>
+                                        The queue data structure is used to hold data that comes in over bluetooth. The bluetooth receive functions put the data for each actuator into the right queue. There is an lsQueue (light sensor queue) on the base station, and a laserQueue and roombaQueue on the remote station. The independent functions can then check these queues to see if new data has become available. The queues are circular and keep track of a front and rear pointer. They are all a fixed size of 10, which with a circular queue gives 9 spaces. The functions available are buffer_isEmpty, buffer_isFull, buffer_enqueue, and buffer_dequeue. Because of the rear and front pointers, enqueue and dequeue are both O(1) operations.
+                                    </p>
                                     <h4>Base Station</h4>
 									<p>
-										The base station is implemented using four tasks and an idle task. These tasks are LaserTask, RoombaTask, 
+										The base station is implemented using five tasks and an idle task. These tasks are LaserTask, RoombaTask, bluetoothReceive, screenTask, and SwitchTask. The a_main task that is created by the RTOS creates these tasks, initializes the bluetooth_mutex, adc_mutex, ls_mutex, initializes A to D conversion, initializes bluetooth, and then terminates itself.
 									</p>
+                                    <b>Mutexes</b>
+                                    <p>
+                                        The adc_mutex is locked when an A to D conversion begins, and is unlocked when it finishes. This prevents any conversions from being interrupted and cancelled.The bluetooth_mutex is locked when data needs to be sent, and then unlocked when the data has sent. This is to prevent a task that is sending data from being interrupted part way through and having another task start sending data. The ls_mutex is locked anytime the lsQueue (light sensor queue) is accessed.
+                                    </p>
+                                    <b>LaserTask</b>
+                                    <p>
+                                        The LaserTask reads the digital pin from the pushbutton on the joystick and if the state has changed, sends the new state to the remote station so that it can update the laser. LaserTask then goes to sleep for 10 ticks (100ms) and therefore has a frequency of 10Hz.
+                                    </p>
+                                    <b>RoombaTask</b>
+                                    <p>
+                                        RoombaTask locks the adc mutex, then does two A to D conversions to get the x and y values from the joystick and unlocks the mutex. It then maps these values to the characters A, B, C, ... , H, X shown above in the design section. The correct state is then sent to the remote station and this task will sleep for 20 ticks (200ms).
+                                    </p>
+                                    <b>bluetoothReceive</b>
+                                    <p>
+                                        If there is data available to receive, then this task reads the data and checks to see if the first byte is the light sensor flag indicating light sensor data is incoming. If it is, two more bytes are read and put together into a 16 bit integer. The ls_mutex is locked and this integer is enqueued into the light sensor queue, then the ls_mutex is unlocked. This task then sleeps for 15 ticks (150ms).
+                                    </p>
+                                    <b>screenTask</b>
+                                    <p>
+                                        screenTask locks the ls_mutex and dequeues an element from the buffer if one is available. This is all this task does for now, eventually it would display on an LCD screen on the base station. The ls_mutex is then unlocked. screenTask then sleeps for 15 ticks (150ms).
+                                    </p>
+                                    <b>SwitchTask</b>
+                                    <p>
+                                        SwitchTask reads the digital pin the other joystick pushbutton is connected to. If the button has been pushed, it sends a byte to the remote station that indicates it needs to change states. The two possible states are autonomous or manual. This task then sleeps for 20 ticks (200ms).
+                                    </p>
                                     <h4>Remote Station</h4>
-                                    <p></p>
+                                    <p>
+                                        The remote station is implemented using 6 tasks and an idle task.
+                                    </p>
 								</section>
 
 								<section id="Testing">

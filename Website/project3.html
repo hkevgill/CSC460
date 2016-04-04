@@ -81,13 +81,22 @@
 									<header>
 										<h3>Design</h3>
 									</header>
+                                    <p>
+                                        This section talks about the system design from a high level perspective using block diagrams, finite state machines, and the subsumption architecture.
+                                    </p>
 									<h4>System Architecture</h4>
+                                    <b>Base Station</b>
 									<p>
-										BASE STATION
+										The base station is connected to bluetooth, and two joysticks. Bluetooth provides bi-directional communication and is used to communicate with the remote station over UART. One of the joysticks is used to control the Roomba, with its pushbutton to fire the laser. The second joystick is purely used for the pushbutton to change the state of the remote station between manual and semi-autonomous. This is illustrated in the base station's block diagram:
+                                        <br>
+                                        <br>
 										<a class="image paragraph"><img src="images/project3/Block_Base.png"></a>
-										REMOTE STATION
-										<a class="image paragraph"><img src="images/project3/Block_Remote.png"></a>
 									</p>
+                                    <b>Remote Station</b>
+                                    <p>
+                                        The remote station is the one connected to the Roomba.
+                                        <a class="image paragraph"><img src="images/project3/Block_Remote.png"></a> 
+                                    </p>
                                     <h4>Phase 1: Manual Control</h4>
                                     <p>
                                         Phase 1 is heavily associated with behaviour based robotics. The sensors are used to directly control the actuators.
@@ -100,7 +109,7 @@
                                     <a class="image paragraph"><img src="images/project3/FSM_Fire.png"></a>
                                     <b>Photocell</b>
 									<p>
-										The photocell sensor array detects spikes in light to determine if it has been shot. Every 0.5 seconds it will update a threshold value. This threshold value is the amount of light coming from the room plus a little. If this threshold is exceeded, then we can determine that the tank has been shot. Being shot puts the Roomba into a dead state where it can't move or shoot.
+										The photocell sensor array detects spikes in light to determine if it has been shot. Every 0.5 seconds it will update a threshold value. This threshold value is the amount of light coming from the room plus a little. If this threshold is exceeded, then we can determine that the tank has been shot. Being shot puts the Roomba into a dead state where it can't move or shoot. This is illustrated in the diagrams below.
 									</p>
                                     <a class="image paragraph"><img src="images/project3/Flow_Photocell.png"></a>
                                     <a class="image paragraph"><img src="images/project3/FSM_Photocell.png"></a>

@@ -547,7 +547,16 @@
                                         <h3>Discussion</h3>
                                     </header>
                                     <p>
-                                        Discuss...
+                                        The laser tank Roomba was successfully implemented and tested. The Roomba's movement, laser firing, obstacle and virtual wall avoidance, and the light detection are working responsively.
+                                    </p>
+                                    <p>
+                                        Currently the RTOS runs each task on a periodic basis by using to Task_Sleep to simulate what resembles a time triggered architecture. At some point in the future, some of the tasks could be moved over to be event based instead of periodic. The Laser_Task on the remote station for example doesn't always need to run, it could wait on an event, such as when there is new data available for it, then be signalled to change the state of the laser. Moving over to this event based system would decrease the load on the RTOS by only running the tasks that need to run. This could potentially also make the actuators respond faster to the sensor input.
+                                    </p>
+                                    <p>
+                                        Our original method of attack for Project 3 was to get Project 1 working on the RTOS with the servo, lightsensors and lasers. All of which we were able to get working. The servo task still exists in the code for Project 3 (but isn't running) and uses Timer 4 to generate a PWM signal. Then setting OCR4A to a value from 125-625 would move the servo between 0 and 180 degree. but we ended up switching gears to get the Roomba working with the joystick and ran out of time to implement the servo control while in autonomous mode. Hooking up the LCD to the base station would also allow us to have the remote station send more data back and display it on the LCD, such as the current state of the Roomba, laser, and lightsensor.
+                                    </p>
+                                    <p>
+                                        An ideal next step for obstacle avoidance would be to detect which side of the bumper was hit and base the Roombas turning off of that instead of always turning counterclockwise. The light bumpers can also be added to give the Roomba some more notice that an obstacle is coming so it can slow down if it's moving fast, or back away before it hits if it's moving slow.
                                     </p>
                                 </section>
 
@@ -556,7 +565,7 @@
 										<h3>Conclusion</h3>
 									</header>
 									<p>
-										A semi-autonomous laser tank was created using the sensors and actuators from project 1, the RTOS from project 2, the ATMega 2560 microcontroller, and the iRobot Roomba Create 2. The tank's movement can be operated manually or autonomously, while the laser is always controlled by the pushbutton on the joystick. The light sensor detects the light of the room using averaging and detects bursts in the light to determine whether it has been hit. This concludes our making of a Roomba laser tank.
+										A semi-autonomous laser tank was created using the sensors and actuators from project 1, the RTOS from project 2, the ATMega 2560 microcontroller, and the iRobot Roomba Create 2. The tank's movement can be operated manually or autonomously, while the laser is always controlled by the pushbutton on the joystick. The light sensor detects the light of the room using averaging and detects bursts in the light to determine whether it has been hit. This concludes our making of a Roomba laser tank. The tank is now ready for battle.
 									</p>
 								</section>
 

@@ -169,9 +169,12 @@
                                     </p>
                                     <a class="image paragraph"><img src="images/project3/FSM_Bluetooth.png"></a>
 									<h4>Phase 2: Semi-Autonomous Control</h4>
-									<b>"Semi-Autonomous"</b>
+									<b>Subsumption Architecture</b>
 									<p>
-										Phase 2 introduces subsumption architecture to the project. In this robotics paradigm, sensors may cause the system to have different behaviour based on their state.
+										Phase 2 introduces subsumption architecture to the project. In this robotics paradigm, sensors may cause the system to have different behaviour based on their state. This can be seen from the high-level representation of our system's motor control logic:
+										<a class="image paragraph"><img src="images/project3/Flow_Motor.png"></a>
+										In the above representation, four separate FSM's govern the Roomba's motor behaviour. However, there is a subsumption hierarchy that determines which logic is actually in command. In our system, the order is: 
+										<i>Laser Detection > IR Boundary Detection > Obstacle Avoidance > Movement</i>.
 									</p>
 									<b>Updated Movement</b>
 									<p>
@@ -230,12 +233,7 @@
 									</p>
 									<a class="image paragraph"><img src="images/project3/Flow_Obstacle.png"></a>
 									<a class="image paragraph"><img src="images/project3/FSM_Obstacle.png"></a>
-									<b>Subsumption Architecture</b>
-									<p>
-										<!-- TODO -->
-										<i>VAMP ABOUT NEW REQUIREMENTS</i>
-										<a class="image paragraph"><img src="images/project3/Flow_Motor.png"></a>
-									</p>
+
                                     <h4>Task Decomposition</h3>
                                     <p>The above functionality is broken down into tasks that will run on the RTOS. Each task has its own scheduling parameters (priority and frequency).</p>
                                     <b>Base Station Tasks</b>

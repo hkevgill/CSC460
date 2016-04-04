@@ -425,7 +425,7 @@
                                     </p>
                                     <b>Bluetooth_Receive</b>
                                     <p>
-                                        Bluetooth_Receive will read a byte if it is available, then check to see if that incoming byte is a flag signalling more data is coming for the laser, the Roomba, or whether it means switch modes. If it is one of the first two, the data is received and put into the correct queue (laserQueue or roombaQueue). If it is the third, then the value of the AUTO variable is flipped, changing the state to either autonomous or manual control. This task sleeps for 5 ticks (50ms).
+                                        Bluetooth_Receive will read a byte if it is available, then check to see if that incoming byte is a flag signalling more data is coming for the laser, the Roomba, or whether it means switch modes. If it is one of the first two, the data is received and put into the correct queue (laserQueue or roombaQueue). If it is the third, then the value of the AUTO variable is flipped, changing the state to either autonomous or manual control. If the set goes to manual control, the roombaBuffer is cleared so new data from the joystick can be received. This task sleeps for 5 ticks (50ms).
                                     </p>
                                     <b>Bluetooth_Send</b>
                                     <p>
@@ -445,7 +445,7 @@
                                     </p>
                                     <b>Roomba_Task</b>
                                     <p>
-                                        All that remains...
+                                        Roomba_Task implements the subsumption architecture discussed earlier in the design section. This is done through an if, else if, else tree. If wallState is set, then the Roomba will do the opposite of its current movement state, if the mode is also autonomous then the Roomba will turn counterclockwise after it backs up as well. If wallState is not set then a check is made for bumpState. If bumpState is set, the Roomba will go straight backwards. If autonomous mode is enabled it will also turn counterclockwise after is backs up. If bumpState is not set either then we reach the else case. Inside the else, a check is made for autonomous mode. If autuonomous mode is enabled the Roomba will travel straight forward. If autonomous mode is disabled, the Roomba will dequeue a new state from the roombaBuffer and perform that action. This task then sleeps for 20 ticks (200ms).
                                     </p>
 								</section>
 

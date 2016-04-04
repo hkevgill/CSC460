@@ -421,7 +421,31 @@
                                     </p>
                                     <h4>Remote Station</h4>
                                     <p>
-                                        The remote station is implemented using 6 tasks and an idle task.
+                                        The remote station is implemented using 6 tasks and an idle task. These tasks are Bluetooth_Receive, Bluetooth_Send, Laser_Task, LightSensor_Task, Get_Sensor_Data, and Roomba_Task. The remote station has a laser_mutex that is used to protect the laserQueue. a_main initializes the bluetooth and Roomba UART, A to D, and the Roomba. It also then uses A to D to get an initial threshold for the light sensor.
+                                    </p>
+                                    <b>Bluetooth_Receive</b>
+                                    <p>
+                                        Bluetooth_Receive will read a byte if it is available, then check to see if that incoming byte is a flag signalling more data is coming for the laser, the Roomba, or whether it means switch modes. If it is one of the first two, the data is received and put into the correct queue (laserQueue or roombaQueue). If it is the third, then the value of the AUTO variable is flipped, changing the state to either autonomous or manual control. This task sleeps for 5 ticks (50ms).
+                                    </p>
+                                    <b>Bluetooth_Send</b>
+                                    <p>
+                                        Bluetooth_Send simply sends a byte indicating the data is for the photocell, then the current value of the photocell (stored in the global variable photocellReading). Then this task sleeps for 10 ticks (100ms).
+                                    </p>
+                                    <b>Laser_Task</b>
+                                    <p>
+                                        Laser tasks checks if the buffer has data in it, if it does the data is dequeued and the laser is turned on or off depending on the new value. This task then sleeps for 10 ticks (100ms).
+                                    </p>
+                                    <b>LightSensor_Task</b>
+                                    <p>
+                                        The LightSensor_Task does an A to D conversion on the analog pin that has the photocell array connected. It then checks if this value is greater than the threshold value plus fifty. If it is, An LED on the Roomba is turned on, the Roomba plays a song, the laser is disabled, the Roomba stops moving, and OS_Abort is called make sure it doesn't move again. If this doesn't happen, the task will sleep 10 ticks (100ms). Every 5 times this task runs (every 0.5 seconds), this task also does 3 readings of the photocell array and averages them to compute a new threshold. This allows the Roomba to transition from dark environments to well lit environments without being destroyed. It also allows travel from well lit to dimly lit environments and allows the Roomba to still detect being shot.
+                                    </p>
+                                    <b>Get_Sensor_Data</b>
+                                    <p>
+                                        Get_Sensor_Data sends a request to the Roomba over UART for the values of the bumper sensor and virtual wall detection sensor. These values are returned and stored in globala variables called bumpState and wallState. This task then sleeps for 20 ticks (200ms);
+                                    </p>
+                                    <b>Roomba_Task</b>
+                                    <p>
+                                        All that remains...
                                     </p>
 								</section>
 

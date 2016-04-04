@@ -52,7 +52,9 @@
 										<li> <a href="#Testing">Testing</a> </li>
                                         <li> <a href="#Discussion">Discussion</a> </li>
 										<li> <a href="#Conclusion">Conclusion</a> </li>
+                                        <li> <a href="#Demos">Demos</a> </li>
 										<li> <a href="#References">References</a> </li>
+                                        <li> <a href="#Appendix">Appendix</a> </li>
 										<li> <a href="#Code">Code</a> </li>
 									</ul>
 								</section>
@@ -62,7 +64,7 @@
 										<h3>Introduction</h3>
 									</header>
 									<p>
-										The goal of project 3 is to use the sensors and actuators from project 1, the real time operating system (RTOS) from project 2, and an iRobot Roomba to create a semi-autonomous laser tank capable of battling other tanks. The Roomba will be controllable through a joystick and a pushbutton for the laser. It can roam and avoid obstacles and virtual walls on its own in autonomous mode. There is also a light-sensing target on the Roomba that detects when it has been shot, in which in case it will remain stationary as if it has been destroyed.
+										The goal of project 3 is to use the sensors and actuators from project 1, the real time operating system (RTOS) from project 2, and an iRobot Roomba to create a semi-autonomous laser tank capable of battling other tanks. The Roomba will be controllable through a joystick and a pushbutton for the laser. It can roam and avoid obstacles and virtual walls on its own in autonomous mode. There is also a light-sensing target on the Roomba that detects when it has been shot, in which in case it will remain stationary, as if it has been destroyed.
 									</p>
 								</section>
 
@@ -88,14 +90,14 @@
 									<h4>System Architecture</h4>
                                     <b>Base Station</b>
 									<p>
-										The base station is connected to bluetooth, and two joysticks. Bluetooth provides bi-directional communication and is used to communicate with the remote station over UART. One of the joysticks is used to control the Roomba, with its pushbutton to fire the laser. The second joystick is purely used for the pushbutton to change the state of the remote station between manual and semi-autonomous. This is illustrated in the base station's block diagram:
+										The base station is connected to bluetooth, and two joysticks. Bluetooth provides bidirectional communication and is used to communicate with the remote station over UART. One of the joysticks is used to control the Roomba, with its pushbutton to fire the laser. The second joystick is purely used for the pushbutton to change the remote station's state from manual to semi-autonomous and vice versa. This is illustrated in the base station's block diagram:
                                         <br>
                                         <br>
 										<a class="image paragraph"><img src="images/project3/Block_Base.png"></a>
 									</p>
                                     <b>Remote Station</b>
                                     <p>
-                                        The remote station is connected to bluetooth, the laser, a photocell array, and the Roomba, which is it mounted on. The laser emits a bright beam when the pin is set high. The photocell is read to obtain a value and determine if it has been shot, and the connection to the Roomba allows the remote station to send the Roomba commands, and receive sensor data back. The block diagram below shows the architecture of the remote station.
+                                        The remote station is connected to bluetooth, the laser, the photocell array, and the Roomba, which it is mounted on. The laser emits a bright beam when the pin is set high. The photocell is read to obtain a value and determine if it has been shot, and the connection to the Roomba allows the remote station to send the Roomba commands, and receive sensor data back. The block diagram below shows the architecture of the remote station.
                                         <a class="image paragraph"><img src="images/project3/Block_Remote.png"></a> 
                                     </p>
                                     <h4>Phase 1: Manual Control</h4>
@@ -110,7 +112,7 @@
                                     <a class="image paragraph"><img src="images/project3/FSM_Fire.png"></a>
                                     <b>Photocell</b>
 									<p>
-										The photocell sensor array detects spikes in light to determine if it has been shot. Every 0.5 seconds it will update a threshold value. This threshold value is the amount of light coming from the room plus a little. If this threshold is exceeded, then we can determine that the tank has been shot. Being shot puts the Roomba into a dead state where it can't move or shoot. This is illustrated in the diagrams below.
+										The photocell sensor array detects spikes in light to determine if it has been shot. Every 0.5 seconds it will update a threshold value. This threshold value is the amount of light coming from the room plus a small value. If this threshold is exceeded, then we can determine that the tank has been shot. Being shot puts the Roomba into a dead state where it can't move or shoot. This is illustrated in the diagrams below.
 									</p>
                                     <a class="image paragraph"><img src="images/project3/Flow_Photocell.png"></a>
                                     <a class="image paragraph"><img src="images/project3/FSM_Photocell.png"></a>
@@ -171,11 +173,17 @@
 									<h4>Phase 2: Semi-Autonomous Control</h4>
 									<b>Subsumption Architecture</b>
 									<p>
-										Phase 2 introduces subsumption architecture to the project. In this robotics paradigm, sensors may cause the system to have different behaviour based on their state. This can be seen from the high-level representation of our system's motor control logic:
+										Phase 2 uses the subsumption architecture. In this robotics architecture, sensors may cause the system to have different behaviour based on their state. This is accomplished by decomposing the overall behaviour into sub-behaviours. These sub-behaviours implement a degree of behavioral competence. The more important behaviours are then able to subsume less important behaviours. This can be seen from the high-level representation of our system's motor control logic:
+                                        <br>
+                                        <br>
 										<a class="image paragraph"><img src="images/project3/Flow_Motor.png"></a>
 										In the above representation, four separate FSM's govern the Roomba's motor behaviour. However, there is a subsumption hierarchy that determines which logic is actually in command. In our system, the order is: 
 										<i>Laser Detection > IR Boundary Detection > Obstacle Avoidance > Movement</i>.
 									</p>
+                                    <b>Semi-Autonomous Movement</b>
+                                    <p>
+                                        When the Roomba is in semi-autonomous mode, it will travel forward, and when it detects an obstacle or virtual IR wall, it will back up, turn counterclockwise and continue onward.
+                                    </p>
 									<b>Updated Movement</b>
 									<p>
 										The Movement FSM was updated to include a pushbutton input that toggles the state of AUTO between 1 and 0. In addition to the functionality from Phase 1, the system now only continues forward when AUTO is set to 1. The change can be seen in the following diagrams:
@@ -184,7 +192,7 @@
 									<a class="image paragraph"><img src="images/project3/FSM_Movement2.png"></a>
 									<b>IR-Wall Detection</b>
 									<p>
-										The IR-Wall Detection FSM takes Roomba sensor data and sends a movement command if an IR-Wall is detected. The command sent depends on the current movement state, and is generally the reverse of the current movement state. The mapping of current states to movement commands is shown in the table below:
+										The IR-Wall Detection FSM uses the Roomba sensor data and sends a movement command if an IR-Wall is detected. The command sent depends on the current movement state, and is the reverse of the current movement state. The mapping of current states to movement commands is shown in the table below:
                                         <table>
                                             <tr>
                                                 <td>A</td>
@@ -406,7 +414,7 @@
 											</tr>
 											<tr>
 												<td>Description:</td>
-												<td>When a laser is shined on the light sensor, the Roomba will play a sound to indicate that it was hit, turn off its laser, stop moving, and be in a dead state.</td>
+												<td>When a laser is shined on the light sensor, the Roomba (the one on the left) will play a sound to indicate that it was hit, turn off its laser, stop moving, and be in a dead state.</td>
 											</tr>
 											<tr>
 												<td>Results:</td>
@@ -438,6 +446,28 @@
 									</p>
 								</section>
 
+                                <section id="Demos">
+                                    <header>
+                                        <h3>Demos</h3>
+                                    </header>
+                                    <h4>Phase 1 Demo</h4>
+                                    <p>
+                                        This demo shows the Roomba being manually controller by the joystick and moving around.
+                                    </p>
+                                    <video width="640" height="400" controls>
+                                        <source src="videos/manual_demo.mov" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                    <h4>Phase 2 Demo</h4>
+                                    <p>
+                                        This demo shows the Roomba operating in semi-autonomous mode. When it runs into an obstacle, it goes straight backwards, turns counterclockwise, and then continues forward again.
+                                    </p>
+                                    <video width="640" height="400" controls>
+                                        <source src="videos/autonomous_demo.mov" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </section>
+
 								<section id="References">
 									<header>
 										<h3>References</h3>
@@ -453,6 +483,25 @@
 										</ul>
 									</p>
 								</section>
+
+                                <section id="Appendix">
+                                    <header>
+                                        <h3>Appendix</h3>
+                                    </header>
+                                    <h4>Base Station Wiring Diagram</h4>
+                                    <p>
+                                        One of the joysticks only has the digital pushbutton pin connected.
+                                        <br><br>
+                                        <a class="image paragraph"><img src="images/project3/fritz_project3_base_bb.png"></a>
+                                    </p>
+                                    <h4>Base Station Wiring Diagram</h4>
+                                    <p>
+                                        The four wires left unplug are for attaching to the Roomba.
+                                        <br>
+                                        <br>
+                                        <a class="image paragraph"><img src="images/project3/fritz_project3_remote_bb.png"></a>
+                                    </p>
+                                </section>
 
 								<section id="Code">
 									<header>

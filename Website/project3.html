@@ -237,8 +237,87 @@
 										<a class="image paragraph"><img src="images/project3/Flow_Motor.png"></a>
 									</p>
                                     <h4>Task Decomposition</h3>
-                                    <p>The above functionality is broken down into tasks that will run on the RTOS. Each task has its own scheduling parameters (priority and frequency).</p>
+                                    <p>The above functionality is broken down into tasks that will run on the RTOS. Each task has its own scheduling parameters (priority and frequency). A priority of 0 represents the highest, whereas a priority of 10 is the lowest.</p>
                                     <b>Base Station Tasks</b>
+                                    <p>
+                                        <table>
+                                            <tr>
+                                                <td><b>Task</b></td>
+                                                <td><b>Description</b></td>
+                                                <td><b>Priority, Frequency</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td>SwitchTask</td>
+                                                <td>Switches between autonomous and manual mode</td>
+                                                <td>2, 20ms</td>
+                                            </tr>
+                                            <tr>
+                                                <td>LaserTask</td>
+                                                <td>Reads the pushbutton and sends the data to fire the laser</td>
+                                                <td>2, 10ms</td>
+                                            </tr>
+                                            <tr>
+                                                <td>bluetoothReceive</td>
+                                                <td>Receives incoming data from the remote station</td>
+                                                <td>2, 15ms</td>
+                                            </tr>
+                                            <tr>
+                                                <td>RoombaTask</td>
+                                                <td>Reads x and y from joystick and maps it to Roomba states</td>
+                                                <td>2, 20ms</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Idle</td>
+                                                <td>Runs when no other task is available</td>
+                                                <td>10, No other taks</td>
+                                            </tr>
+                                        </table>
+                                    </p>
+                                    <b>Base Station Tasks</b>
+                                    <p>
+                                        <table>
+                                            <tr>
+                                                <td><b>Task</b></td>
+                                                <td><b>Description</b></td>
+                                                <td><b>Priority, Frequency</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Bluetooth_Receive</td>
+                                                <td>Receives incoming data from the base station</td>
+                                                <td>1, 5ms</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Bluetooth_Send</td>
+                                                <td>Sends lightsensor data to the base station</td>
+                                                <td>2, 10ms</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Laser_Task</td>
+                                                <td>Turns the laser on or off depending on the pushbutton</td>
+                                                <td>2, 10ms</td>
+                                            </tr>
+                                            <tr>
+                                                <td>LightSensor_Task</td>
+                                                <td>Reads the lightsensor value to determine if it has been shot</td>
+                                                <td>2, 10ms</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Roomba_Task</td>
+                                                <td>Determines the next move for the Roomba</td>
+                                                <td>2, 20ms</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Get_Sensor_Data</td>
+                                                <td>Requests bumper and virtual wall data from the Roomba</td>
+                                                <td>2, 20ms</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Idle</td>
+                                                <td>Runs when no other task is available</td>
+                                                <td>10, 10, No other taks</td>
+                                            </tr>
+                                        </table>
+                                    </p>
 								</section>
 
 								<section id="Implementation">

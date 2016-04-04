@@ -179,10 +179,10 @@ void Laser_Task() {
 		if(!buffer_isEmpty(&laserFront, &laserRear)) {
 			laserState = buffer_dequeue(laserQueue, &laserFront, &laserRear);
 			if (laserState == ON) {
-				enablePORTL6();
+				enablePORTL5();
 			}
 			else {
-				disablePORTL6();
+				disablePORTL5();
 			}
 		}
 
@@ -274,7 +274,7 @@ void LightSensor_Task() {
 		if (photocellReading >= (photoThreshold + 50)) {
 			enablePORTL2();
 			Roomba_Play(0);
-			disablePORTL6();
+			disablePORTL5();
 			Roomba_Drive(0,0);
 			OS_Abort();
 		}
@@ -376,7 +376,7 @@ void Manual_Drive() {
 
 // ------------------------------ AUTO DRIVE ------------------------------ //
 void Auto_Drive() {
-	Roomba_Drive(50,DRIVE_STRAIGHT);
+	Roomba_Drive(ROOMBA_SPEED,DRIVE_STRAIGHT);
 }
 
 // ------------------------------ ROOMBA TASK ------------------------------ //

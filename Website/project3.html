@@ -89,11 +89,28 @@
 										<a class="image"><img src="images/project3/Block_Remote.png"></a>
 									</p>
                                     <h4>Phase 1: Manual Control</h4>
-                                    <b>Laser</b>
+                                    <p>
+                                        Phase 1 is heavily associated with behaviour based robotics. The sensors are used to directly control the actuators.
+                                    </p>
+                                    <b>Laser Fire</b>
+                                    <p>
+                                        The Fire FSM takes data from a pushbutton and turns the laser on if the state of the pushbutton is down, or off if the state is up. The following shows the connection of sensors to actuators and the finite state machine (FSM).
+                                    </p>
                                     <a class="image paragraph"><img src="images/project3/Flow_Fire.png"></a>
+                                    <a class="image paragraph"><img src="images/project3/FSM_Fire.png"></a>
+                                    <b>Photocell</b>
 									<p>
-										Design 1
+										The photocell sensor array detects spikes in light to determine if it has been shot. Every 0.5 seconds it will update a threshold value. This threshold value is the amount of light coming from the room plus a little. If this threshold is exceeded, then we can determine that the tank has been shot. Being shot puts the Roomba into a dead state where it can't move or shoot.
 									</p>
+                                    <a class="image paragraph"><img src="images/project3/Flow_Photocell.png"></a>
+                                    <a class="image paragraph"><img src="images/project3/FSM_Photocell.png"></a>
+                                    <b>Movement</b>
+                                    <p>
+                                        The joystick is used to control the Roomba. The position of the joystick is mapped to nine different states. These states are shown in the diagram below:
+                                        <a class="image paragraph"><img src="images/project3/FSM_Photocell.png"></a>
+                                    </p>
+                                    <a class="image paragraph"><img src="images/project3/Flow_Movement1.png"></a>
+                                    <a class="image paragraph"><img src="images/project3/FSM_Movement1.png"></a>
 									<h4>Phase 2: Semi-Autonomous Control</h4>
 									<p>
 										MOVEMENT 2 FLOW

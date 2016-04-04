@@ -139,7 +139,7 @@
                                             </tr>
                                             <tr>
                                                 <td>E</td>
-                                                <td>Spin counterclockwise</td>
+                                                <td>Spin clockwise</td>
                                             </tr>
                                             <tr>
                                                 <td>F</td>
@@ -177,16 +177,55 @@
 									<b>IR-Wall Detection</b>
 									<p>
 										<!-- TODO -->
-										The IR-Wall Detection FSM takes Roomba sensor data 
+										The IR-Wall Detection FSM takes Roomba sensor data and sends a movement command if an IR-Wall is detected. The command sent depends on the current movement state. The mapping of current states to movement commands is shown in the table below:
+                                        <table>
+                                            <tr>
+                                                <td>A</td>
+                                                <td>Backwards left</td>
+                                            </tr>
+                                            <tr>
+                                                <td>B</td>
+                                                <td>Backwards</td>
+                                            </tr>
+                                            <tr>
+                                                <td>C</td>
+                                                <td>Backwards right</td>
+                                            </tr>
+                                            <tr>
+                                                <td>D</td>
+                                                <td>Spin clockwise</td>
+                                            </tr>
+                                            <tr>
+                                                <td>E</td>
+                                                <td>Spin counterclockwise</td>
+                                            </tr>
+                                            <tr>
+                                                <td>F</td>
+                                                <td>Forward left</td>
+                                            </tr>
+                                            <tr>
+                                                <td>G</td>
+                                                <td>Forward</td>
+                                            </tr>
+                                            <tr>
+                                                <td>H</td>
+                                                <td>Forward right</td>
+                                            </tr>
+                                            <tr>
+                                                <td>X</td>
+                                                <td>Backwards</td>
+                                            </tr>
+                                        </table>
+                                        The movement FSM then interprets each of these commands and tells the Roomba to drive in that direction. If the Roomba is currently in autonomous mode (ie: AUTO = 1), the Roomba will then briefly turn in place. This FSM is shown below:
 									</p>
 									<a class="image paragraph"><img src="images/project3/Flow_IR_Boundary.png"></a>
 									<a class="image paragraph"><img src="images/project3/FSM_IR_Boundary.png"></a>
 									<b>Obstacle Avoidance</b>
 									<p>
-										<!-- TODO -->
+										The Obstacle Avoidance FSM takes Roomba sensor data and determines if an obstacle has been hit by the Roomba's front bumpers. If this is the case, the Roomba will drive backwards for 200ms. In addition, if the Roomba is currently in autonomous mode (ie: AUTO = 1), the Roomba will then briefly turn in place. This FSM is shown below:
 									</p>
-									<a class="image paragraph"><img src="images/project3/Flow_IR_Boundary.png"></a>
-									<a class="image paragraph"><img src="images/project3/FSM_IR_Boundary.png"></a>
+									<a class="image paragraph"><img src="images/project3/Flow_Obstacle.png"></a>
+									<a class="image paragraph"><img src="images/project3/FSM_Obstacle.png"></a>
 									<b>Subsumption Architecture</b>
 									<p>
 										<!-- TODO -->

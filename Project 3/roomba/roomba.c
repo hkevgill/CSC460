@@ -8,8 +8,6 @@
 #include "../uart/uart.h" 
 
 void Roomba_Init(){
-    
-	_delay_ms(2100);
    
     // Wake Roomba from sleep
     // Pin 25
@@ -20,8 +18,22 @@ void Roomba_Init(){
     
     PORTA |= (1<<PA3);
     
-    // set Roomba to passive mode
+    // start the OI
     Roomba_Send_Byte(START);
+
+    _delay_ms(2100);
+
+    PORTA |= (1<<PA3);
+    PORTA &= ~(1<<PA3);
+    _delay_ms(100);
+
+    PORTA |= (1<<PA3);
+    PORTA &= ~(1<<PA3);
+    _delay_ms(100);
+
+    PORTA |= (1<<PA3);
+    PORTA &= ~(1<<PA3);
+    _delay_ms(100);
 
     // set Roomba to safe mode
     Roomba_Send_Byte(SAFE_MODE); 

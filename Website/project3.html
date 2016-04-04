@@ -330,9 +330,64 @@
 									<header>
 										<h3>Implementation</h3>
 									</header>
+                                    <h4>RTOS</h4>
+                                    <p>
+                                        The RTOS from project 2 is running on both the base and remote station. The stations do not use all of the features of the RTOS, but they use task creation, sleep, termination, and mutex lock and unlock. Thus the code does have critical sections that are protected by mutexes, and tasks that are put to sleep and woken up.
+                                    </p>
+                                    <h4>UART</h4>
+                                    <p>
+                                        The UART library is used to transfer data across bluetooth, and to and from the Roomba. There are four commands for bluetooth and the Roomba and they are: UART_Init, Send_Byte, Receive_Byte, and Send_String.
+                                    </p>
+                                    <b>UART_Init</b>
+                                    <p>
+                                        UART_Init sets the baud rate to 19.2k, enables the receiver and transmitter, specifies that 8 bit data will be transferred, and disables double speed.
+                                    </p>
+                                    <b>Send_Byte</b>
+                                    <p>
+                                        Send_Byte takes in 8 bits of data, waits for an empty transmit buffer, then puts the data into the buffer.
+                                    </p>
+                                    <b>Receive_Byte</b>
+                                    <p>
+                                        Receive_Byte waits for data to be received, then returns the byte.
+                                    </p>
+                                    <b>Send_String</b>
+                                    <p>
+                                        Send_String takes a character array and sends one character at a time until the entire array has been sent.
+                                    </p>
+                                    <h4>Roomba</h4>
+                                    <p>
+                                        The Roomba library is used to initialize the Roomba, drive the Roomba, Query the sensors, and load a song.
+                                    </p>
+                                    <b>Roomba_Init</b>
+                                    <p>
+                                        Roomba_Init wakes the Roomba from sleep, Starts the open interface (OI), waits 2 seconds, then pulses the DD pin three times to set the baud rate to 19.2k. Then the Roomba is put into safe mode and a song 0 is initialized.
+                                    </p>
+                                    <b>Roomba_Drive</b>
+                                    <p>
+                                        Roomba_Drive takes in a 16 bit velocity and a 16 bit radius, and sends them to the Roomba for execution.
+                                    </p>
+                                    <b>Roomba_Play</b>
+                                    <p>
+                                        Roomba_Play takes a song number and plays the song.
+                                    </p>
+                                    <b>Roomba_Sensors</b>
+                                    <p>
+                                        Roomba_Sensors takes a packet_id and returns the data from the specified sensor.
+                                    </p>
+                                    <b>Roomba_QueryList</b>
+                                    <p>
+                                        Roomba_QueryList takes two parameters and requests two sensor data packets back. The data arrives in the same order it was sent.
+                                    </p>
+                                    <b>Roomba_Song</b>
+                                    <p>
+                                        Roomba_Song loads a song onto the Roomba by sending the song number, 6 notes, and the duration each note should be played in 1/64ths of a second.
+                                    </p>
+                                    <h4>Base Station</h4>
 									<p>
-										Implementation
+										The base station is implemented using four tasks and an idle task. These tasks are LaserTask, RoombaTask, 
 									</p>
+                                    <h4>Remote Station</h4>
+                                    <p></p>
 								</section>
 
 								<section id="Testing">

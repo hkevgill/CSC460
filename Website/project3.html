@@ -107,7 +107,49 @@
                                     <b>Movement</b>
                                     <p>
                                         The joystick is used to control the Roomba. The position of the joystick is mapped to nine different states. These states are shown in the diagram below:
-                                        <a class="image paragraph"><img src="images/project3/FSM_Photocell.png"></a>
+                                        <br>
+                                        <br>
+                                        <a class="image paragraph"><img src="images/project3/Joystick_States.png"></a>
+                                        These letters then map to commands:
+                                        <table>
+                                            <tr>
+                                                <td>A</td>
+                                                <td>Forward left</td>
+                                            </tr>
+                                            <tr>
+                                                <td>B</td>
+                                                <td>Forward</td>
+                                            </tr>
+                                            <tr>
+                                                <td>C</td>
+                                                <td>Forward right</td>
+                                            </tr>
+                                            <tr>
+                                                <td>D</td>
+                                                <td>Spin counterclockwise</td>
+                                            </tr>
+                                            <tr>
+                                                <td>E</td>
+                                                <td>Spin counterclockwise</td>
+                                            </tr>
+                                            <tr>
+                                                <td>F</td>
+                                                <td>Backwards left</td>
+                                            </tr>
+                                            <tr>
+                                                <td>G</td>
+                                                <td>Backwards</td>
+                                            </tr>
+                                            <tr>
+                                                <td>H</td>
+                                                <td>Backwards right</td>
+                                            </tr>
+                                            <tr>
+                                                <td>X</td>
+                                                <td>Stop</td>
+                                            </tr>
+                                        </table>
+                                        The movement FSM then interprets each of these commands and tells the Roomba to drive in that direction. This FSM is shown below:
                                     </p>
                                     <a class="image paragraph"><img src="images/project3/Flow_Movement1.png"></a>
                                     <a class="image paragraph"><img src="images/project3/FSM_Movement1.png"></a>

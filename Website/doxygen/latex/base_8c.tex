@@ -1,0 +1,427 @@
+\hypertarget{base_8c}{}\section{/\+Users/kevingill/\+Git/\+C\+S\+C460/\+Project 3/base\+\_\+station/base.c File Reference}
+\label{base_8c}\index{/\+Users/kevingill/\+Git/\+C\+S\+C460/\+Project 3/base\+\_\+station/base.\+c@{/\+Users/kevingill/\+Git/\+C\+S\+C460/\+Project 3/base\+\_\+station/base.\+c}}
+{\ttfamily \#include $<$avr/io.\+h$>$}\\*
+{\ttfamily \#include $<$avr/interrupt.\+h$>$}\\*
+{\ttfamily \#include $<$util/delay.\+h$>$}\\*
+{\ttfamily \#include \char`\"{}../roomba/roomba.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}../rtos/os.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}../uart/uart.\+h\char`\"{}}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{base_8c_a43bafb28b29491ec7f871319b5a3b2f8}{F\+\_\+\+C\+PU}~16000000
+\item 
+\#define \hyperlink{base_8c_a392fb874e547e582e9c66a08a1f23326}{M\+AX}~10
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{base_8c_a5eb7178c89e87a2b9cae0face8098854}{buffer\+\_\+is\+Full} (int $\ast$front, int $\ast$rear)
+\item 
+int \hyperlink{base_8c_a465626b8e45538719238591a1e7dc058}{buffer\+\_\+is\+Empty} (int $\ast$front, int $\ast$rear)
+\item 
+void \hyperlink{base_8c_a300298c7f791c4a7c9eb982580002e68}{buffer\+\_\+enqueue} (int val, int $\ast$queue, int $\ast$front, int $\ast$rear)
+\item 
+int \hyperlink{base_8c_a9a1f74520178306984f5c7c437b9c2ff}{buffer\+\_\+dequeue} (int $\ast$queue, int $\ast$front, int $\ast$rear)
+\item 
+void \hyperlink{base_8c_a2242f9428023ff0aacadb5fa210a6686}{Idle} ()
+\item 
+void \hyperlink{base_8c_aebf00c4b26377bca91c8702ced5e7927}{Init\+A\+DC} ()
+\item 
+void \hyperlink{base_8c_aeb0ac4a532fa0a6d42896bdcc6753b4a}{Joystick\+Task} ()
+\item 
+void \hyperlink{base_8c_ad9e0ff0917a529384e0bca4b4eebbabb}{Switch\+Task} ()
+\item 
+void \hyperlink{base_8c_ab8663b2b2489d37b89f39dcf242e7dec}{Laser\+Task} ()
+\item 
+void \hyperlink{base_8c_a2112cc5a7490460c08328149fb9865ae}{bluetooth\+Receive} ()
+\item 
+void \hyperlink{base_8c_affbda09bf4f26b2dbaf9411dbd91fc86}{screen\+Task} ()
+\item 
+void \hyperlink{base_8c_ab0425312ae7e50fc13d54a0ff75a0f87}{Roomba\+Task} ()
+\item 
+void \hyperlink{base_8c_af9c2d0fc011e8984b199e8255ffd9f96}{a\+\_\+main} ()
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+unsigned int \hyperlink{base_8c_aac67aee6b880b1e4ef29c54e604abc51}{Idle\+P\+ID}
+\item 
+\hyperlink{os_8h_ad50a579691fc8233e549f1b355ef96b3}{M\+U\+T\+EX} \hyperlink{base_8c_a9ac65e3e34decfce619dfdeddb9a74a7}{bluetooth\+\_\+mutex}
+\item 
+\hyperlink{os_8h_ad50a579691fc8233e549f1b355ef96b3}{M\+U\+T\+EX} \hyperlink{base_8c_a23755447ac1213a3bf7ed9ef19da064f}{ls\+\_\+mutex}
+\item 
+\hyperlink{os_8h_ad50a579691fc8233e549f1b355ef96b3}{M\+U\+T\+EX} \hyperlink{base_8c_a0bcb7e08a4f3fe92262508ce5525df1e}{adc\+\_\+mutex}
+\item 
+int \hyperlink{base_8c_a6150e0515f7202e2fb518f7206ed97dc}{x}
+\item 
+int \hyperlink{base_8c_a0a2f84ed7838f07779ae24c5a9086d33}{y} = 375
+\item 
+int \hyperlink{base_8c_ad1ab67f206e4b3f0b90858f3cd92f033}{rx}
+\item 
+int \hyperlink{base_8c_a874b7d636d69225b50b81d5885182f3e}{ry}
+\item 
+uint16\+\_\+t \hyperlink{base_8c_a68ec0d412f0f4cc8fa85b4837b29afa3}{photocell\+Reading}
+\item 
+uint8\+\_\+t \hyperlink{base_8c_ac4c528bfd1f0b07dd1ff7cdcfd740512}{L\+A\+S\+ER} = 0
+\item 
+uint8\+\_\+t \hyperlink{base_8c_a7c7e2d474752dba025a5c0c2b1b077f9}{S\+E\+R\+VO} = 1
+\item 
+uint8\+\_\+t \hyperlink{base_8c_a2dcaf91c72cc2908e71e1378aa6b1c7d}{LS} = 2
+\item 
+uint8\+\_\+t \hyperlink{base_8c_ad8cc58abe5ca1290e3fcad270c01b026}{S\+C\+R\+E\+EN} = 3
+\item 
+uint8\+\_\+t \hyperlink{base_8c_ae6afaf2067d241dcd232364e30c1593d}{R\+O\+O\+M\+BA} = 4
+\item 
+uint8\+\_\+t \hyperlink{base_8c_a43b063261f3aac0bf5ace8e787f72b49}{M\+O\+DE} = 5
+\item 
+int \hyperlink{base_8c_a2778b2a45971bc91a2fe06e3b88cfdf5}{servo\+State} = 375
+\item 
+uint8\+\_\+t \hyperlink{base_8c_a46e33fe7921635c370bd09d124ce43eb}{laser} = 0
+\item 
+uint8\+\_\+t \hyperlink{base_8c_ad1f549667f80268cee59c032be85d0aa}{previous\+Laser} = 0
+\item 
+uint8\+\_\+t \hyperlink{base_8c_a37e90f5e3bd99fac2021fb3a326607d4}{mode} = 0
+\item 
+uint8\+\_\+t \hyperlink{base_8c_abb8ef6e078b9e4b726ef7f612d434a54}{previous\+Mode} = 0
+\item 
+int \hyperlink{base_8c_a80c46d330638ada3d0c99bdd8af9addf}{l\+S\+Queue} \mbox{[}\hyperlink{base_8c_a392fb874e547e582e9c66a08a1f23326}{M\+AX}\mbox{]}
+\item 
+int \hyperlink{base_8c_a54e3bc378eb6269181908e04021edb1f}{l\+S\+Front} = 0
+\item 
+int \hyperlink{base_8c_ad643681f3cbad45cb7e2fa7b7ae1ab49}{l\+S\+Rear} = 0
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\index{base.\+c@{base.\+c}!F\+\_\+\+C\+PU@{F\+\_\+\+C\+PU}}
+\index{F\+\_\+\+C\+PU@{F\+\_\+\+C\+PU}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{F\+\_\+\+C\+PU}{F_CPU}}]{\setlength{\rightskip}{0pt plus 5cm}\#define F\+\_\+\+C\+PU~16000000}\hypertarget{base_8c_a43bafb28b29491ec7f871319b5a3b2f8}{}\label{base_8c_a43bafb28b29491ec7f871319b5a3b2f8}
+
+
+Definition at line 1 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!M\+AX@{M\+AX}}
+\index{M\+AX@{M\+AX}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{M\+AX}{MAX}}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\+AX~10}\hypertarget{base_8c_a392fb874e547e582e9c66a08a1f23326}{}\label{base_8c_a392fb874e547e582e9c66a08a1f23326}
+
+
+Definition at line 35 of file base.\+c.
+
+
+
+\subsection{Function Documentation}
+\index{base.\+c@{base.\+c}!a\+\_\+main@{a\+\_\+main}}
+\index{a\+\_\+main@{a\+\_\+main}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{a\+\_\+main()}{a_main()}}]{\setlength{\rightskip}{0pt plus 5cm}void a\+\_\+main (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{base_8c_af9c2d0fc011e8984b199e8255ffd9f96}{}\label{base_8c_af9c2d0fc011e8984b199e8255ffd9f96}
+Application level main function. Creates the required tasks and then terminates 
+
+Definition at line 317 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!bluetooth\+Receive@{bluetooth\+Receive}}
+\index{bluetooth\+Receive@{bluetooth\+Receive}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{bluetooth\+Receive()}{bluetoothReceive()}}]{\setlength{\rightskip}{0pt plus 5cm}void bluetooth\+Receive (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{base_8c_a2112cc5a7490460c08328149fb9865ae}{}\label{base_8c_a2112cc5a7490460c08328149fb9865ae}
+Receives the lightsensor data from the remote station over bluetooth. 
+
+Definition at line 207 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!buffer\+\_\+dequeue@{buffer\+\_\+dequeue}}
+\index{buffer\+\_\+dequeue@{buffer\+\_\+dequeue}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{buffer\+\_\+dequeue(int $\ast$queue, int $\ast$front, int $\ast$rear)}{buffer_dequeue(int *queue, int *front, int *rear)}}]{\setlength{\rightskip}{0pt plus 5cm}int buffer\+\_\+dequeue (
+\begin{DoxyParamCaption}
+\item[{int $\ast$}]{queue, }
+\item[{int $\ast$}]{front, }
+\item[{int $\ast$}]{rear}
+\end{DoxyParamCaption}
+)}\hypertarget{base_8c_a9a1f74520178306984f5c7c437b9c2ff}{}\label{base_8c_a9a1f74520178306984f5c7c437b9c2ff}
+Dequeues the value from the specified buffer and returns it. 
+
+Definition at line 70 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!buffer\+\_\+enqueue@{buffer\+\_\+enqueue}}
+\index{buffer\+\_\+enqueue@{buffer\+\_\+enqueue}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{buffer\+\_\+enqueue(int val, int $\ast$queue, int $\ast$front, int $\ast$rear)}{buffer_enqueue(int val, int *queue, int *front, int *rear)}}]{\setlength{\rightskip}{0pt plus 5cm}void buffer\+\_\+enqueue (
+\begin{DoxyParamCaption}
+\item[{int}]{val, }
+\item[{int $\ast$}]{queue, }
+\item[{int $\ast$}]{front, }
+\item[{int $\ast$}]{rear}
+\end{DoxyParamCaption}
+)}\hypertarget{base_8c_a300298c7f791c4a7c9eb982580002e68}{}\label{base_8c_a300298c7f791c4a7c9eb982580002e68}
+Enqueues the value into the specified buffer. 
+
+Definition at line 58 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!buffer\+\_\+is\+Empty@{buffer\+\_\+is\+Empty}}
+\index{buffer\+\_\+is\+Empty@{buffer\+\_\+is\+Empty}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{buffer\+\_\+is\+Empty(int $\ast$front, int $\ast$rear)}{buffer_isEmpty(int *front, int *rear)}}]{\setlength{\rightskip}{0pt plus 5cm}int buffer\+\_\+is\+Empty (
+\begin{DoxyParamCaption}
+\item[{int $\ast$}]{front, }
+\item[{int $\ast$}]{rear}
+\end{DoxyParamCaption}
+)}\hypertarget{base_8c_a465626b8e45538719238591a1e7dc058}{}\label{base_8c_a465626b8e45538719238591a1e7dc058}
+Return 1 if the buffer is empty. 
+
+Definition at line 51 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!buffer\+\_\+is\+Full@{buffer\+\_\+is\+Full}}
+\index{buffer\+\_\+is\+Full@{buffer\+\_\+is\+Full}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{buffer\+\_\+is\+Full(int $\ast$front, int $\ast$rear)}{buffer_isFull(int *front, int *rear)}}]{\setlength{\rightskip}{0pt plus 5cm}int buffer\+\_\+is\+Full (
+\begin{DoxyParamCaption}
+\item[{int $\ast$}]{front, }
+\item[{int $\ast$}]{rear}
+\end{DoxyParamCaption}
+)}\hypertarget{base_8c_a5eb7178c89e87a2b9cae0face8098854}{}\label{base_8c_a5eb7178c89e87a2b9cae0face8098854}
+Return 1 if the buffer is full. 
+
+Definition at line 44 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!Idle@{Idle}}
+\index{Idle@{Idle}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{Idle()}{Idle()}}]{\setlength{\rightskip}{0pt plus 5cm}void Idle (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{base_8c_a2242f9428023ff0aacadb5fa210a6686}{}\label{base_8c_a2242f9428023ff0aacadb5fa210a6686}
+Idle task to run when nothing else is ready. 
+
+Definition at line 85 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!Init\+A\+DC@{Init\+A\+DC}}
+\index{Init\+A\+DC@{Init\+A\+DC}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{Init\+A\+D\+C()}{InitADC()}}]{\setlength{\rightskip}{0pt plus 5cm}void Init\+A\+DC (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{base_8c_aebf00c4b26377bca91c8702ced5e7927}{}\label{base_8c_aebf00c4b26377bca91c8702ced5e7927}
+Initializes A to D conversion. 
+
+Definition at line 93 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!Joystick\+Task@{Joystick\+Task}}
+\index{Joystick\+Task@{Joystick\+Task}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{Joystick\+Task()}{JoystickTask()}}]{\setlength{\rightskip}{0pt plus 5cm}void Joystick\+Task (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{base_8c_aeb0ac4a532fa0a6d42896bdcc6753b4a}{}\label{base_8c_aeb0ac4a532fa0a6d42896bdcc6753b4a}
+Reads x from the joystick and sends it over bluetooth to the remote station. 
+
+Definition at line 101 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!Laser\+Task@{Laser\+Task}}
+\index{Laser\+Task@{Laser\+Task}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{Laser\+Task()}{LaserTask()}}]{\setlength{\rightskip}{0pt plus 5cm}void Laser\+Task (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{base_8c_ab8663b2b2489d37b89f39dcf242e7dec}{}\label{base_8c_ab8663b2b2489d37b89f39dcf242e7dec}
+Read the digital pin for the laser pushbutton and if it has changed, send the data to the remote station. 
+
+Definition at line 181 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!Roomba\+Task@{Roomba\+Task}}
+\index{Roomba\+Task@{Roomba\+Task}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{Roomba\+Task()}{RoombaTask()}}]{\setlength{\rightskip}{0pt plus 5cm}void Roomba\+Task (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{base_8c_ab0425312ae7e50fc13d54a0ff75a0f87}{}\label{base_8c_ab0425312ae7e50fc13d54a0ff75a0f87}
+Reads x and y from the joystick and maps them to commands to send to the remote station for control over the Roomba. 
+
+Definition at line 248 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!screen\+Task@{screen\+Task}}
+\index{screen\+Task@{screen\+Task}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{screen\+Task()}{screenTask()}}]{\setlength{\rightskip}{0pt plus 5cm}void screen\+Task (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{base_8c_affbda09bf4f26b2dbaf9411dbd91fc86}{}\label{base_8c_affbda09bf4f26b2dbaf9411dbd91fc86}
+
+
+Definition at line 235 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!Switch\+Task@{Switch\+Task}}
+\index{Switch\+Task@{Switch\+Task}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{Switch\+Task()}{SwitchTask()}}]{\setlength{\rightskip}{0pt plus 5cm}void Switch\+Task (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{base_8c_ad9e0ff0917a529384e0bca4b4eebbabb}{}\label{base_8c_ad9e0ff0917a529384e0bca4b4eebbabb}
+Reads a digital button and if it has changed, send a byte to the remote station. 
+
+Definition at line 155 of file base.\+c.
+
+
+
+\subsection{Variable Documentation}
+\index{base.\+c@{base.\+c}!adc\+\_\+mutex@{adc\+\_\+mutex}}
+\index{adc\+\_\+mutex@{adc\+\_\+mutex}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{adc\+\_\+mutex}{adc_mutex}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf M\+U\+T\+EX} adc\+\_\+mutex}\hypertarget{base_8c_a0bcb7e08a4f3fe92262508ce5525df1e}{}\label{base_8c_a0bcb7e08a4f3fe92262508ce5525df1e}
+
+
+Definition at line 14 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!bluetooth\+\_\+mutex@{bluetooth\+\_\+mutex}}
+\index{bluetooth\+\_\+mutex@{bluetooth\+\_\+mutex}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{bluetooth\+\_\+mutex}{bluetooth_mutex}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf M\+U\+T\+EX} bluetooth\+\_\+mutex}\hypertarget{base_8c_a9ac65e3e34decfce619dfdeddb9a74a7}{}\label{base_8c_a9ac65e3e34decfce619dfdeddb9a74a7}
+
+
+Definition at line 12 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!Idle\+P\+ID@{Idle\+P\+ID}}
+\index{Idle\+P\+ID@{Idle\+P\+ID}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{Idle\+P\+ID}{IdlePID}}]{\setlength{\rightskip}{0pt plus 5cm}unsigned int Idle\+P\+ID}\hypertarget{base_8c_aac67aee6b880b1e4ef29c54e604abc51}{}\label{base_8c_aac67aee6b880b1e4ef29c54e604abc51}
+
+
+Definition at line 10 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!L\+A\+S\+ER@{L\+A\+S\+ER}}
+\index{L\+A\+S\+ER@{L\+A\+S\+ER}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{L\+A\+S\+ER}{LASER}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t L\+A\+S\+ER = 0}\hypertarget{base_8c_ac4c528bfd1f0b07dd1ff7cdcfd740512}{}\label{base_8c_ac4c528bfd1f0b07dd1ff7cdcfd740512}
+
+
+Definition at line 20 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!laser@{laser}}
+\index{laser@{laser}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{laser}{laser}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t laser = 0}\hypertarget{base_8c_a46e33fe7921635c370bd09d124ce43eb}{}\label{base_8c_a46e33fe7921635c370bd09d124ce43eb}
+
+
+Definition at line 29 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!LS@{LS}}
+\index{LS@{LS}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{LS}{LS}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t LS = 2}\hypertarget{base_8c_a2dcaf91c72cc2908e71e1378aa6b1c7d}{}\label{base_8c_a2dcaf91c72cc2908e71e1378aa6b1c7d}
+
+
+Definition at line 22 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!ls\+\_\+mutex@{ls\+\_\+mutex}}
+\index{ls\+\_\+mutex@{ls\+\_\+mutex}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{ls\+\_\+mutex}{ls_mutex}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf M\+U\+T\+EX} ls\+\_\+mutex}\hypertarget{base_8c_a23755447ac1213a3bf7ed9ef19da064f}{}\label{base_8c_a23755447ac1213a3bf7ed9ef19da064f}
+
+
+Definition at line 13 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!l\+S\+Front@{l\+S\+Front}}
+\index{l\+S\+Front@{l\+S\+Front}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{l\+S\+Front}{lSFront}}]{\setlength{\rightskip}{0pt plus 5cm}int l\+S\+Front = 0}\hypertarget{base_8c_a54e3bc378eb6269181908e04021edb1f}{}\label{base_8c_a54e3bc378eb6269181908e04021edb1f}
+
+
+Definition at line 38 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!l\+S\+Queue@{l\+S\+Queue}}
+\index{l\+S\+Queue@{l\+S\+Queue}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{l\+S\+Queue}{lSQueue}}]{\setlength{\rightskip}{0pt plus 5cm}int l\+S\+Queue\mbox{[}{\bf M\+AX}\mbox{]}}\hypertarget{base_8c_a80c46d330638ada3d0c99bdd8af9addf}{}\label{base_8c_a80c46d330638ada3d0c99bdd8af9addf}
+
+
+Definition at line 37 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!l\+S\+Rear@{l\+S\+Rear}}
+\index{l\+S\+Rear@{l\+S\+Rear}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{l\+S\+Rear}{lSRear}}]{\setlength{\rightskip}{0pt plus 5cm}int l\+S\+Rear = 0}\hypertarget{base_8c_ad643681f3cbad45cb7e2fa7b7ae1ab49}{}\label{base_8c_ad643681f3cbad45cb7e2fa7b7ae1ab49}
+
+
+Definition at line 39 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!M\+O\+DE@{M\+O\+DE}}
+\index{M\+O\+DE@{M\+O\+DE}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{M\+O\+DE}{MODE}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t M\+O\+DE = 5}\hypertarget{base_8c_a43b063261f3aac0bf5ace8e787f72b49}{}\label{base_8c_a43b063261f3aac0bf5ace8e787f72b49}
+
+
+Definition at line 25 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!mode@{mode}}
+\index{mode@{mode}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{mode}{mode}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t mode = 0}\hypertarget{base_8c_a37e90f5e3bd99fac2021fb3a326607d4}{}\label{base_8c_a37e90f5e3bd99fac2021fb3a326607d4}
+
+
+Definition at line 32 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!photocell\+Reading@{photocell\+Reading}}
+\index{photocell\+Reading@{photocell\+Reading}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{photocell\+Reading}{photocellReading}}]{\setlength{\rightskip}{0pt plus 5cm}uint16\+\_\+t photocell\+Reading}\hypertarget{base_8c_a68ec0d412f0f4cc8fa85b4837b29afa3}{}\label{base_8c_a68ec0d412f0f4cc8fa85b4837b29afa3}
+
+
+Definition at line 18 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!previous\+Laser@{previous\+Laser}}
+\index{previous\+Laser@{previous\+Laser}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{previous\+Laser}{previousLaser}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t previous\+Laser = 0}\hypertarget{base_8c_ad1f549667f80268cee59c032be85d0aa}{}\label{base_8c_ad1f549667f80268cee59c032be85d0aa}
+
+
+Definition at line 30 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!previous\+Mode@{previous\+Mode}}
+\index{previous\+Mode@{previous\+Mode}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{previous\+Mode}{previousMode}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t previous\+Mode = 0}\hypertarget{base_8c_abb8ef6e078b9e4b726ef7f612d434a54}{}\label{base_8c_abb8ef6e078b9e4b726ef7f612d434a54}
+
+
+Definition at line 33 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!R\+O\+O\+M\+BA@{R\+O\+O\+M\+BA}}
+\index{R\+O\+O\+M\+BA@{R\+O\+O\+M\+BA}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{R\+O\+O\+M\+BA}{ROOMBA}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t R\+O\+O\+M\+BA = 4}\hypertarget{base_8c_ae6afaf2067d241dcd232364e30c1593d}{}\label{base_8c_ae6afaf2067d241dcd232364e30c1593d}
+
+
+Definition at line 24 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!rx@{rx}}
+\index{rx@{rx}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{rx}{rx}}]{\setlength{\rightskip}{0pt plus 5cm}int rx}\hypertarget{base_8c_ad1ab67f206e4b3f0b90858f3cd92f033}{}\label{base_8c_ad1ab67f206e4b3f0b90858f3cd92f033}
+
+
+Definition at line 17 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!ry@{ry}}
+\index{ry@{ry}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{ry}{ry}}]{\setlength{\rightskip}{0pt plus 5cm}int ry}\hypertarget{base_8c_a874b7d636d69225b50b81d5885182f3e}{}\label{base_8c_a874b7d636d69225b50b81d5885182f3e}
+
+
+Definition at line 17 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!S\+C\+R\+E\+EN@{S\+C\+R\+E\+EN}}
+\index{S\+C\+R\+E\+EN@{S\+C\+R\+E\+EN}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{S\+C\+R\+E\+EN}{SCREEN}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t S\+C\+R\+E\+EN = 3}\hypertarget{base_8c_ad8cc58abe5ca1290e3fcad270c01b026}{}\label{base_8c_ad8cc58abe5ca1290e3fcad270c01b026}
+
+
+Definition at line 23 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!S\+E\+R\+VO@{S\+E\+R\+VO}}
+\index{S\+E\+R\+VO@{S\+E\+R\+VO}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{S\+E\+R\+VO}{SERVO}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t S\+E\+R\+VO = 1}\hypertarget{base_8c_a7c7e2d474752dba025a5c0c2b1b077f9}{}\label{base_8c_a7c7e2d474752dba025a5c0c2b1b077f9}
+
+
+Definition at line 21 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!servo\+State@{servo\+State}}
+\index{servo\+State@{servo\+State}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{servo\+State}{servoState}}]{\setlength{\rightskip}{0pt plus 5cm}int servo\+State = 375}\hypertarget{base_8c_a2778b2a45971bc91a2fe06e3b88cfdf5}{}\label{base_8c_a2778b2a45971bc91a2fe06e3b88cfdf5}
+
+
+Definition at line 27 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!x@{x}}
+\index{x@{x}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{x}{x}}]{\setlength{\rightskip}{0pt plus 5cm}int x}\hypertarget{base_8c_a6150e0515f7202e2fb518f7206ed97dc}{}\label{base_8c_a6150e0515f7202e2fb518f7206ed97dc}
+
+
+Definition at line 16 of file base.\+c.
+
+\index{base.\+c@{base.\+c}!y@{y}}
+\index{y@{y}!base.\+c@{base.\+c}}
+\subsubsection[{\texorpdfstring{y}{y}}]{\setlength{\rightskip}{0pt plus 5cm}int y = 375}\hypertarget{base_8c_a0a2f84ed7838f07779ae24c5a9086d33}{}\label{base_8c_a0a2f84ed7838f07779ae24c5a9086d33}
+
+
+Definition at line 16 of file base.\+c.
+

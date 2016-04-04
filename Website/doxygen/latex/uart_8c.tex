@@ -1,0 +1,131 @@
+\hypertarget{uart_8c}{}\section{/\+Users/kevingill/\+Git/\+C\+S\+C460/\+Project 3/uart/uart.c File Reference}
+\label{uart_8c}\index{/\+Users/kevingill/\+Git/\+C\+S\+C460/\+Project 3/uart/uart.\+c@{/\+Users/kevingill/\+Git/\+C\+S\+C460/\+Project 3/uart/uart.\+c}}
+{\ttfamily \#include $<$util/delay.\+h$>$}\\*
+{\ttfamily \#include \char`\"{}uart.\+h\char`\"{}}\\*
+{\ttfamily \#include $<$string.\+h$>$}\\*
+{\ttfamily \#include $<$avr/io.\+h$>$}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{uart_8c_a43bafb28b29491ec7f871319b5a3b2f8}{F\+\_\+\+C\+PU}~16000000
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{uart_8c_a6a67ee02690d1f2fe43f14abc3832fac}{Roomba\+\_\+\+U\+A\+R\+T\+\_\+\+Init} ()
+\item 
+void \hyperlink{uart_8c_a91b3a8be87e32c6317939eca03d35147}{Roomba\+\_\+\+Send\+\_\+\+Byte} (uint8\+\_\+t data\+\_\+out)
+\item 
+unsigned char \hyperlink{uart_8c_aa11c3d6df5490333828b1b76742c519f}{Roomba\+\_\+\+Receive\+\_\+\+Byte} ()
+\item 
+void \hyperlink{uart_8c_aae28592178952a3fba703c959e6cf472}{Roomba\+\_\+\+Send\+\_\+\+String} (char $\ast$string\+\_\+out)
+\item 
+void \hyperlink{uart_8c_a17a228b9206899a74b6111751855518f}{Bluetooth\+\_\+\+U\+A\+R\+T\+\_\+\+Init} ()
+\item 
+void \hyperlink{uart_8c_ad3fd53782fd9d6f87e6c382c18f2f3da}{Bluetooth\+\_\+\+Send\+\_\+\+Byte} (uint8\+\_\+t data\+\_\+out)
+\item 
+unsigned char \hyperlink{uart_8c_a6209cfab9917f99b7ef571edb158711f}{Bluetooth\+\_\+\+Receive\+\_\+\+Byte} ()
+\item 
+void \hyperlink{uart_8c_ab5c4be9e4f58c7d373209560a82e075d}{Bluetooth\+\_\+\+Send\+\_\+\+String} (char $\ast$string\+\_\+out)
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\index{uart.\+c@{uart.\+c}!F\+\_\+\+C\+PU@{F\+\_\+\+C\+PU}}
+\index{F\+\_\+\+C\+PU@{F\+\_\+\+C\+PU}!uart.\+c@{uart.\+c}}
+\subsubsection[{\texorpdfstring{F\+\_\+\+C\+PU}{F_CPU}}]{\setlength{\rightskip}{0pt plus 5cm}\#define F\+\_\+\+C\+PU~16000000}\hypertarget{uart_8c_a43bafb28b29491ec7f871319b5a3b2f8}{}\label{uart_8c_a43bafb28b29491ec7f871319b5a3b2f8}
+
+
+Definition at line 1 of file uart.\+c.
+
+
+
+\subsection{Function Documentation}
+\index{uart.\+c@{uart.\+c}!Bluetooth\+\_\+\+Receive\+\_\+\+Byte@{Bluetooth\+\_\+\+Receive\+\_\+\+Byte}}
+\index{Bluetooth\+\_\+\+Receive\+\_\+\+Byte@{Bluetooth\+\_\+\+Receive\+\_\+\+Byte}!uart.\+c@{uart.\+c}}
+\subsubsection[{\texorpdfstring{Bluetooth\+\_\+\+Receive\+\_\+\+Byte()}{Bluetooth_Receive_Byte()}}]{\setlength{\rightskip}{0pt plus 5cm}unsigned char Bluetooth\+\_\+\+Receive\+\_\+\+Byte (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{uart_8c_a6209cfab9917f99b7ef571edb158711f}{}\label{uart_8c_a6209cfab9917f99b7ef571edb158711f}
+Receives 1 byte from bluetooth 
+
+Definition at line 83 of file uart.\+c.
+
+\index{uart.\+c@{uart.\+c}!Bluetooth\+\_\+\+Send\+\_\+\+Byte@{Bluetooth\+\_\+\+Send\+\_\+\+Byte}}
+\index{Bluetooth\+\_\+\+Send\+\_\+\+Byte@{Bluetooth\+\_\+\+Send\+\_\+\+Byte}!uart.\+c@{uart.\+c}}
+\subsubsection[{\texorpdfstring{Bluetooth\+\_\+\+Send\+\_\+\+Byte(uint8\+\_\+t data\+\_\+out)}{Bluetooth_Send_Byte(uint8_t data_out)}}]{\setlength{\rightskip}{0pt plus 5cm}void Bluetooth\+\_\+\+Send\+\_\+\+Byte (
+\begin{DoxyParamCaption}
+\item[{uint8\+\_\+t}]{data\+\_\+out}
+\end{DoxyParamCaption}
+)}\hypertarget{uart_8c_ad3fd53782fd9d6f87e6c382c18f2f3da}{}\label{uart_8c_ad3fd53782fd9d6f87e6c382c18f2f3da}
+Sends 1 byte over bluetooth 
+
+Definition at line 73 of file uart.\+c.
+
+\index{uart.\+c@{uart.\+c}!Bluetooth\+\_\+\+Send\+\_\+\+String@{Bluetooth\+\_\+\+Send\+\_\+\+String}}
+\index{Bluetooth\+\_\+\+Send\+\_\+\+String@{Bluetooth\+\_\+\+Send\+\_\+\+String}!uart.\+c@{uart.\+c}}
+\subsubsection[{\texorpdfstring{Bluetooth\+\_\+\+Send\+\_\+\+String(char $\ast$string\+\_\+out)}{Bluetooth_Send_String(char *string_out)}}]{\setlength{\rightskip}{0pt plus 5cm}void Bluetooth\+\_\+\+Send\+\_\+\+String (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{string\+\_\+out}
+\end{DoxyParamCaption}
+)}\hypertarget{uart_8c_ab5c4be9e4f58c7d373209560a82e075d}{}\label{uart_8c_ab5c4be9e4f58c7d373209560a82e075d}
+Sends a string of characters over bluetooth 
+
+Definition at line 93 of file uart.\+c.
+
+\index{uart.\+c@{uart.\+c}!Bluetooth\+\_\+\+U\+A\+R\+T\+\_\+\+Init@{Bluetooth\+\_\+\+U\+A\+R\+T\+\_\+\+Init}}
+\index{Bluetooth\+\_\+\+U\+A\+R\+T\+\_\+\+Init@{Bluetooth\+\_\+\+U\+A\+R\+T\+\_\+\+Init}!uart.\+c@{uart.\+c}}
+\subsubsection[{\texorpdfstring{Bluetooth\+\_\+\+U\+A\+R\+T\+\_\+\+Init()}{Bluetooth_UART_Init()}}]{\setlength{\rightskip}{0pt plus 5cm}void Bluetooth\+\_\+\+U\+A\+R\+T\+\_\+\+Init (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{uart_8c_a17a228b9206899a74b6111751855518f}{}\label{uart_8c_a17a228b9206899a74b6111751855518f}
+Initializes U\+A\+RT 1, sets baud rate to 19.\+2k, enables transmitter and receiver, 8 bit data 
+
+Definition at line 56 of file uart.\+c.
+
+\index{uart.\+c@{uart.\+c}!Roomba\+\_\+\+Receive\+\_\+\+Byte@{Roomba\+\_\+\+Receive\+\_\+\+Byte}}
+\index{Roomba\+\_\+\+Receive\+\_\+\+Byte@{Roomba\+\_\+\+Receive\+\_\+\+Byte}!uart.\+c@{uart.\+c}}
+\subsubsection[{\texorpdfstring{Roomba\+\_\+\+Receive\+\_\+\+Byte()}{Roomba_Receive_Byte()}}]{\setlength{\rightskip}{0pt plus 5cm}unsigned char Roomba\+\_\+\+Receive\+\_\+\+Byte (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{uart_8c_aa11c3d6df5490333828b1b76742c519f}{}\label{uart_8c_aa11c3d6df5490333828b1b76742c519f}
+Receives 1 byte from the Roomba 
+
+Definition at line 37 of file uart.\+c.
+
+\index{uart.\+c@{uart.\+c}!Roomba\+\_\+\+Send\+\_\+\+Byte@{Roomba\+\_\+\+Send\+\_\+\+Byte}}
+\index{Roomba\+\_\+\+Send\+\_\+\+Byte@{Roomba\+\_\+\+Send\+\_\+\+Byte}!uart.\+c@{uart.\+c}}
+\subsubsection[{\texorpdfstring{Roomba\+\_\+\+Send\+\_\+\+Byte(uint8\+\_\+t data\+\_\+out)}{Roomba_Send_Byte(uint8_t data_out)}}]{\setlength{\rightskip}{0pt plus 5cm}void Roomba\+\_\+\+Send\+\_\+\+Byte (
+\begin{DoxyParamCaption}
+\item[{uint8\+\_\+t}]{data\+\_\+out}
+\end{DoxyParamCaption}
+)}\hypertarget{uart_8c_a91b3a8be87e32c6317939eca03d35147}{}\label{uart_8c_a91b3a8be87e32c6317939eca03d35147}
+Sends 1 byte to the Roomba 
+
+Definition at line 27 of file uart.\+c.
+
+\index{uart.\+c@{uart.\+c}!Roomba\+\_\+\+Send\+\_\+\+String@{Roomba\+\_\+\+Send\+\_\+\+String}}
+\index{Roomba\+\_\+\+Send\+\_\+\+String@{Roomba\+\_\+\+Send\+\_\+\+String}!uart.\+c@{uart.\+c}}
+\subsubsection[{\texorpdfstring{Roomba\+\_\+\+Send\+\_\+\+String(char $\ast$string\+\_\+out)}{Roomba_Send_String(char *string_out)}}]{\setlength{\rightskip}{0pt plus 5cm}void Roomba\+\_\+\+Send\+\_\+\+String (
+\begin{DoxyParamCaption}
+\item[{char $\ast$}]{string\+\_\+out}
+\end{DoxyParamCaption}
+)}\hypertarget{uart_8c_aae28592178952a3fba703c959e6cf472}{}\label{uart_8c_aae28592178952a3fba703c959e6cf472}
+Sends a string of characters to the Roomba 
+
+Definition at line 47 of file uart.\+c.
+
+\index{uart.\+c@{uart.\+c}!Roomba\+\_\+\+U\+A\+R\+T\+\_\+\+Init@{Roomba\+\_\+\+U\+A\+R\+T\+\_\+\+Init}}
+\index{Roomba\+\_\+\+U\+A\+R\+T\+\_\+\+Init@{Roomba\+\_\+\+U\+A\+R\+T\+\_\+\+Init}!uart.\+c@{uart.\+c}}
+\subsubsection[{\texorpdfstring{Roomba\+\_\+\+U\+A\+R\+T\+\_\+\+Init()}{Roomba_UART_Init()}}]{\setlength{\rightskip}{0pt plus 5cm}void Roomba\+\_\+\+U\+A\+R\+T\+\_\+\+Init (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{uart_8c_a6a67ee02690d1f2fe43f14abc3832fac}{}\label{uart_8c_a6a67ee02690d1f2fe43f14abc3832fac}
+Initializes U\+A\+RT 3, sets baud rate to 19.\+2k, enables transmitter and receiver, 8 bit data 
+
+Definition at line 10 of file uart.\+c.
+

@@ -1,0 +1,284 @@
+\hypertarget{roomba_8h}{}\section{/\+Users/kevingill/\+Git/\+C\+S\+C460/\+Project 3/roomba/roomba.h File Reference}
+\label{roomba_8h}\index{/\+Users/kevingill/\+Git/\+C\+S\+C460/\+Project 3/roomba/roomba.\+h@{/\+Users/kevingill/\+Git/\+C\+S\+C460/\+Project 3/roomba/roomba.\+h}}
+{\ttfamily \#include $<$stdint.\+h$>$}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{roomba_8h_a3018c7600b7bb9866400596a56a57af7}{S\+T\+A\+RT}~128
+\item 
+\#define \hyperlink{roomba_8h_abb5f39e481f34a236eda8c9dad1ce81d}{C\+O\+N\+T\+R\+O\+L\+\_\+\+M\+O\+DE}~130
+\item 
+\#define \hyperlink{roomba_8h_ae507d35026bbe9d7ef5f01a281b70bd3}{S\+A\+F\+E\+\_\+\+M\+O\+DE}~131
+\item 
+\#define \hyperlink{roomba_8h_add9a73e6fc678f75efd85e1abd1fbdc4}{F\+U\+L\+L\+\_\+\+M\+O\+DE}~132
+\item 
+\#define \hyperlink{roomba_8h_a0d5e23bac60070676b465522a140f5c7}{P\+O\+W\+ER}~133
+\item 
+\#define \hyperlink{roomba_8h_af1b838ca233d9f4050c17dafe8772cfb}{D\+R\+I\+VE}~137
+\item 
+\#define \hyperlink{roomba_8h_aae7db8b5a70620e24eee76922ac28350}{S\+O\+NG}~140
+\item 
+\#define \hyperlink{roomba_8h_a34deddb3d2e1791fd7ce5acc13ffc8df}{P\+L\+AY}~141
+\item 
+\#define \hyperlink{roomba_8h_a11d038bc0d376b5a6a7634604b6e058d}{S\+E\+N\+S\+O\+RS}~142
+\item 
+\#define \hyperlink{roomba_8h_a067f069eb978605d4c8274723600c0b5}{Q\+U\+E\+R\+Y\+L\+I\+ST}~149
+\item 
+\#define \hyperlink{roomba_8h_aa858976bc7357f68f7ed98995c51fd7f}{S\+E\+N\+S\+O\+R\+\_\+\+A\+L\+L\+\_\+\+D\+A\+TA}~0
+\item 
+\#define \hyperlink{roomba_8h_ab74311a6bda48c3b0b76a01afcf9f08d}{S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+1}~1
+\item 
+\#define \hyperlink{roomba_8h_aea169d1d859d4d0c0ea2f4425d4c5498}{S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+2}~2
+\item 
+\#define \hyperlink{roomba_8h_a9f9e6cc4c931595b7356ed9ffa9d3b0a}{S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+3}~3
+\item 
+\#define \hyperlink{roomba_8h_a2344384a382e24ee94b17e8f73e2a64a}{R\+O\+O\+M\+B\+A\+\_\+\+S\+P\+E\+ED}~250
+\item 
+\#define \hyperlink{roomba_8h_a27f925060f9064fd5c9bf1fe39e59ac0}{R\+O\+O\+M\+B\+A\+\_\+\+T\+U\+RN}~150
+\item 
+\#define \hyperlink{roomba_8h_ae207099771d091c4ee20629133d54968}{T\+U\+R\+N\+\_\+\+R\+A\+D\+I\+US}~400
+\item 
+\#define \hyperlink{roomba_8h_ac7ad12a8a33be4375e06bd575d169f0a}{A\+U\+T\+O\+T\+U\+R\+N\+\_\+\+R\+A\+D\+I\+US}~350
+\item 
+\#define \hyperlink{roomba_8h_ac6224b4b242fb5ef42ae2a5f2572d35d}{D\+R\+I\+V\+E\+\_\+\+S\+T\+R\+A\+I\+G\+HT}~32768
+\item 
+\#define \hyperlink{roomba_8h_a7b724bbc448c840bd33e91794baffb39}{I\+N\+\_\+\+P\+L\+A\+C\+E\+\_\+\+CW}~-\/1
+\item 
+\#define \hyperlink{roomba_8h_acfd039518254b890757b84b52ddd06df}{I\+N\+\_\+\+P\+L\+A\+C\+E\+\_\+\+C\+CW}~1
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{roomba_8h_a449967cfc7507f9cd80c2c8c48418809}{Roomba\+\_\+\+Init} (void)
+\item 
+void \hyperlink{roomba_8h_a4526c3e2f72e1c5a91ac59c0d8bf85b2}{Roomba\+\_\+\+Drive} (int16\+\_\+t velocity, int16\+\_\+t radius)
+\item 
+void \hyperlink{roomba_8h_a730289a3a2311300394561b329f9e87c}{Roomba\+\_\+\+Play} (uint8\+\_\+t song)
+\item 
+void \hyperlink{roomba_8h_a0cff88af29600c52132bef89e97e2534}{Roomba\+\_\+\+Sensors} (uint8\+\_\+t packet\+\_\+id)
+\item 
+void \hyperlink{roomba_8h_a6c997672fca053dfe5adc1017cf32c9d}{Roomba\+\_\+\+Query\+List} (uint8\+\_\+t packet1, uint8\+\_\+t packet2)
+\item 
+void \hyperlink{roomba_8h_aed4f4cb088329cc1756f6185f0b73f61}{Roomba\+\_\+\+Song} (uint8\+\_\+t n)
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\index{roomba.\+h@{roomba.\+h}!A\+U\+T\+O\+T\+U\+R\+N\+\_\+\+R\+A\+D\+I\+US@{A\+U\+T\+O\+T\+U\+R\+N\+\_\+\+R\+A\+D\+I\+US}}
+\index{A\+U\+T\+O\+T\+U\+R\+N\+\_\+\+R\+A\+D\+I\+US@{A\+U\+T\+O\+T\+U\+R\+N\+\_\+\+R\+A\+D\+I\+US}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{A\+U\+T\+O\+T\+U\+R\+N\+\_\+\+R\+A\+D\+I\+US}{AUTOTURN_RADIUS}}]{\setlength{\rightskip}{0pt plus 5cm}\#define A\+U\+T\+O\+T\+U\+R\+N\+\_\+\+R\+A\+D\+I\+US~350}\hypertarget{roomba_8h_ac7ad12a8a33be4375e06bd575d169f0a}{}\label{roomba_8h_ac7ad12a8a33be4375e06bd575d169f0a}
+
+
+Definition at line 39 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!C\+O\+N\+T\+R\+O\+L\+\_\+\+M\+O\+DE@{C\+O\+N\+T\+R\+O\+L\+\_\+\+M\+O\+DE}}
+\index{C\+O\+N\+T\+R\+O\+L\+\_\+\+M\+O\+DE@{C\+O\+N\+T\+R\+O\+L\+\_\+\+M\+O\+DE}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{C\+O\+N\+T\+R\+O\+L\+\_\+\+M\+O\+DE}{CONTROL_MODE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define C\+O\+N\+T\+R\+O\+L\+\_\+\+M\+O\+DE~130}\hypertarget{roomba_8h_abb5f39e481f34a236eda8c9dad1ce81d}{}\label{roomba_8h_abb5f39e481f34a236eda8c9dad1ce81d}
+
+
+Definition at line 15 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!D\+R\+I\+VE@{D\+R\+I\+VE}}
+\index{D\+R\+I\+VE@{D\+R\+I\+VE}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{D\+R\+I\+VE}{DRIVE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define D\+R\+I\+VE~137}\hypertarget{roomba_8h_af1b838ca233d9f4050c17dafe8772cfb}{}\label{roomba_8h_af1b838ca233d9f4050c17dafe8772cfb}
+
+
+Definition at line 19 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!D\+R\+I\+V\+E\+\_\+\+S\+T\+R\+A\+I\+G\+HT@{D\+R\+I\+V\+E\+\_\+\+S\+T\+R\+A\+I\+G\+HT}}
+\index{D\+R\+I\+V\+E\+\_\+\+S\+T\+R\+A\+I\+G\+HT@{D\+R\+I\+V\+E\+\_\+\+S\+T\+R\+A\+I\+G\+HT}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{D\+R\+I\+V\+E\+\_\+\+S\+T\+R\+A\+I\+G\+HT}{DRIVE_STRAIGHT}}]{\setlength{\rightskip}{0pt plus 5cm}\#define D\+R\+I\+V\+E\+\_\+\+S\+T\+R\+A\+I\+G\+HT~32768}\hypertarget{roomba_8h_ac6224b4b242fb5ef42ae2a5f2572d35d}{}\label{roomba_8h_ac6224b4b242fb5ef42ae2a5f2572d35d}
+
+
+Definition at line 40 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!F\+U\+L\+L\+\_\+\+M\+O\+DE@{F\+U\+L\+L\+\_\+\+M\+O\+DE}}
+\index{F\+U\+L\+L\+\_\+\+M\+O\+DE@{F\+U\+L\+L\+\_\+\+M\+O\+DE}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{F\+U\+L\+L\+\_\+\+M\+O\+DE}{FULL_MODE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define F\+U\+L\+L\+\_\+\+M\+O\+DE~132}\hypertarget{roomba_8h_add9a73e6fc678f75efd85e1abd1fbdc4}{}\label{roomba_8h_add9a73e6fc678f75efd85e1abd1fbdc4}
+
+
+Definition at line 17 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!I\+N\+\_\+\+P\+L\+A\+C\+E\+\_\+\+C\+CW@{I\+N\+\_\+\+P\+L\+A\+C\+E\+\_\+\+C\+CW}}
+\index{I\+N\+\_\+\+P\+L\+A\+C\+E\+\_\+\+C\+CW@{I\+N\+\_\+\+P\+L\+A\+C\+E\+\_\+\+C\+CW}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{I\+N\+\_\+\+P\+L\+A\+C\+E\+\_\+\+C\+CW}{IN_PLACE_CCW}}]{\setlength{\rightskip}{0pt plus 5cm}\#define I\+N\+\_\+\+P\+L\+A\+C\+E\+\_\+\+C\+CW~1}\hypertarget{roomba_8h_acfd039518254b890757b84b52ddd06df}{}\label{roomba_8h_acfd039518254b890757b84b52ddd06df}
+
+
+Definition at line 42 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!I\+N\+\_\+\+P\+L\+A\+C\+E\+\_\+\+CW@{I\+N\+\_\+\+P\+L\+A\+C\+E\+\_\+\+CW}}
+\index{I\+N\+\_\+\+P\+L\+A\+C\+E\+\_\+\+CW@{I\+N\+\_\+\+P\+L\+A\+C\+E\+\_\+\+CW}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{I\+N\+\_\+\+P\+L\+A\+C\+E\+\_\+\+CW}{IN_PLACE_CW}}]{\setlength{\rightskip}{0pt plus 5cm}\#define I\+N\+\_\+\+P\+L\+A\+C\+E\+\_\+\+CW~-\/1}\hypertarget{roomba_8h_a7b724bbc448c840bd33e91794baffb39}{}\label{roomba_8h_a7b724bbc448c840bd33e91794baffb39}
+
+
+Definition at line 41 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!P\+L\+AY@{P\+L\+AY}}
+\index{P\+L\+AY@{P\+L\+AY}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{P\+L\+AY}{PLAY}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+L\+AY~141}\hypertarget{roomba_8h_a34deddb3d2e1791fd7ce5acc13ffc8df}{}\label{roomba_8h_a34deddb3d2e1791fd7ce5acc13ffc8df}
+
+
+Definition at line 21 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!P\+O\+W\+ER@{P\+O\+W\+ER}}
+\index{P\+O\+W\+ER@{P\+O\+W\+ER}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{P\+O\+W\+ER}{POWER}}]{\setlength{\rightskip}{0pt plus 5cm}\#define P\+O\+W\+ER~133}\hypertarget{roomba_8h_a0d5e23bac60070676b465522a140f5c7}{}\label{roomba_8h_a0d5e23bac60070676b465522a140f5c7}
+
+
+Definition at line 18 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!Q\+U\+E\+R\+Y\+L\+I\+ST@{Q\+U\+E\+R\+Y\+L\+I\+ST}}
+\index{Q\+U\+E\+R\+Y\+L\+I\+ST@{Q\+U\+E\+R\+Y\+L\+I\+ST}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{Q\+U\+E\+R\+Y\+L\+I\+ST}{QUERYLIST}}]{\setlength{\rightskip}{0pt plus 5cm}\#define Q\+U\+E\+R\+Y\+L\+I\+ST~149}\hypertarget{roomba_8h_a067f069eb978605d4c8274723600c0b5}{}\label{roomba_8h_a067f069eb978605d4c8274723600c0b5}
+
+
+Definition at line 23 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!R\+O\+O\+M\+B\+A\+\_\+\+S\+P\+E\+ED@{R\+O\+O\+M\+B\+A\+\_\+\+S\+P\+E\+ED}}
+\index{R\+O\+O\+M\+B\+A\+\_\+\+S\+P\+E\+ED@{R\+O\+O\+M\+B\+A\+\_\+\+S\+P\+E\+ED}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{R\+O\+O\+M\+B\+A\+\_\+\+S\+P\+E\+ED}{ROOMBA_SPEED}}]{\setlength{\rightskip}{0pt plus 5cm}\#define R\+O\+O\+M\+B\+A\+\_\+\+S\+P\+E\+ED~250}\hypertarget{roomba_8h_a2344384a382e24ee94b17e8f73e2a64a}{}\label{roomba_8h_a2344384a382e24ee94b17e8f73e2a64a}
+Data special cases 
+
+Definition at line 36 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!R\+O\+O\+M\+B\+A\+\_\+\+T\+U\+RN@{R\+O\+O\+M\+B\+A\+\_\+\+T\+U\+RN}}
+\index{R\+O\+O\+M\+B\+A\+\_\+\+T\+U\+RN@{R\+O\+O\+M\+B\+A\+\_\+\+T\+U\+RN}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{R\+O\+O\+M\+B\+A\+\_\+\+T\+U\+RN}{ROOMBA_TURN}}]{\setlength{\rightskip}{0pt plus 5cm}\#define R\+O\+O\+M\+B\+A\+\_\+\+T\+U\+RN~150}\hypertarget{roomba_8h_a27f925060f9064fd5c9bf1fe39e59ac0}{}\label{roomba_8h_a27f925060f9064fd5c9bf1fe39e59ac0}
+
+
+Definition at line 37 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!S\+A\+F\+E\+\_\+\+M\+O\+DE@{S\+A\+F\+E\+\_\+\+M\+O\+DE}}
+\index{S\+A\+F\+E\+\_\+\+M\+O\+DE@{S\+A\+F\+E\+\_\+\+M\+O\+DE}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{S\+A\+F\+E\+\_\+\+M\+O\+DE}{SAFE_MODE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\+A\+F\+E\+\_\+\+M\+O\+DE~131}\hypertarget{roomba_8h_ae507d35026bbe9d7ef5f01a281b70bd3}{}\label{roomba_8h_ae507d35026bbe9d7ef5f01a281b70bd3}
+
+
+Definition at line 16 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!S\+E\+N\+S\+O\+R\+\_\+\+A\+L\+L\+\_\+\+D\+A\+TA@{S\+E\+N\+S\+O\+R\+\_\+\+A\+L\+L\+\_\+\+D\+A\+TA}}
+\index{S\+E\+N\+S\+O\+R\+\_\+\+A\+L\+L\+\_\+\+D\+A\+TA@{S\+E\+N\+S\+O\+R\+\_\+\+A\+L\+L\+\_\+\+D\+A\+TA}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{S\+E\+N\+S\+O\+R\+\_\+\+A\+L\+L\+\_\+\+D\+A\+TA}{SENSOR_ALL_DATA}}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\+E\+N\+S\+O\+R\+\_\+\+A\+L\+L\+\_\+\+D\+A\+TA~0}\hypertarget{roomba_8h_aa858976bc7357f68f7ed98995c51fd7f}{}\label{roomba_8h_aa858976bc7357f68f7ed98995c51fd7f}
+Sensors 
+
+Definition at line 28 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+1@{S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+1}}
+\index{S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+1@{S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+1}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+1}{SENSOR_SUB_1}}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+1~1}\hypertarget{roomba_8h_ab74311a6bda48c3b0b76a01afcf9f08d}{}\label{roomba_8h_ab74311a6bda48c3b0b76a01afcf9f08d}
+
+
+Definition at line 29 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+2@{S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+2}}
+\index{S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+2@{S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+2}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+2}{SENSOR_SUB_2}}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+2~2}\hypertarget{roomba_8h_aea169d1d859d4d0c0ea2f4425d4c5498}{}\label{roomba_8h_aea169d1d859d4d0c0ea2f4425d4c5498}
+
+
+Definition at line 30 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+3@{S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+3}}
+\index{S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+3@{S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+3}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+3}{SENSOR_SUB_3}}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\+E\+N\+S\+O\+R\+\_\+\+S\+U\+B\+\_\+3~3}\hypertarget{roomba_8h_a9f9e6cc4c931595b7356ed9ffa9d3b0a}{}\label{roomba_8h_a9f9e6cc4c931595b7356ed9ffa9d3b0a}
+
+
+Definition at line 31 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!S\+E\+N\+S\+O\+RS@{S\+E\+N\+S\+O\+RS}}
+\index{S\+E\+N\+S\+O\+RS@{S\+E\+N\+S\+O\+RS}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{S\+E\+N\+S\+O\+RS}{SENSORS}}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\+E\+N\+S\+O\+RS~142}\hypertarget{roomba_8h_a11d038bc0d376b5a6a7634604b6e058d}{}\label{roomba_8h_a11d038bc0d376b5a6a7634604b6e058d}
+
+
+Definition at line 22 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!S\+O\+NG@{S\+O\+NG}}
+\index{S\+O\+NG@{S\+O\+NG}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{S\+O\+NG}{SONG}}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\+O\+NG~140}\hypertarget{roomba_8h_aae7db8b5a70620e24eee76922ac28350}{}\label{roomba_8h_aae7db8b5a70620e24eee76922ac28350}
+
+
+Definition at line 20 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!S\+T\+A\+RT@{S\+T\+A\+RT}}
+\index{S\+T\+A\+RT@{S\+T\+A\+RT}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{S\+T\+A\+RT}{START}}]{\setlength{\rightskip}{0pt plus 5cm}\#define S\+T\+A\+RT~128}\hypertarget{roomba_8h_a3018c7600b7bb9866400596a56a57af7}{}\label{roomba_8h_a3018c7600b7bb9866400596a56a57af7}
+Roomba serial opcodes 
+
+Definition at line 14 of file roomba.\+h.
+
+\index{roomba.\+h@{roomba.\+h}!T\+U\+R\+N\+\_\+\+R\+A\+D\+I\+US@{T\+U\+R\+N\+\_\+\+R\+A\+D\+I\+US}}
+\index{T\+U\+R\+N\+\_\+\+R\+A\+D\+I\+US@{T\+U\+R\+N\+\_\+\+R\+A\+D\+I\+US}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{T\+U\+R\+N\+\_\+\+R\+A\+D\+I\+US}{TURN_RADIUS}}]{\setlength{\rightskip}{0pt plus 5cm}\#define T\+U\+R\+N\+\_\+\+R\+A\+D\+I\+US~400}\hypertarget{roomba_8h_ae207099771d091c4ee20629133d54968}{}\label{roomba_8h_ae207099771d091c4ee20629133d54968}
+
+
+Definition at line 38 of file roomba.\+h.
+
+
+
+\subsection{Function Documentation}
+\index{roomba.\+h@{roomba.\+h}!Roomba\+\_\+\+Drive@{Roomba\+\_\+\+Drive}}
+\index{Roomba\+\_\+\+Drive@{Roomba\+\_\+\+Drive}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{Roomba\+\_\+\+Drive(int16\+\_\+t velocity, int16\+\_\+t radius)}{Roomba_Drive(int16_t velocity, int16_t radius)}}]{\setlength{\rightskip}{0pt plus 5cm}void Roomba\+\_\+\+Drive (
+\begin{DoxyParamCaption}
+\item[{int16\+\_\+t}]{velocity, }
+\item[{int16\+\_\+t}]{radius}
+\end{DoxyParamCaption}
+)}\hypertarget{roomba_8h_a4526c3e2f72e1c5a91ac59c0d8bf85b2}{}\label{roomba_8h_a4526c3e2f72e1c5a91ac59c0d8bf85b2}
+Tells the roomba to drive with the given velocity and radius 
+
+Definition at line 38 of file roomba.\+c.
+
+\index{roomba.\+h@{roomba.\+h}!Roomba\+\_\+\+Init@{Roomba\+\_\+\+Init}}
+\index{Roomba\+\_\+\+Init@{Roomba\+\_\+\+Init}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{Roomba\+\_\+\+Init(void)}{Roomba_Init(void)}}]{\setlength{\rightskip}{0pt plus 5cm}void Roomba\+\_\+\+Init (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{roomba_8h_a449967cfc7507f9cd80c2c8c48418809}{}\label{roomba_8h_a449967cfc7507f9cd80c2c8c48418809}
+Wakes Roomba from sleep and sets it to safe mode 
+
+Definition at line 13 of file roomba.\+c.
+
+\index{roomba.\+h@{roomba.\+h}!Roomba\+\_\+\+Play@{Roomba\+\_\+\+Play}}
+\index{Roomba\+\_\+\+Play@{Roomba\+\_\+\+Play}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{Roomba\+\_\+\+Play(uint8\+\_\+t song)}{Roomba_Play(uint8_t song)}}]{\setlength{\rightskip}{0pt plus 5cm}void Roomba\+\_\+\+Play (
+\begin{DoxyParamCaption}
+\item[{uint8\+\_\+t}]{song}
+\end{DoxyParamCaption}
+)}\hypertarget{roomba_8h_a730289a3a2311300394561b329f9e87c}{}\label{roomba_8h_a730289a3a2311300394561b329f9e87c}
+Plays the song corresponding to a song \# from 0-\/4 
+
+Definition at line 49 of file roomba.\+c.
+
+\index{roomba.\+h@{roomba.\+h}!Roomba\+\_\+\+Query\+List@{Roomba\+\_\+\+Query\+List}}
+\index{Roomba\+\_\+\+Query\+List@{Roomba\+\_\+\+Query\+List}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{Roomba\+\_\+\+Query\+List(uint8\+\_\+t packet1, uint8\+\_\+t packet2)}{Roomba_QueryList(uint8_t packet1, uint8_t packet2)}}]{\setlength{\rightskip}{0pt plus 5cm}void Roomba\+\_\+\+Query\+List (
+\begin{DoxyParamCaption}
+\item[{uint8\+\_\+t}]{packet1, }
+\item[{uint8\+\_\+t}]{packet2}
+\end{DoxyParamCaption}
+)}\hypertarget{roomba_8h_a6c997672fca053dfe5adc1017cf32c9d}{}\label{roomba_8h_a6c997672fca053dfe5adc1017cf32c9d}
+Requests multiple packets from the Roomba 
+
+Definition at line 65 of file roomba.\+c.
+
+\index{roomba.\+h@{roomba.\+h}!Roomba\+\_\+\+Sensors@{Roomba\+\_\+\+Sensors}}
+\index{Roomba\+\_\+\+Sensors@{Roomba\+\_\+\+Sensors}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{Roomba\+\_\+\+Sensors(uint8\+\_\+t packet\+\_\+id)}{Roomba_Sensors(uint8_t packet_id)}}]{\setlength{\rightskip}{0pt plus 5cm}void Roomba\+\_\+\+Sensors (
+\begin{DoxyParamCaption}
+\item[{uint8\+\_\+t}]{packet\+\_\+id}
+\end{DoxyParamCaption}
+)}\hypertarget{roomba_8h_a0cff88af29600c52132bef89e97e2534}{}\label{roomba_8h_a0cff88af29600c52132bef89e97e2534}
+Requests a packet from the Roomba about a specific sensor 
+
+Definition at line 57 of file roomba.\+c.
+
+\index{roomba.\+h@{roomba.\+h}!Roomba\+\_\+\+Song@{Roomba\+\_\+\+Song}}
+\index{Roomba\+\_\+\+Song@{Roomba\+\_\+\+Song}!roomba.\+h@{roomba.\+h}}
+\subsubsection[{\texorpdfstring{Roomba\+\_\+\+Song(uint8\+\_\+t n)}{Roomba_Song(uint8_t n)}}]{\setlength{\rightskip}{0pt plus 5cm}void Roomba\+\_\+\+Song (
+\begin{DoxyParamCaption}
+\item[{uint8\+\_\+t}]{n}
+\end{DoxyParamCaption}
+)}\hypertarget{roomba_8h_aed4f4cb088329cc1756f6185f0b73f61}{}\label{roomba_8h_aed4f4cb088329cc1756f6185f0b73f61}
+Loads a song onto the Roomba 
+
+Definition at line 75 of file roomba.\+c.
+

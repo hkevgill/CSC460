@@ -1,0 +1,539 @@
+\hypertarget{os_8h}{}\section{/\+Users/kevingill/\+Git/\+C\+S\+C460/\+Project 3/rtos/os.h File Reference}
+\label{os_8h}\index{/\+Users/kevingill/\+Git/\+C\+S\+C460/\+Project 3/rtos/os.\+h@{/\+Users/kevingill/\+Git/\+C\+S\+C460/\+Project 3/rtos/os.\+h}}
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{struct_mutex}{Mutex}
+\item 
+struct \hyperlink{struct_event}{Event}
+\item 
+struct \hyperlink{struct_process_descriptor}{Process\+Descriptor}
+\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{os_8h_a06227c0951b6668e376b70760f6ead76}{M\+A\+X\+T\+H\+R\+E\+AD}~16
+\item 
+\#define \hyperlink{os_8h_a420f71a6e3a201757631a92a1fb38529}{W\+O\+R\+K\+S\+P\+A\+CE}~256   /$\ast$$\ast$ in bytes, per T\+H\+R\+E\+AD $\ast$/
+\item 
+\#define \hyperlink{os_8h_af386206024ecaf7cd90a448858f86db3}{M\+A\+X\+M\+U\+T\+EX}~8
+\item 
+\#define \hyperlink{os_8h_a2a50d99dc5d43eb57bdcb2c4c29bc76e}{M\+A\+X\+E\+V\+E\+NT}~8
+\item 
+\#define \hyperlink{os_8h_a0bccb58de55d81233bb2311b0a61361d}{M\+S\+E\+C\+P\+E\+R\+T\+I\+CK}~10   /$\ast$$\ast$ resolution of a system tick in milliseconds $\ast$/
+\item 
+\#define \hyperlink{os_8h_a06cc0e4881accfc1f7db471e5c12c2bd}{M\+I\+N\+P\+R\+I\+O\+R\+I\+TY}~10   /$\ast$$\ast$ 0 is the highest priority, 10 the lowest $\ast$/
+\item 
+\#define \hyperlink{os_8h_a070d2ce7b6bb7e5c05602aa8c308d0c4}{N\+U\+LL}~0   /$\ast$$\ast$ undefined $\ast$/
+\item 
+\#define \hyperlink{os_8h_a87072e6e0295068ecb45fb3a6fe46666}{Disable\+\_\+\+Interrupt}()      ~asm volatile (\char`\"{}cli\char`\"{}\+::)
+\item 
+\#define \hyperlink{os_8h_a21e81ea9a1fc8af5e18ccb423219e731}{Enable\+\_\+\+Interrupt}()        ~asm volatile (\char`\"{}sei\char`\"{}\+::)
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef void($\ast$ \hyperlink{os_8h_afaa1ed37e5a81e2bcafd0ca0fee30da3}{voidfuncptr}) (void)
+\item 
+typedef unsigned int \hyperlink{os_8h_aa4f4d03691545cda70a42801c8b9096b}{P\+ID}
+\item 
+typedef unsigned int \hyperlink{os_8h_ad50a579691fc8233e549f1b355ef96b3}{M\+U\+T\+EX}
+\item 
+typedef unsigned int \hyperlink{os_8h_ac7feb3cd411cb0c0924b0defb19127d4}{P\+R\+I\+O\+R\+I\+TY}
+\item 
+typedef unsigned int \hyperlink{os_8h_a3b95dbfce5db28a04d9387963a3f3708}{E\+V\+E\+NT}
+\item 
+typedef unsigned int \hyperlink{os_8h_a8cc02cda8b6aacf20b067a28103f1e1a}{T\+I\+CK}
+\item 
+typedef enum \hyperlink{os_8h_a620c62e0db95234680633c4ddb626e24}{process\+\_\+states} \hyperlink{os_8h_a0112d02f802d8a370eaed35faebd4502}{P\+R\+O\+C\+E\+S\+S\+\_\+\+S\+T\+A\+T\+ES}
+\item 
+typedef enum \hyperlink{os_8h_a9f370e4c39050de1279a1d969aa8496b}{kernel\+\_\+request\+\_\+type} \hyperlink{os_8h_aaa279b48476cb9236328475e13085103}{K\+E\+R\+N\+E\+L\+\_\+\+R\+E\+Q\+U\+E\+S\+T\+\_\+\+T\+Y\+PE}
+\item 
+typedef enum \hyperlink{os_8h_aa027db226a90c42327f008d517e7b294}{mutex\+\_\+state} \hyperlink{os_8h_a19387686da7b8715f31f6d5a9eb8751e}{M\+U\+T\+E\+X\+\_\+\+S\+T\+A\+TE}
+\item 
+typedef struct \hyperlink{struct_mutex}{Mutex} \hyperlink{os_8h_adf13ad848f096dd6747c462f711fe829}{M\+TX}
+\item 
+typedef enum \hyperlink{os_8h_aca3c41adfe685308394696bb5e53cf23}{event\+\_\+state} \hyperlink{os_8h_a5c32a61b1e9f4d35d9f5cbfb3bf7626c}{E\+V\+E\+N\+T\+\_\+\+S\+T\+A\+TE}
+\item 
+typedef struct \hyperlink{struct_event}{Event} \hyperlink{os_8h_af1b0aafef027c952563aac52da203bb1}{E\+VT}
+\item 
+typedef struct \hyperlink{struct_process_descriptor}{Process\+Descriptor} \hyperlink{os_8h_ad71fa550e6ad0b4ded3d147641b23d12}{PD}
+\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{os_8h_a620c62e0db95234680633c4ddb626e24}{process\+\_\+states} \{ \\*
+\hyperlink{os_8h_a620c62e0db95234680633c4ddb626e24a11fd9ca455f92c69c084484d5cd803c2}{D\+E\+AD} = 0, 
+\hyperlink{os_8h_a620c62e0db95234680633c4ddb626e24a6564f2f3e15be06b670547bbcaaf0798}{R\+E\+A\+DY}, 
+\hyperlink{os_8h_a620c62e0db95234680633c4ddb626e24a1061be6c3fb88d32829cba6f6b2be304}{R\+U\+N\+N\+I\+NG}, 
+\hyperlink{os_8h_a620c62e0db95234680633c4ddb626e24a488282601451a751e0f0e770b15d4235}{S\+L\+E\+E\+P\+I\+NG}, 
+\\*
+\hyperlink{os_8h_a620c62e0db95234680633c4ddb626e24afadaa2c2b209d92a5d92a337de378efd}{B\+L\+O\+C\+K\+E\+D\+\_\+\+O\+N\+\_\+\+M\+U\+T\+EX}, 
+\hyperlink{os_8h_a620c62e0db95234680633c4ddb626e24a0e35679f0c0a5dff6c73b95438944ec3}{W\+A\+I\+T\+I\+N\+G\+\_\+\+O\+N\+\_\+\+E\+V\+E\+NT}, 
+\hyperlink{os_8h_a620c62e0db95234680633c4ddb626e24a240c1965a48eaf409ba68c4cc9462ac5}{T\+E\+R\+M\+I\+N\+A\+T\+ED}
+ \}
+\item 
+enum \hyperlink{os_8h_a9f370e4c39050de1279a1d969aa8496b}{kernel\+\_\+request\+\_\+type} \{ \\*
+\hyperlink{os_8h_a9f370e4c39050de1279a1d969aa8496bac157bdf0b85a40d2619cbc8bc1ae5fe2}{N\+O\+NE} = 0, 
+\hyperlink{os_8h_a9f370e4c39050de1279a1d969aa8496ba473b49382a20dcc5b0ee10ddbc6338b4}{C\+R\+E\+A\+TE}, 
+\hyperlink{os_8h_a9f370e4c39050de1279a1d969aa8496bab13b96bf99a409e019f70dc1602532fd}{N\+E\+XT}, 
+\hyperlink{os_8h_a9f370e4c39050de1279a1d969aa8496bad6137abebe4fdc59e2f0f2c84bdbe3fa}{S\+L\+E\+EP}, 
+\\*
+\hyperlink{os_8h_a9f370e4c39050de1279a1d969aa8496ba9aab2d9eae3e9a84d9fed3f0cadd7e22}{T\+E\+R\+M\+I\+N\+A\+TE}, 
+\hyperlink{os_8h_a9f370e4c39050de1279a1d969aa8496ba3ed8602f942c896b4872f3c3af0d307c}{S\+U\+S\+P\+E\+ND}, 
+\hyperlink{os_8h_a9f370e4c39050de1279a1d969aa8496ba401283aaa98a76b506f2198465bd7009}{R\+E\+S\+U\+ME}, 
+\hyperlink{os_8h_a9f370e4c39050de1279a1d969aa8496ba4fce4dc1922bb0bbeb4b629277b3b8ed}{M\+U\+T\+E\+X\+\_\+\+I\+N\+IT}, 
+\\*
+\hyperlink{os_8h_a9f370e4c39050de1279a1d969aa8496ba75aff8117ccaf2b87aa57d2b8efd6b61}{M\+U\+T\+E\+X\+\_\+\+L\+O\+CK}, 
+\hyperlink{os_8h_a9f370e4c39050de1279a1d969aa8496ba2aa4bb586a13f1019d20fe228f987308}{M\+U\+T\+E\+X\+\_\+\+U\+N\+L\+O\+CK}, 
+\hyperlink{os_8h_a9f370e4c39050de1279a1d969aa8496badbf8902d567f0cc7ca77232f46142a0d}{E\+V\+E\+N\+T\+\_\+\+I\+N\+IT}, 
+\hyperlink{os_8h_a9f370e4c39050de1279a1d969aa8496ba8b53f4ea700f5763de889e6467270ef8}{E\+V\+E\+N\+T\+\_\+\+W\+A\+IT}, 
+\\*
+\hyperlink{os_8h_a9f370e4c39050de1279a1d969aa8496bacc68c387b0b1cc2a99d3779b89e424f1}{E\+V\+E\+N\+T\+\_\+\+S\+I\+G\+N\+AL}
+ \}
+\item 
+enum \hyperlink{os_8h_aa027db226a90c42327f008d517e7b294}{mutex\+\_\+state} \{ \hyperlink{os_8h_aa027db226a90c42327f008d517e7b294a40f39385238042f6ec0cbac821a19fc4}{D\+I\+S\+A\+B\+L\+ED}, 
+\hyperlink{os_8h_aa027db226a90c42327f008d517e7b294acc62d1576546f3245237e1b232d838b6}{F\+R\+EE}, 
+\hyperlink{os_8h_aa027db226a90c42327f008d517e7b294a6b4af979c9694e48f340397ac08dfd1c}{L\+O\+C\+K\+ED}
+ \}
+\item 
+enum \hyperlink{os_8h_aca3c41adfe685308394696bb5e53cf23}{event\+\_\+state} \{ \hyperlink{os_8h_aca3c41adfe685308394696bb5e53cf23a3ff8ba88da6f8947ab7c22b7825c6bb6}{I\+N\+A\+C\+T\+I\+VE}, 
+\hyperlink{os_8h_aca3c41adfe685308394696bb5e53cf23af83b16473e1f56e72be28498608671b6}{U\+N\+S\+I\+G\+N\+A\+L\+L\+ED}, 
+\hyperlink{os_8h_aca3c41adfe685308394696bb5e53cf23af378db3f0846975b837e22401f48b132}{S\+I\+G\+N\+A\+L\+L\+ED}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{os_8h_ab5747390a8be675282cb93e5198bd085}{O\+S\+\_\+\+Abort} (void)
+\item 
+\hyperlink{os_8h_aa4f4d03691545cda70a42801c8b9096b}{P\+ID} \hyperlink{os_8h_aba1bd7ffde8c74ee5f7f0c3c1fca7825}{Task\+\_\+\+Create} (void($\ast$f)(void), \hyperlink{os_8h_ac7feb3cd411cb0c0924b0defb19127d4}{P\+R\+I\+O\+R\+I\+TY} py, int arg)
+\item 
+void \hyperlink{os_8h_aeb1fcf3f13ebc649c9882f07de88cf74}{Task\+\_\+\+Terminate} (void)
+\item 
+void \hyperlink{os_8h_adf2f899160bcb12d32f2cbce83470ea5}{Task\+\_\+\+Next} (void)
+\item 
+int \hyperlink{os_8h_ae9e552294bff300b4c4f4e5a010ee735}{Task\+\_\+\+Get\+Arg} (\hyperlink{os_8h_aa4f4d03691545cda70a42801c8b9096b}{P\+ID} p)
+\item 
+void \hyperlink{os_8h_a8d86c9b6abd886dc6dc8005808d219e6}{Task\+\_\+\+Suspend} (\hyperlink{os_8h_aa4f4d03691545cda70a42801c8b9096b}{P\+ID} p)
+\item 
+void \hyperlink{os_8h_a6bbdbd6cb63924353074e64134deff60}{Task\+\_\+\+Resume} (\hyperlink{os_8h_aa4f4d03691545cda70a42801c8b9096b}{P\+ID} p)
+\item 
+void \hyperlink{os_8h_a312c9c8228404b24b021279387a7c774}{Task\+\_\+\+Sleep} (\hyperlink{os_8h_a8cc02cda8b6aacf20b067a28103f1e1a}{T\+I\+CK} t)
+\item 
+\hyperlink{os_8h_ad50a579691fc8233e549f1b355ef96b3}{M\+U\+T\+EX} \hyperlink{os_8h_a9247d49fbdf5ecbb7b5879411cd4c7fb}{Mutex\+\_\+\+Init} (void)
+\item 
+void \hyperlink{os_8h_a192517b3428c686a32293805abd120f1}{Mutex\+\_\+\+Lock} (\hyperlink{os_8h_ad50a579691fc8233e549f1b355ef96b3}{M\+U\+T\+EX} m)
+\item 
+void \hyperlink{os_8h_ac614666cf2c6345ff7e15ceb2e96e8dc}{Mutex\+\_\+\+Unlock} (\hyperlink{os_8h_ad50a579691fc8233e549f1b355ef96b3}{M\+U\+T\+EX} m)
+\item 
+\hyperlink{os_8h_a3b95dbfce5db28a04d9387963a3f3708}{E\+V\+E\+NT} \hyperlink{os_8h_a5f473406f5d06f02b3866c7cb400371b}{Event\+\_\+\+Init} (void)
+\item 
+void \hyperlink{os_8h_adc88c81b804bb7848bb39488ebdac6f9}{Event\+\_\+\+Wait} (\hyperlink{os_8h_a3b95dbfce5db28a04d9387963a3f3708}{E\+V\+E\+NT} e)
+\item 
+void \hyperlink{os_8h_a82948eaf2be7ba779203ac31df96e5b6}{Event\+\_\+\+Signal} (\hyperlink{os_8h_a3b95dbfce5db28a04d9387963a3f3708}{E\+V\+E\+NT} e)
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\index{os.\+h@{os.\+h}!Disable\+\_\+\+Interrupt@{Disable\+\_\+\+Interrupt}}
+\index{Disable\+\_\+\+Interrupt@{Disable\+\_\+\+Interrupt}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{Disable\+\_\+\+Interrupt}{Disable_Interrupt}}]{\setlength{\rightskip}{0pt plus 5cm}\#define Disable\+\_\+\+Interrupt(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)~asm volatile (\char`\"{}cli\char`\"{}\+::)}\hypertarget{os_8h_a87072e6e0295068ecb45fb3a6fe46666}{}\label{os_8h_a87072e6e0295068ecb45fb3a6fe46666}
+
+
+Definition at line 16 of file os.\+h.
+
+\index{os.\+h@{os.\+h}!Enable\+\_\+\+Interrupt@{Enable\+\_\+\+Interrupt}}
+\index{Enable\+\_\+\+Interrupt@{Enable\+\_\+\+Interrupt}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{Enable\+\_\+\+Interrupt}{Enable_Interrupt}}]{\setlength{\rightskip}{0pt plus 5cm}\#define Enable\+\_\+\+Interrupt(
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)~asm volatile (\char`\"{}sei\char`\"{}\+::)}\hypertarget{os_8h_a21e81ea9a1fc8af5e18ccb423219e731}{}\label{os_8h_a21e81ea9a1fc8af5e18ccb423219e731}
+
+
+Definition at line 17 of file os.\+h.
+
+\index{os.\+h@{os.\+h}!M\+A\+X\+E\+V\+E\+NT@{M\+A\+X\+E\+V\+E\+NT}}
+\index{M\+A\+X\+E\+V\+E\+NT@{M\+A\+X\+E\+V\+E\+NT}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{M\+A\+X\+E\+V\+E\+NT}{MAXEVENT}}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\+A\+X\+E\+V\+E\+NT~8}\hypertarget{os_8h_a2a50d99dc5d43eb57bdcb2c4c29bc76e}{}\label{os_8h_a2a50d99dc5d43eb57bdcb2c4c29bc76e}
+
+
+Definition at line 7 of file os.\+h.
+
+\index{os.\+h@{os.\+h}!M\+A\+X\+M\+U\+T\+EX@{M\+A\+X\+M\+U\+T\+EX}}
+\index{M\+A\+X\+M\+U\+T\+EX@{M\+A\+X\+M\+U\+T\+EX}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{M\+A\+X\+M\+U\+T\+EX}{MAXMUTEX}}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\+A\+X\+M\+U\+T\+EX~8}\hypertarget{os_8h_af386206024ecaf7cd90a448858f86db3}{}\label{os_8h_af386206024ecaf7cd90a448858f86db3}
+
+
+Definition at line 6 of file os.\+h.
+
+\index{os.\+h@{os.\+h}!M\+A\+X\+T\+H\+R\+E\+AD@{M\+A\+X\+T\+H\+R\+E\+AD}}
+\index{M\+A\+X\+T\+H\+R\+E\+AD@{M\+A\+X\+T\+H\+R\+E\+AD}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{M\+A\+X\+T\+H\+R\+E\+AD}{MAXTHREAD}}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\+A\+X\+T\+H\+R\+E\+AD~16}\hypertarget{os_8h_a06227c0951b6668e376b70760f6ead76}{}\label{os_8h_a06227c0951b6668e376b70760f6ead76}
+
+
+Definition at line 4 of file os.\+h.
+
+\index{os.\+h@{os.\+h}!M\+I\+N\+P\+R\+I\+O\+R\+I\+TY@{M\+I\+N\+P\+R\+I\+O\+R\+I\+TY}}
+\index{M\+I\+N\+P\+R\+I\+O\+R\+I\+TY@{M\+I\+N\+P\+R\+I\+O\+R\+I\+TY}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{M\+I\+N\+P\+R\+I\+O\+R\+I\+TY}{MINPRIORITY}}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\+I\+N\+P\+R\+I\+O\+R\+I\+TY~10   /$\ast$$\ast$ 0 is the highest priority, 10 the lowest $\ast$/}\hypertarget{os_8h_a06cc0e4881accfc1f7db471e5c12c2bd}{}\label{os_8h_a06cc0e4881accfc1f7db471e5c12c2bd}
+
+
+Definition at line 9 of file os.\+h.
+
+\index{os.\+h@{os.\+h}!M\+S\+E\+C\+P\+E\+R\+T\+I\+CK@{M\+S\+E\+C\+P\+E\+R\+T\+I\+CK}}
+\index{M\+S\+E\+C\+P\+E\+R\+T\+I\+CK@{M\+S\+E\+C\+P\+E\+R\+T\+I\+CK}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{M\+S\+E\+C\+P\+E\+R\+T\+I\+CK}{MSECPERTICK}}]{\setlength{\rightskip}{0pt plus 5cm}\#define M\+S\+E\+C\+P\+E\+R\+T\+I\+CK~10   /$\ast$$\ast$ resolution of a system tick in milliseconds $\ast$/}\hypertarget{os_8h_a0bccb58de55d81233bb2311b0a61361d}{}\label{os_8h_a0bccb58de55d81233bb2311b0a61361d}
+
+
+Definition at line 8 of file os.\+h.
+
+\index{os.\+h@{os.\+h}!N\+U\+LL@{N\+U\+LL}}
+\index{N\+U\+LL@{N\+U\+LL}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{N\+U\+LL}{NULL}}]{\setlength{\rightskip}{0pt plus 5cm}\#define N\+U\+LL~0   /$\ast$$\ast$ undefined $\ast$/}\hypertarget{os_8h_a070d2ce7b6bb7e5c05602aa8c308d0c4}{}\label{os_8h_a070d2ce7b6bb7e5c05602aa8c308d0c4}
+
+
+Definition at line 13 of file os.\+h.
+
+\index{os.\+h@{os.\+h}!W\+O\+R\+K\+S\+P\+A\+CE@{W\+O\+R\+K\+S\+P\+A\+CE}}
+\index{W\+O\+R\+K\+S\+P\+A\+CE@{W\+O\+R\+K\+S\+P\+A\+CE}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{W\+O\+R\+K\+S\+P\+A\+CE}{WORKSPACE}}]{\setlength{\rightskip}{0pt plus 5cm}\#define W\+O\+R\+K\+S\+P\+A\+CE~256   /$\ast$$\ast$ in bytes, per T\+H\+R\+E\+AD $\ast$/}\hypertarget{os_8h_a420f71a6e3a201757631a92a1fb38529}{}\label{os_8h_a420f71a6e3a201757631a92a1fb38529}
+
+
+Definition at line 5 of file os.\+h.
+
+
+
+\subsection{Typedef Documentation}
+\index{os.\+h@{os.\+h}!E\+V\+E\+NT@{E\+V\+E\+NT}}
+\index{E\+V\+E\+NT@{E\+V\+E\+NT}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{E\+V\+E\+NT}{EVENT}}]{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned int {\bf E\+V\+E\+NT}}\hypertarget{os_8h_a3b95dbfce5db28a04d9387963a3f3708}{}\label{os_8h_a3b95dbfce5db28a04d9387963a3f3708}
+
+
+Definition at line 24 of file os.\+h.
+
+\index{os.\+h@{os.\+h}!E\+V\+E\+N\+T\+\_\+\+S\+T\+A\+TE@{E\+V\+E\+N\+T\+\_\+\+S\+T\+A\+TE}}
+\index{E\+V\+E\+N\+T\+\_\+\+S\+T\+A\+TE@{E\+V\+E\+N\+T\+\_\+\+S\+T\+A\+TE}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{E\+V\+E\+N\+T\+\_\+\+S\+T\+A\+TE}{EVENT_STATE}}]{\setlength{\rightskip}{0pt plus 5cm}typedef enum {\bf event\+\_\+state}  {\bf E\+V\+E\+N\+T\+\_\+\+S\+T\+A\+TE}}\hypertarget{os_8h_a5c32a61b1e9f4d35d9f5cbfb3bf7626c}{}\label{os_8h_a5c32a61b1e9f4d35d9f5cbfb3bf7626c}
+This is the set of states that a mutex can be in at any given time. \index{os.\+h@{os.\+h}!E\+VT@{E\+VT}}
+\index{E\+VT@{E\+VT}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{E\+VT}{EVT}}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf Event}  {\bf E\+VT}}\hypertarget{os_8h_af1b0aafef027c952563aac52da203bb1}{}\label{os_8h_af1b0aafef027c952563aac52da203bb1}
+Each event is represented by a event struct, which contains all relevant information about this event. \index{os.\+h@{os.\+h}!K\+E\+R\+N\+E\+L\+\_\+\+R\+E\+Q\+U\+E\+S\+T\+\_\+\+T\+Y\+PE@{K\+E\+R\+N\+E\+L\+\_\+\+R\+E\+Q\+U\+E\+S\+T\+\_\+\+T\+Y\+PE}}
+\index{K\+E\+R\+N\+E\+L\+\_\+\+R\+E\+Q\+U\+E\+S\+T\+\_\+\+T\+Y\+PE@{K\+E\+R\+N\+E\+L\+\_\+\+R\+E\+Q\+U\+E\+S\+T\+\_\+\+T\+Y\+PE}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{K\+E\+R\+N\+E\+L\+\_\+\+R\+E\+Q\+U\+E\+S\+T\+\_\+\+T\+Y\+PE}{KERNEL_REQUEST_TYPE}}]{\setlength{\rightskip}{0pt plus 5cm}typedef enum {\bf kernel\+\_\+request\+\_\+type}  {\bf K\+E\+R\+N\+E\+L\+\_\+\+R\+E\+Q\+U\+E\+S\+T\+\_\+\+T\+Y\+PE}}\hypertarget{os_8h_aaa279b48476cb9236328475e13085103}{}\label{os_8h_aaa279b48476cb9236328475e13085103}
+This is the set of kernel requests \index{os.\+h@{os.\+h}!M\+TX@{M\+TX}}
+\index{M\+TX@{M\+TX}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{M\+TX}{MTX}}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf Mutex}  {\bf M\+TX}}\hypertarget{os_8h_adf13ad848f096dd6747c462f711fe829}{}\label{os_8h_adf13ad848f096dd6747c462f711fe829}
+Each mutex is represented by a mutex struct, which contains all relevant information about this mutex. \index{os.\+h@{os.\+h}!M\+U\+T\+EX@{M\+U\+T\+EX}}
+\index{M\+U\+T\+EX@{M\+U\+T\+EX}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{M\+U\+T\+EX}{MUTEX}}]{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned int {\bf M\+U\+T\+EX}}\hypertarget{os_8h_ad50a579691fc8233e549f1b355ef96b3}{}\label{os_8h_ad50a579691fc8233e549f1b355ef96b3}
+always non-\/zero if it is valid 
+
+Definition at line 22 of file os.\+h.
+
+\index{os.\+h@{os.\+h}!M\+U\+T\+E\+X\+\_\+\+S\+T\+A\+TE@{M\+U\+T\+E\+X\+\_\+\+S\+T\+A\+TE}}
+\index{M\+U\+T\+E\+X\+\_\+\+S\+T\+A\+TE@{M\+U\+T\+E\+X\+\_\+\+S\+T\+A\+TE}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{M\+U\+T\+E\+X\+\_\+\+S\+T\+A\+TE}{MUTEX_STATE}}]{\setlength{\rightskip}{0pt plus 5cm}typedef enum {\bf mutex\+\_\+state}  {\bf M\+U\+T\+E\+X\+\_\+\+S\+T\+A\+TE}}\hypertarget{os_8h_a19387686da7b8715f31f6d5a9eb8751e}{}\label{os_8h_a19387686da7b8715f31f6d5a9eb8751e}
+This is the set of states that a mutex can be in at any given time. \index{os.\+h@{os.\+h}!PD@{PD}}
+\index{PD@{PD}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{PD}{PD}}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf Process\+Descriptor}  {\bf PD}}\hypertarget{os_8h_ad71fa550e6ad0b4ded3d147641b23d12}{}\label{os_8h_ad71fa550e6ad0b4ded3d147641b23d12}
+Each task is represented by a process descriptor, which contains all relevant information about this task. For convenience, we also store the task\textquotesingle{}s stack, i.\+e., its workspace, in here. \index{os.\+h@{os.\+h}!P\+ID@{P\+ID}}
+\index{P\+ID@{P\+ID}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{P\+ID}{PID}}]{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned int {\bf P\+ID}}\hypertarget{os_8h_aa4f4d03691545cda70a42801c8b9096b}{}\label{os_8h_aa4f4d03691545cda70a42801c8b9096b}
+pointer to void f(void) 
+
+Definition at line 21 of file os.\+h.
+
+\index{os.\+h@{os.\+h}!P\+R\+I\+O\+R\+I\+TY@{P\+R\+I\+O\+R\+I\+TY}}
+\index{P\+R\+I\+O\+R\+I\+TY@{P\+R\+I\+O\+R\+I\+TY}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{P\+R\+I\+O\+R\+I\+TY}{PRIORITY}}]{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned int {\bf P\+R\+I\+O\+R\+I\+TY}}\hypertarget{os_8h_ac7feb3cd411cb0c0924b0defb19127d4}{}\label{os_8h_ac7feb3cd411cb0c0924b0defb19127d4}
+always non-\/zero if it is valid 
+
+Definition at line 23 of file os.\+h.
+
+\index{os.\+h@{os.\+h}!P\+R\+O\+C\+E\+S\+S\+\_\+\+S\+T\+A\+T\+ES@{P\+R\+O\+C\+E\+S\+S\+\_\+\+S\+T\+A\+T\+ES}}
+\index{P\+R\+O\+C\+E\+S\+S\+\_\+\+S\+T\+A\+T\+ES@{P\+R\+O\+C\+E\+S\+S\+\_\+\+S\+T\+A\+T\+ES}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{P\+R\+O\+C\+E\+S\+S\+\_\+\+S\+T\+A\+T\+ES}{PROCESS_STATES}}]{\setlength{\rightskip}{0pt plus 5cm}typedef enum {\bf process\+\_\+states}  {\bf P\+R\+O\+C\+E\+S\+S\+\_\+\+S\+T\+A\+T\+ES}}\hypertarget{os_8h_a0112d02f802d8a370eaed35faebd4502}{}\label{os_8h_a0112d02f802d8a370eaed35faebd4502}
+This is the set of states that a task can be in at any given time. \index{os.\+h@{os.\+h}!T\+I\+CK@{T\+I\+CK}}
+\index{T\+I\+CK@{T\+I\+CK}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{T\+I\+CK}{TICK}}]{\setlength{\rightskip}{0pt plus 5cm}typedef unsigned int {\bf T\+I\+CK}}\hypertarget{os_8h_a8cc02cda8b6aacf20b067a28103f1e1a}{}\label{os_8h_a8cc02cda8b6aacf20b067a28103f1e1a}
+always non-\/zero if it is valid 
+
+Definition at line 25 of file os.\+h.
+
+\index{os.\+h@{os.\+h}!voidfuncptr@{voidfuncptr}}
+\index{voidfuncptr@{voidfuncptr}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{voidfuncptr}{voidfuncptr}}]{\setlength{\rightskip}{0pt plus 5cm}typedef void($\ast$ voidfuncptr) (void)}\hypertarget{os_8h_afaa1ed37e5a81e2bcafd0ca0fee30da3}{}\label{os_8h_afaa1ed37e5a81e2bcafd0ca0fee30da3}
+
+
+Definition at line 19 of file os.\+h.
+
+
+
+\subsection{Enumeration Type Documentation}
+\index{os.\+h@{os.\+h}!event\+\_\+state@{event\+\_\+state}}
+\index{event\+\_\+state@{event\+\_\+state}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{event\+\_\+state}{event_state}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf event\+\_\+state}}\hypertarget{os_8h_aca3c41adfe685308394696bb5e53cf23}{}\label{os_8h_aca3c41adfe685308394696bb5e53cf23}
+This is the set of states that a mutex can be in at any given time. \begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{I\+N\+A\+C\+T\+I\+VE@{I\+N\+A\+C\+T\+I\+VE}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!I\+N\+A\+C\+T\+I\+VE@{I\+N\+A\+C\+T\+I\+VE}}\item[{\em 
+I\+N\+A\+C\+T\+I\+VE\hypertarget{os_8h_aca3c41adfe685308394696bb5e53cf23a3ff8ba88da6f8947ab7c22b7825c6bb6}{}\label{os_8h_aca3c41adfe685308394696bb5e53cf23a3ff8ba88da6f8947ab7c22b7825c6bb6}
+}]\index{U\+N\+S\+I\+G\+N\+A\+L\+L\+ED@{U\+N\+S\+I\+G\+N\+A\+L\+L\+ED}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!U\+N\+S\+I\+G\+N\+A\+L\+L\+ED@{U\+N\+S\+I\+G\+N\+A\+L\+L\+ED}}\item[{\em 
+U\+N\+S\+I\+G\+N\+A\+L\+L\+ED\hypertarget{os_8h_aca3c41adfe685308394696bb5e53cf23af83b16473e1f56e72be28498608671b6}{}\label{os_8h_aca3c41adfe685308394696bb5e53cf23af83b16473e1f56e72be28498608671b6}
+}]\index{S\+I\+G\+N\+A\+L\+L\+ED@{S\+I\+G\+N\+A\+L\+L\+ED}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!S\+I\+G\+N\+A\+L\+L\+ED@{S\+I\+G\+N\+A\+L\+L\+ED}}\item[{\em 
+S\+I\+G\+N\+A\+L\+L\+ED\hypertarget{os_8h_aca3c41adfe685308394696bb5e53cf23af378db3f0846975b837e22401f48b132}{}\label{os_8h_aca3c41adfe685308394696bb5e53cf23af378db3f0846975b837e22401f48b132}
+}]\end{description}
+\end{Desc}
+
+
+Definition at line 82 of file os.\+h.
+
+\index{os.\+h@{os.\+h}!kernel\+\_\+request\+\_\+type@{kernel\+\_\+request\+\_\+type}}
+\index{kernel\+\_\+request\+\_\+type@{kernel\+\_\+request\+\_\+type}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{kernel\+\_\+request\+\_\+type}{kernel_request_type}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf kernel\+\_\+request\+\_\+type}}\hypertarget{os_8h_a9f370e4c39050de1279a1d969aa8496b}{}\label{os_8h_a9f370e4c39050de1279a1d969aa8496b}
+This is the set of kernel requests \begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{N\+O\+NE@{N\+O\+NE}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!N\+O\+NE@{N\+O\+NE}}\item[{\em 
+N\+O\+NE\hypertarget{os_8h_a9f370e4c39050de1279a1d969aa8496bac157bdf0b85a40d2619cbc8bc1ae5fe2}{}\label{os_8h_a9f370e4c39050de1279a1d969aa8496bac157bdf0b85a40d2619cbc8bc1ae5fe2}
+}]\index{C\+R\+E\+A\+TE@{C\+R\+E\+A\+TE}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!C\+R\+E\+A\+TE@{C\+R\+E\+A\+TE}}\item[{\em 
+C\+R\+E\+A\+TE\hypertarget{os_8h_a9f370e4c39050de1279a1d969aa8496ba473b49382a20dcc5b0ee10ddbc6338b4}{}\label{os_8h_a9f370e4c39050de1279a1d969aa8496ba473b49382a20dcc5b0ee10ddbc6338b4}
+}]\index{N\+E\+XT@{N\+E\+XT}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!N\+E\+XT@{N\+E\+XT}}\item[{\em 
+N\+E\+XT\hypertarget{os_8h_a9f370e4c39050de1279a1d969aa8496bab13b96bf99a409e019f70dc1602532fd}{}\label{os_8h_a9f370e4c39050de1279a1d969aa8496bab13b96bf99a409e019f70dc1602532fd}
+}]\index{S\+L\+E\+EP@{S\+L\+E\+EP}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!S\+L\+E\+EP@{S\+L\+E\+EP}}\item[{\em 
+S\+L\+E\+EP\hypertarget{os_8h_a9f370e4c39050de1279a1d969aa8496bad6137abebe4fdc59e2f0f2c84bdbe3fa}{}\label{os_8h_a9f370e4c39050de1279a1d969aa8496bad6137abebe4fdc59e2f0f2c84bdbe3fa}
+}]\index{T\+E\+R\+M\+I\+N\+A\+TE@{T\+E\+R\+M\+I\+N\+A\+TE}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!T\+E\+R\+M\+I\+N\+A\+TE@{T\+E\+R\+M\+I\+N\+A\+TE}}\item[{\em 
+T\+E\+R\+M\+I\+N\+A\+TE\hypertarget{os_8h_a9f370e4c39050de1279a1d969aa8496ba9aab2d9eae3e9a84d9fed3f0cadd7e22}{}\label{os_8h_a9f370e4c39050de1279a1d969aa8496ba9aab2d9eae3e9a84d9fed3f0cadd7e22}
+}]\index{S\+U\+S\+P\+E\+ND@{S\+U\+S\+P\+E\+ND}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!S\+U\+S\+P\+E\+ND@{S\+U\+S\+P\+E\+ND}}\item[{\em 
+S\+U\+S\+P\+E\+ND\hypertarget{os_8h_a9f370e4c39050de1279a1d969aa8496ba3ed8602f942c896b4872f3c3af0d307c}{}\label{os_8h_a9f370e4c39050de1279a1d969aa8496ba3ed8602f942c896b4872f3c3af0d307c}
+}]\index{R\+E\+S\+U\+ME@{R\+E\+S\+U\+ME}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!R\+E\+S\+U\+ME@{R\+E\+S\+U\+ME}}\item[{\em 
+R\+E\+S\+U\+ME\hypertarget{os_8h_a9f370e4c39050de1279a1d969aa8496ba401283aaa98a76b506f2198465bd7009}{}\label{os_8h_a9f370e4c39050de1279a1d969aa8496ba401283aaa98a76b506f2198465bd7009}
+}]\index{M\+U\+T\+E\+X\+\_\+\+I\+N\+IT@{M\+U\+T\+E\+X\+\_\+\+I\+N\+IT}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!M\+U\+T\+E\+X\+\_\+\+I\+N\+IT@{M\+U\+T\+E\+X\+\_\+\+I\+N\+IT}}\item[{\em 
+M\+U\+T\+E\+X\+\_\+\+I\+N\+IT\hypertarget{os_8h_a9f370e4c39050de1279a1d969aa8496ba4fce4dc1922bb0bbeb4b629277b3b8ed}{}\label{os_8h_a9f370e4c39050de1279a1d969aa8496ba4fce4dc1922bb0bbeb4b629277b3b8ed}
+}]\index{M\+U\+T\+E\+X\+\_\+\+L\+O\+CK@{M\+U\+T\+E\+X\+\_\+\+L\+O\+CK}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!M\+U\+T\+E\+X\+\_\+\+L\+O\+CK@{M\+U\+T\+E\+X\+\_\+\+L\+O\+CK}}\item[{\em 
+M\+U\+T\+E\+X\+\_\+\+L\+O\+CK\hypertarget{os_8h_a9f370e4c39050de1279a1d969aa8496ba75aff8117ccaf2b87aa57d2b8efd6b61}{}\label{os_8h_a9f370e4c39050de1279a1d969aa8496ba75aff8117ccaf2b87aa57d2b8efd6b61}
+}]\index{M\+U\+T\+E\+X\+\_\+\+U\+N\+L\+O\+CK@{M\+U\+T\+E\+X\+\_\+\+U\+N\+L\+O\+CK}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!M\+U\+T\+E\+X\+\_\+\+U\+N\+L\+O\+CK@{M\+U\+T\+E\+X\+\_\+\+U\+N\+L\+O\+CK}}\item[{\em 
+M\+U\+T\+E\+X\+\_\+\+U\+N\+L\+O\+CK\hypertarget{os_8h_a9f370e4c39050de1279a1d969aa8496ba2aa4bb586a13f1019d20fe228f987308}{}\label{os_8h_a9f370e4c39050de1279a1d969aa8496ba2aa4bb586a13f1019d20fe228f987308}
+}]\index{E\+V\+E\+N\+T\+\_\+\+I\+N\+IT@{E\+V\+E\+N\+T\+\_\+\+I\+N\+IT}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!E\+V\+E\+N\+T\+\_\+\+I\+N\+IT@{E\+V\+E\+N\+T\+\_\+\+I\+N\+IT}}\item[{\em 
+E\+V\+E\+N\+T\+\_\+\+I\+N\+IT\hypertarget{os_8h_a9f370e4c39050de1279a1d969aa8496badbf8902d567f0cc7ca77232f46142a0d}{}\label{os_8h_a9f370e4c39050de1279a1d969aa8496badbf8902d567f0cc7ca77232f46142a0d}
+}]\index{E\+V\+E\+N\+T\+\_\+\+W\+A\+IT@{E\+V\+E\+N\+T\+\_\+\+W\+A\+IT}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!E\+V\+E\+N\+T\+\_\+\+W\+A\+IT@{E\+V\+E\+N\+T\+\_\+\+W\+A\+IT}}\item[{\em 
+E\+V\+E\+N\+T\+\_\+\+W\+A\+IT\hypertarget{os_8h_a9f370e4c39050de1279a1d969aa8496ba8b53f4ea700f5763de889e6467270ef8}{}\label{os_8h_a9f370e4c39050de1279a1d969aa8496ba8b53f4ea700f5763de889e6467270ef8}
+}]\index{E\+V\+E\+N\+T\+\_\+\+S\+I\+G\+N\+AL@{E\+V\+E\+N\+T\+\_\+\+S\+I\+G\+N\+AL}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!E\+V\+E\+N\+T\+\_\+\+S\+I\+G\+N\+AL@{E\+V\+E\+N\+T\+\_\+\+S\+I\+G\+N\+AL}}\item[{\em 
+E\+V\+E\+N\+T\+\_\+\+S\+I\+G\+N\+AL\hypertarget{os_8h_a9f370e4c39050de1279a1d969aa8496bacc68c387b0b1cc2a99d3779b89e424f1}{}\label{os_8h_a9f370e4c39050de1279a1d969aa8496bacc68c387b0b1cc2a99d3779b89e424f1}
+}]\end{description}
+\end{Desc}
+
+
+Definition at line 43 of file os.\+h.
+
+\index{os.\+h@{os.\+h}!mutex\+\_\+state@{mutex\+\_\+state}}
+\index{mutex\+\_\+state@{mutex\+\_\+state}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{mutex\+\_\+state}{mutex_state}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf mutex\+\_\+state}}\hypertarget{os_8h_aa027db226a90c42327f008d517e7b294}{}\label{os_8h_aa027db226a90c42327f008d517e7b294}
+This is the set of states that a mutex can be in at any given time. \begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{D\+I\+S\+A\+B\+L\+ED@{D\+I\+S\+A\+B\+L\+ED}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!D\+I\+S\+A\+B\+L\+ED@{D\+I\+S\+A\+B\+L\+ED}}\item[{\em 
+D\+I\+S\+A\+B\+L\+ED\hypertarget{os_8h_aa027db226a90c42327f008d517e7b294a40f39385238042f6ec0cbac821a19fc4}{}\label{os_8h_aa027db226a90c42327f008d517e7b294a40f39385238042f6ec0cbac821a19fc4}
+}]\index{F\+R\+EE@{F\+R\+EE}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!F\+R\+EE@{F\+R\+EE}}\item[{\em 
+F\+R\+EE\hypertarget{os_8h_aa027db226a90c42327f008d517e7b294acc62d1576546f3245237e1b232d838b6}{}\label{os_8h_aa027db226a90c42327f008d517e7b294acc62d1576546f3245237e1b232d838b6}
+}]\index{L\+O\+C\+K\+ED@{L\+O\+C\+K\+ED}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!L\+O\+C\+K\+ED@{L\+O\+C\+K\+ED}}\item[{\em 
+L\+O\+C\+K\+ED\hypertarget{os_8h_aa027db226a90c42327f008d517e7b294a6b4af979c9694e48f340397ac08dfd1c}{}\label{os_8h_aa027db226a90c42327f008d517e7b294a6b4af979c9694e48f340397ac08dfd1c}
+}]\end{description}
+\end{Desc}
+
+
+Definition at line 62 of file os.\+h.
+
+\index{os.\+h@{os.\+h}!process\+\_\+states@{process\+\_\+states}}
+\index{process\+\_\+states@{process\+\_\+states}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{process\+\_\+states}{process_states}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf process\+\_\+states}}\hypertarget{os_8h_a620c62e0db95234680633c4ddb626e24}{}\label{os_8h_a620c62e0db95234680633c4ddb626e24}
+This is the set of states that a task can be in at any given time. \begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{D\+E\+AD@{D\+E\+AD}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!D\+E\+AD@{D\+E\+AD}}\item[{\em 
+D\+E\+AD\hypertarget{os_8h_a620c62e0db95234680633c4ddb626e24a11fd9ca455f92c69c084484d5cd803c2}{}\label{os_8h_a620c62e0db95234680633c4ddb626e24a11fd9ca455f92c69c084484d5cd803c2}
+}]\index{R\+E\+A\+DY@{R\+E\+A\+DY}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!R\+E\+A\+DY@{R\+E\+A\+DY}}\item[{\em 
+R\+E\+A\+DY\hypertarget{os_8h_a620c62e0db95234680633c4ddb626e24a6564f2f3e15be06b670547bbcaaf0798}{}\label{os_8h_a620c62e0db95234680633c4ddb626e24a6564f2f3e15be06b670547bbcaaf0798}
+}]\index{R\+U\+N\+N\+I\+NG@{R\+U\+N\+N\+I\+NG}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!R\+U\+N\+N\+I\+NG@{R\+U\+N\+N\+I\+NG}}\item[{\em 
+R\+U\+N\+N\+I\+NG\hypertarget{os_8h_a620c62e0db95234680633c4ddb626e24a1061be6c3fb88d32829cba6f6b2be304}{}\label{os_8h_a620c62e0db95234680633c4ddb626e24a1061be6c3fb88d32829cba6f6b2be304}
+}]\index{S\+L\+E\+E\+P\+I\+NG@{S\+L\+E\+E\+P\+I\+NG}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!S\+L\+E\+E\+P\+I\+NG@{S\+L\+E\+E\+P\+I\+NG}}\item[{\em 
+S\+L\+E\+E\+P\+I\+NG\hypertarget{os_8h_a620c62e0db95234680633c4ddb626e24a488282601451a751e0f0e770b15d4235}{}\label{os_8h_a620c62e0db95234680633c4ddb626e24a488282601451a751e0f0e770b15d4235}
+}]\index{B\+L\+O\+C\+K\+E\+D\+\_\+\+O\+N\+\_\+\+M\+U\+T\+EX@{B\+L\+O\+C\+K\+E\+D\+\_\+\+O\+N\+\_\+\+M\+U\+T\+EX}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!B\+L\+O\+C\+K\+E\+D\+\_\+\+O\+N\+\_\+\+M\+U\+T\+EX@{B\+L\+O\+C\+K\+E\+D\+\_\+\+O\+N\+\_\+\+M\+U\+T\+EX}}\item[{\em 
+B\+L\+O\+C\+K\+E\+D\+\_\+\+O\+N\+\_\+\+M\+U\+T\+EX\hypertarget{os_8h_a620c62e0db95234680633c4ddb626e24afadaa2c2b209d92a5d92a337de378efd}{}\label{os_8h_a620c62e0db95234680633c4ddb626e24afadaa2c2b209d92a5d92a337de378efd}
+}]\index{W\+A\+I\+T\+I\+N\+G\+\_\+\+O\+N\+\_\+\+E\+V\+E\+NT@{W\+A\+I\+T\+I\+N\+G\+\_\+\+O\+N\+\_\+\+E\+V\+E\+NT}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!W\+A\+I\+T\+I\+N\+G\+\_\+\+O\+N\+\_\+\+E\+V\+E\+NT@{W\+A\+I\+T\+I\+N\+G\+\_\+\+O\+N\+\_\+\+E\+V\+E\+NT}}\item[{\em 
+W\+A\+I\+T\+I\+N\+G\+\_\+\+O\+N\+\_\+\+E\+V\+E\+NT\hypertarget{os_8h_a620c62e0db95234680633c4ddb626e24a0e35679f0c0a5dff6c73b95438944ec3}{}\label{os_8h_a620c62e0db95234680633c4ddb626e24a0e35679f0c0a5dff6c73b95438944ec3}
+}]\index{T\+E\+R\+M\+I\+N\+A\+T\+ED@{T\+E\+R\+M\+I\+N\+A\+T\+ED}!os.\+h@{os.\+h}}\index{os.\+h@{os.\+h}!T\+E\+R\+M\+I\+N\+A\+T\+ED@{T\+E\+R\+M\+I\+N\+A\+T\+ED}}\item[{\em 
+T\+E\+R\+M\+I\+N\+A\+T\+ED\hypertarget{os_8h_a620c62e0db95234680633c4ddb626e24a240c1965a48eaf409ba68c4cc9462ac5}{}\label{os_8h_a620c62e0db95234680633c4ddb626e24a240c1965a48eaf409ba68c4cc9462ac5}
+}]\end{description}
+\end{Desc}
+
+
+Definition at line 30 of file os.\+h.
+
+
+
+\subsection{Function Documentation}
+\index{os.\+h@{os.\+h}!Event\+\_\+\+Init@{Event\+\_\+\+Init}}
+\index{Event\+\_\+\+Init@{Event\+\_\+\+Init}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{Event\+\_\+\+Init(void)}{Event_Init(void)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf E\+V\+E\+NT} Event\+\_\+\+Init (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{os_8h_a5f473406f5d06f02b3866c7cb400371b}{}\label{os_8h_a5f473406f5d06f02b3866c7cb400371b}
+Application level event init to setup system call 
+
+Definition at line 711 of file os.\+c.
+
+\index{os.\+h@{os.\+h}!Event\+\_\+\+Signal@{Event\+\_\+\+Signal}}
+\index{Event\+\_\+\+Signal@{Event\+\_\+\+Signal}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{Event\+\_\+\+Signal(\+E\+V\+E\+N\+T e)}{Event_Signal(EVENT e)}}]{\setlength{\rightskip}{0pt plus 5cm}void Event\+\_\+\+Signal (
+\begin{DoxyParamCaption}
+\item[{{\bf E\+V\+E\+NT}}]{e}
+\end{DoxyParamCaption}
+)}\hypertarget{os_8h_a82948eaf2be7ba779203ac31df96e5b6}{}\label{os_8h_a82948eaf2be7ba779203ac31df96e5b6}
+Application level event signal to setup system call 
+
+Definition at line 735 of file os.\+c.
+
+\index{os.\+h@{os.\+h}!Event\+\_\+\+Wait@{Event\+\_\+\+Wait}}
+\index{Event\+\_\+\+Wait@{Event\+\_\+\+Wait}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{Event\+\_\+\+Wait(\+E\+V\+E\+N\+T e)}{Event_Wait(EVENT e)}}]{\setlength{\rightskip}{0pt plus 5cm}void Event\+\_\+\+Wait (
+\begin{DoxyParamCaption}
+\item[{{\bf E\+V\+E\+NT}}]{e}
+\end{DoxyParamCaption}
+)}\hypertarget{os_8h_adc88c81b804bb7848bb39488ebdac6f9}{}\label{os_8h_adc88c81b804bb7848bb39488ebdac6f9}
+Application level event wait to setup system call 
+
+Definition at line 723 of file os.\+c.
+
+\index{os.\+h@{os.\+h}!Mutex\+\_\+\+Init@{Mutex\+\_\+\+Init}}
+\index{Mutex\+\_\+\+Init@{Mutex\+\_\+\+Init}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{Mutex\+\_\+\+Init(void)}{Mutex_Init(void)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf M\+U\+T\+EX} Mutex\+\_\+\+Init (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{os_8h_a9247d49fbdf5ecbb7b5879411cd4c7fb}{}\label{os_8h_a9247d49fbdf5ecbb7b5879411cd4c7fb}
+Application level mutex init to setup system call 
+
+Definition at line 674 of file os.\+c.
+
+\index{os.\+h@{os.\+h}!Mutex\+\_\+\+Lock@{Mutex\+\_\+\+Lock}}
+\index{Mutex\+\_\+\+Lock@{Mutex\+\_\+\+Lock}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{Mutex\+\_\+\+Lock(\+M\+U\+T\+E\+X m)}{Mutex_Lock(MUTEX m)}}]{\setlength{\rightskip}{0pt plus 5cm}void Mutex\+\_\+\+Lock (
+\begin{DoxyParamCaption}
+\item[{{\bf M\+U\+T\+EX}}]{m}
+\end{DoxyParamCaption}
+)}\hypertarget{os_8h_a192517b3428c686a32293805abd120f1}{}\label{os_8h_a192517b3428c686a32293805abd120f1}
+Application level mutex lock to setup system call 
+
+Definition at line 686 of file os.\+c.
+
+\index{os.\+h@{os.\+h}!Mutex\+\_\+\+Unlock@{Mutex\+\_\+\+Unlock}}
+\index{Mutex\+\_\+\+Unlock@{Mutex\+\_\+\+Unlock}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{Mutex\+\_\+\+Unlock(\+M\+U\+T\+E\+X m)}{Mutex_Unlock(MUTEX m)}}]{\setlength{\rightskip}{0pt plus 5cm}void Mutex\+\_\+\+Unlock (
+\begin{DoxyParamCaption}
+\item[{{\bf M\+U\+T\+EX}}]{m}
+\end{DoxyParamCaption}
+)}\hypertarget{os_8h_ac614666cf2c6345ff7e15ceb2e96e8dc}{}\label{os_8h_ac614666cf2c6345ff7e15ceb2e96e8dc}
+Application level mutex unlock to setup system call 
+
+Definition at line 699 of file os.\+c.
+
+\index{os.\+h@{os.\+h}!O\+S\+\_\+\+Abort@{O\+S\+\_\+\+Abort}}
+\index{O\+S\+\_\+\+Abort@{O\+S\+\_\+\+Abort}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{O\+S\+\_\+\+Abort(void)}{OS_Abort(void)}}]{\setlength{\rightskip}{0pt plus 5cm}void O\+S\+\_\+\+Abort (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{os_8h_ab5747390a8be675282cb93e5198bd085}{}\label{os_8h_ab5747390a8be675282cb93e5198bd085}
+Just quits 
+
+Definition at line 667 of file os.\+c.
+
+\index{os.\+h@{os.\+h}!Task\+\_\+\+Create@{Task\+\_\+\+Create}}
+\index{Task\+\_\+\+Create@{Task\+\_\+\+Create}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{Task\+\_\+\+Create(void($\ast$f)(void), P\+R\+I\+O\+R\+I\+T\+Y py, int arg)}{Task_Create(void(*f)(void), PRIORITY py, int arg)}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\+ID} Task\+\_\+\+Create (
+\begin{DoxyParamCaption}
+\item[{{\bf voidfuncptr}}]{f, }
+\item[{{\bf P\+R\+I\+O\+R\+I\+TY}}]{py, }
+\item[{int}]{arg}
+\end{DoxyParamCaption}
+)}\hypertarget{os_8h_aba1bd7ffde8c74ee5f7f0c3c1fca7825}{}\label{os_8h_aba1bd7ffde8c74ee5f7f0c3c1fca7825}
+Application or kernel level task create to setup system call 
+
+Definition at line 747 of file os.\+c.
+
+\index{os.\+h@{os.\+h}!Task\+\_\+\+Get\+Arg@{Task\+\_\+\+Get\+Arg}}
+\index{Task\+\_\+\+Get\+Arg@{Task\+\_\+\+Get\+Arg}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{Task\+\_\+\+Get\+Arg(\+P\+I\+D p)}{Task_GetArg(PID p)}}]{\setlength{\rightskip}{0pt plus 5cm}int Task\+\_\+\+Get\+Arg (
+\begin{DoxyParamCaption}
+\item[{{\bf P\+ID}}]{p}
+\end{DoxyParamCaption}
+)}\hypertarget{os_8h_ae9e552294bff300b4c4f4e5a010ee735}{}\label{os_8h_ae9e552294bff300b4c4f4e5a010ee735}
+Application level task getarg to return intiial arg value 
+
+Definition at line 829 of file os.\+c.
+
+\index{os.\+h@{os.\+h}!Task\+\_\+\+Next@{Task\+\_\+\+Next}}
+\index{Task\+\_\+\+Next@{Task\+\_\+\+Next}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{Task\+\_\+\+Next(void)}{Task_Next(void)}}]{\setlength{\rightskip}{0pt plus 5cm}void Task\+\_\+\+Next (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{os_8h_adf2f899160bcb12d32f2cbce83470ea5}{}\label{os_8h_adf2f899160bcb12d32f2cbce83470ea5}
+Application level task next to setup system call to give up C\+PU 
+
+Definition at line 768 of file os.\+c.
+
+\index{os.\+h@{os.\+h}!Task\+\_\+\+Resume@{Task\+\_\+\+Resume}}
+\index{Task\+\_\+\+Resume@{Task\+\_\+\+Resume}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{Task\+\_\+\+Resume(\+P\+I\+D p)}{Task_Resume(PID p)}}]{\setlength{\rightskip}{0pt plus 5cm}void Task\+\_\+\+Resume (
+\begin{DoxyParamCaption}
+\item[{{\bf P\+ID}}]{p}
+\end{DoxyParamCaption}
+)}\hypertarget{os_8h_a6bbdbd6cb63924353074e64134deff60}{}\label{os_8h_a6bbdbd6cb63924353074e64134deff60}
+Application level task resume to setup system call 
+
+Definition at line 805 of file os.\+c.
+
+\index{os.\+h@{os.\+h}!Task\+\_\+\+Sleep@{Task\+\_\+\+Sleep}}
+\index{Task\+\_\+\+Sleep@{Task\+\_\+\+Sleep}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{Task\+\_\+\+Sleep(\+T\+I\+C\+K t)}{Task_Sleep(TICK t)}}]{\setlength{\rightskip}{0pt plus 5cm}void Task\+\_\+\+Sleep (
+\begin{DoxyParamCaption}
+\item[{{\bf T\+I\+CK}}]{t}
+\end{DoxyParamCaption}
+)}\hypertarget{os_8h_a312c9c8228404b24b021279387a7c774}{}\label{os_8h_a312c9c8228404b24b021279387a7c774}
+Application level task sleep to setup system call 
+
+Definition at line 779 of file os.\+c.
+
+\index{os.\+h@{os.\+h}!Task\+\_\+\+Suspend@{Task\+\_\+\+Suspend}}
+\index{Task\+\_\+\+Suspend@{Task\+\_\+\+Suspend}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{Task\+\_\+\+Suspend(\+P\+I\+D p)}{Task_Suspend(PID p)}}]{\setlength{\rightskip}{0pt plus 5cm}void Task\+\_\+\+Suspend (
+\begin{DoxyParamCaption}
+\item[{{\bf P\+ID}}]{p}
+\end{DoxyParamCaption}
+)}\hypertarget{os_8h_a8d86c9b6abd886dc6dc8005808d219e6}{}\label{os_8h_a8d86c9b6abd886dc6dc8005808d219e6}
+Application level task suspend to setup system call 
+
+Definition at line 793 of file os.\+c.
+
+\index{os.\+h@{os.\+h}!Task\+\_\+\+Terminate@{Task\+\_\+\+Terminate}}
+\index{Task\+\_\+\+Terminate@{Task\+\_\+\+Terminate}!os.\+h@{os.\+h}}
+\subsubsection[{\texorpdfstring{Task\+\_\+\+Terminate(void)}{Task_Terminate(void)}}]{\setlength{\rightskip}{0pt plus 5cm}void Task\+\_\+\+Terminate (
+\begin{DoxyParamCaption}
+\item[{void}]{}
+\end{DoxyParamCaption}
+)}\hypertarget{os_8h_aeb1fcf3f13ebc649c9882f07de88cf74}{}\label{os_8h_aeb1fcf3f13ebc649c9882f07de88cf74}
+Prototypes
+
+Application level task terminate to setup system call 
+
+Definition at line 817 of file os.\+c.
+

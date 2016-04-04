@@ -1,0 +1,153 @@
+\hypertarget{queue_8h}{}\section{/\+Users/kevingill/\+Git/\+C\+S\+C460/\+Project 3/rtos/queue.h File Reference}
+\label{queue_8h}\index{/\+Users/kevingill/\+Git/\+C\+S\+C460/\+Project 3/rtos/queue.\+h@{/\+Users/kevingill/\+Git/\+C\+S\+C460/\+Project 3/rtos/queue.\+h}}
+{\ttfamily \#include \char`\"{}os.\+h\char`\"{}}\\*
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+volatile int \hyperlink{queue_8h_a540c1cf39971f052b4a6a400a0b9b2e7}{is\+Full} (volatile int $\ast$Q\+Count)
+\item 
+volatile int \hyperlink{queue_8h_ae1a8f2fb90b2b74e28a3921d6130c503}{is\+Empty} (volatile int $\ast$Q\+Count)
+\item 
+void \hyperlink{queue_8h_a12a71ac34726a92ee38680c038d532e2}{enqueue\+SQ} (volatile \hyperlink{os_8h_ad71fa550e6ad0b4ded3d147641b23d12}{PD} $\ast$$\ast$p, volatile \hyperlink{os_8h_ad71fa550e6ad0b4ded3d147641b23d12}{PD} $\ast$$\ast$Queue, volatile int $\ast$Q\+Count)
+\item 
+void \hyperlink{queue_8h_a9240396acb262a9dfade2ec5b0dc9240}{enqueue\+RQ} (volatile \hyperlink{os_8h_ad71fa550e6ad0b4ded3d147641b23d12}{PD} $\ast$$\ast$p, volatile \hyperlink{os_8h_ad71fa550e6ad0b4ded3d147641b23d12}{PD} $\ast$$\ast$Queue, volatile int $\ast$Q\+Count)
+\item 
+volatile \hyperlink{os_8h_ad71fa550e6ad0b4ded3d147641b23d12}{PD} $\ast$ \hyperlink{queue_8h_ac3a813bb7d92764a8582580c17c76084}{dequeue\+RQ} (volatile \hyperlink{os_8h_ad71fa550e6ad0b4ded3d147641b23d12}{PD} $\ast$$\ast$Queue, volatile int $\ast$Q\+Count)
+\item 
+volatile \hyperlink{os_8h_ad71fa550e6ad0b4ded3d147641b23d12}{PD} $\ast$ \hyperlink{queue_8h_aa39e65bade7b70f43d2a68f2a22f8d22}{dequeue} (volatile \hyperlink{os_8h_ad71fa550e6ad0b4ded3d147641b23d12}{PD} $\ast$$\ast$Queue, volatile int $\ast$Q\+Count)
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+volatile \hyperlink{os_8h_ad71fa550e6ad0b4ded3d147641b23d12}{PD} $\ast$ \hyperlink{queue_8h_a4a9c7eec21f25437a89e349d66608937}{Ready\+Queue} \mbox{[}\hyperlink{os_8h_a06227c0951b6668e376b70760f6ead76}{M\+A\+X\+T\+H\+R\+E\+AD}\mbox{]}
+\item 
+volatile int \hyperlink{queue_8h_a96957c6dd13db4430799fff38a54f151}{R\+Q\+Count}
+\item 
+volatile \hyperlink{os_8h_ad71fa550e6ad0b4ded3d147641b23d12}{PD} $\ast$ \hyperlink{queue_8h_a94c6daa6fecf3677de9e1471e294baa6}{Sleep\+Queue} \mbox{[}\hyperlink{os_8h_a06227c0951b6668e376b70760f6ead76}{M\+A\+X\+T\+H\+R\+E\+AD}\mbox{]}
+\item 
+volatile int \hyperlink{queue_8h_ae6e3d966d41303fbdb4e96c6eecd5f33}{S\+Q\+Count}
+\item 
+volatile \hyperlink{os_8h_ad71fa550e6ad0b4ded3d147641b23d12}{PD} $\ast$ \hyperlink{queue_8h_aab867016d4b204788d326f92a91332d0}{Waiting\+Queue} \mbox{[}\hyperlink{os_8h_a06227c0951b6668e376b70760f6ead76}{M\+A\+X\+T\+H\+R\+E\+AD}\mbox{]}
+\item 
+volatile int \hyperlink{queue_8h_ace06abffffb2c8c001691a32cb41f180}{W\+Q\+Count}
+\end{DoxyCompactItemize}
+
+
+\subsection{Function Documentation}
+\index{queue.\+h@{queue.\+h}!dequeue@{dequeue}}
+\index{dequeue@{dequeue}!queue.\+h@{queue.\+h}}
+\subsubsection[{\texorpdfstring{dequeue(volatile P\+D $\ast$$\ast$\+Queue, volatile int $\ast$\+Q\+Count)}{dequeue(volatile PD **Queue, volatile int *QCount)}}]{\setlength{\rightskip}{0pt plus 5cm}volatile {\bf PD}$\ast$ dequeue (
+\begin{DoxyParamCaption}
+\item[{volatile {\bf PD} $\ast$$\ast$}]{Queue, }
+\item[{volatile int $\ast$}]{Q\+Count}
+\end{DoxyParamCaption}
+)}\hypertarget{queue_8h_aa39e65bade7b70f43d2a68f2a22f8d22}{}\label{queue_8h_aa39e65bade7b70f43d2a68f2a22f8d22}
+
+
+Definition at line 137 of file queue.\+c.
+
+\index{queue.\+h@{queue.\+h}!dequeue\+RQ@{dequeue\+RQ}}
+\index{dequeue\+RQ@{dequeue\+RQ}!queue.\+h@{queue.\+h}}
+\subsubsection[{\texorpdfstring{dequeue\+R\+Q(volatile P\+D $\ast$$\ast$\+Queue, volatile int $\ast$\+Q\+Count)}{dequeueRQ(volatile PD **Queue, volatile int *QCount)}}]{\setlength{\rightskip}{0pt plus 5cm}volatile {\bf PD}$\ast$ dequeue\+RQ (
+\begin{DoxyParamCaption}
+\item[{volatile {\bf PD} $\ast$$\ast$}]{Queue, }
+\item[{volatile int $\ast$}]{Q\+Count}
+\end{DoxyParamCaption}
+)}\hypertarget{queue_8h_ac3a813bb7d92764a8582580c17c76084}{}\label{queue_8h_ac3a813bb7d92764a8582580c17c76084}
+
+
+Definition at line 109 of file queue.\+c.
+
+\index{queue.\+h@{queue.\+h}!enqueue\+RQ@{enqueue\+RQ}}
+\index{enqueue\+RQ@{enqueue\+RQ}!queue.\+h@{queue.\+h}}
+\subsubsection[{\texorpdfstring{enqueue\+R\+Q(volatile P\+D $\ast$$\ast$p, volatile P\+D $\ast$$\ast$\+Queue, volatile int $\ast$\+Q\+Count)}{enqueueRQ(volatile PD **p, volatile PD **Queue, volatile int *QCount)}}]{\setlength{\rightskip}{0pt plus 5cm}void enqueue\+RQ (
+\begin{DoxyParamCaption}
+\item[{volatile {\bf PD} $\ast$$\ast$}]{p, }
+\item[{volatile {\bf PD} $\ast$$\ast$}]{Queue, }
+\item[{volatile int $\ast$}]{Q\+Count}
+\end{DoxyParamCaption}
+)}\hypertarget{queue_8h_a9240396acb262a9dfade2ec5b0dc9240}{}\label{queue_8h_a9240396acb262a9dfade2ec5b0dc9240}
+
+
+Definition at line 57 of file queue.\+c.
+
+\index{queue.\+h@{queue.\+h}!enqueue\+SQ@{enqueue\+SQ}}
+\index{enqueue\+SQ@{enqueue\+SQ}!queue.\+h@{queue.\+h}}
+\subsubsection[{\texorpdfstring{enqueue\+S\+Q(volatile P\+D $\ast$$\ast$p, volatile P\+D $\ast$$\ast$\+Queue, volatile int $\ast$\+Q\+Count)}{enqueueSQ(volatile PD **p, volatile PD **Queue, volatile int *QCount)}}]{\setlength{\rightskip}{0pt plus 5cm}void enqueue\+SQ (
+\begin{DoxyParamCaption}
+\item[{volatile {\bf PD} $\ast$$\ast$}]{p, }
+\item[{volatile {\bf PD} $\ast$$\ast$}]{Queue, }
+\item[{volatile int $\ast$}]{Q\+Count}
+\end{DoxyParamCaption}
+)}\hypertarget{queue_8h_a12a71ac34726a92ee38680c038d532e2}{}\label{queue_8h_a12a71ac34726a92ee38680c038d532e2}
+
+
+Definition at line 33 of file queue.\+c.
+
+\index{queue.\+h@{queue.\+h}!is\+Empty@{is\+Empty}}
+\index{is\+Empty@{is\+Empty}!queue.\+h@{queue.\+h}}
+\subsubsection[{\texorpdfstring{is\+Empty(volatile int $\ast$\+Q\+Count)}{isEmpty(volatile int *QCount)}}]{\setlength{\rightskip}{0pt plus 5cm}volatile int is\+Empty (
+\begin{DoxyParamCaption}
+\item[{volatile int $\ast$}]{Q\+Count}
+\end{DoxyParamCaption}
+)}\hypertarget{queue_8h_ae1a8f2fb90b2b74e28a3921d6130c503}{}\label{queue_8h_ae1a8f2fb90b2b74e28a3921d6130c503}
+
+
+Definition at line 13 of file queue.\+c.
+
+\index{queue.\+h@{queue.\+h}!is\+Full@{is\+Full}}
+\index{is\+Full@{is\+Full}!queue.\+h@{queue.\+h}}
+\subsubsection[{\texorpdfstring{is\+Full(volatile int $\ast$\+Q\+Count)}{isFull(volatile int *QCount)}}]{\setlength{\rightskip}{0pt plus 5cm}volatile int is\+Full (
+\begin{DoxyParamCaption}
+\item[{volatile int $\ast$}]{Q\+Count}
+\end{DoxyParamCaption}
+)}\hypertarget{queue_8h_a540c1cf39971f052b4a6a400a0b9b2e7}{}\label{queue_8h_a540c1cf39971f052b4a6a400a0b9b2e7}
+
+
+Definition at line 6 of file queue.\+c.
+
+
+
+\subsection{Variable Documentation}
+\index{queue.\+h@{queue.\+h}!Ready\+Queue@{Ready\+Queue}}
+\index{Ready\+Queue@{Ready\+Queue}!queue.\+h@{queue.\+h}}
+\subsubsection[{\texorpdfstring{Ready\+Queue}{ReadyQueue}}]{\setlength{\rightskip}{0pt plus 5cm}volatile {\bf PD}$\ast$ Ready\+Queue\mbox{[}{\bf M\+A\+X\+T\+H\+R\+E\+AD}\mbox{]}}\hypertarget{queue_8h_a4a9c7eec21f25437a89e349d66608937}{}\label{queue_8h_a4a9c7eec21f25437a89e349d66608937}
+The Ready\+Queue for tasks 
+
+Definition at line 104 of file os.\+c.
+
+\index{queue.\+h@{queue.\+h}!R\+Q\+Count@{R\+Q\+Count}}
+\index{R\+Q\+Count@{R\+Q\+Count}!queue.\+h@{queue.\+h}}
+\subsubsection[{\texorpdfstring{R\+Q\+Count}{RQCount}}]{\setlength{\rightskip}{0pt plus 5cm}volatile int R\+Q\+Count}\hypertarget{queue_8h_a96957c6dd13db4430799fff38a54f151}{}\label{queue_8h_a96957c6dd13db4430799fff38a54f151}
+
+
+Definition at line 105 of file os.\+c.
+
+\index{queue.\+h@{queue.\+h}!Sleep\+Queue@{Sleep\+Queue}}
+\index{Sleep\+Queue@{Sleep\+Queue}!queue.\+h@{queue.\+h}}
+\subsubsection[{\texorpdfstring{Sleep\+Queue}{SleepQueue}}]{\setlength{\rightskip}{0pt plus 5cm}volatile {\bf PD}$\ast$ Sleep\+Queue\mbox{[}{\bf M\+A\+X\+T\+H\+R\+E\+AD}\mbox{]}}\hypertarget{queue_8h_a94c6daa6fecf3677de9e1471e294baa6}{}\label{queue_8h_a94c6daa6fecf3677de9e1471e294baa6}
+The Sleep\+Queue for tasks 
+
+Definition at line 108 of file os.\+c.
+
+\index{queue.\+h@{queue.\+h}!S\+Q\+Count@{S\+Q\+Count}}
+\index{S\+Q\+Count@{S\+Q\+Count}!queue.\+h@{queue.\+h}}
+\subsubsection[{\texorpdfstring{S\+Q\+Count}{SQCount}}]{\setlength{\rightskip}{0pt plus 5cm}volatile int S\+Q\+Count}\hypertarget{queue_8h_ae6e3d966d41303fbdb4e96c6eecd5f33}{}\label{queue_8h_ae6e3d966d41303fbdb4e96c6eecd5f33}
+
+
+Definition at line 109 of file os.\+c.
+
+\index{queue.\+h@{queue.\+h}!Waiting\+Queue@{Waiting\+Queue}}
+\index{Waiting\+Queue@{Waiting\+Queue}!queue.\+h@{queue.\+h}}
+\subsubsection[{\texorpdfstring{Waiting\+Queue}{WaitingQueue}}]{\setlength{\rightskip}{0pt plus 5cm}volatile {\bf PD}$\ast$ Waiting\+Queue\mbox{[}{\bf M\+A\+X\+T\+H\+R\+E\+AD}\mbox{]}}\hypertarget{queue_8h_aab867016d4b204788d326f92a91332d0}{}\label{queue_8h_aab867016d4b204788d326f92a91332d0}
+The Waiting\+Queue for tasks 
+
+Definition at line 112 of file os.\+c.
+
+\index{queue.\+h@{queue.\+h}!W\+Q\+Count@{W\+Q\+Count}}
+\index{W\+Q\+Count@{W\+Q\+Count}!queue.\+h@{queue.\+h}}
+\subsubsection[{\texorpdfstring{W\+Q\+Count}{WQCount}}]{\setlength{\rightskip}{0pt plus 5cm}volatile int W\+Q\+Count}\hypertarget{queue_8h_ace06abffffb2c8c001691a32cb41f180}{}\label{queue_8h_ace06abffffb2c8c001691a32cb41f180}
+
+
+Definition at line 113 of file os.\+c.
+

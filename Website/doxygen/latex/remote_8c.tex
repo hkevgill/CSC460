@@ -1,0 +1,812 @@
+\hypertarget{remote_8c}{}\section{/\+Users/kevingill/\+Git/\+C\+S\+C460/\+Project 3/remote\+\_\+station/remote.c File Reference}
+\label{remote_8c}\index{/\+Users/kevingill/\+Git/\+C\+S\+C460/\+Project 3/remote\+\_\+station/remote.\+c@{/\+Users/kevingill/\+Git/\+C\+S\+C460/\+Project 3/remote\+\_\+station/remote.\+c}}
+{\ttfamily \#include $<$avr/io.\+h$>$}\\*
+{\ttfamily \#include $<$avr/interrupt.\+h$>$}\\*
+{\ttfamily \#include $<$util/delay.\+h$>$}\\*
+{\ttfamily \#include \char`\"{}../roomba/roomba.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}../rtos/os.\+h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}../uart/uart.\+h\char`\"{}}\\*
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{remote_8c_a43bafb28b29491ec7f871319b5a3b2f8}{F\+\_\+\+C\+PU}~16000000
+\item 
+\#define \hyperlink{remote_8c_aa0cf8bad6fa392ec7cb9fdb843dbb90b}{Q\+Size}~10
+\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef enum \hyperlink{remote_8c_a3f755a107ce6ebcd3938286c16f46f71}{laser\+\_\+states} \hyperlink{remote_8c_a82908fab568377f5df494ab0b89a48cc}{L\+A\+S\+E\+R\+\_\+\+S\+T\+A\+T\+ES}
+\item 
+typedef enum \hyperlink{remote_8c_ab85e49ed439b56da93dc0dd2a322e414}{servo\+\_\+states} \hyperlink{remote_8c_ad73e5e5bf8b7a872c0751a74c372df69}{S\+E\+R\+V\+O\+\_\+\+S\+T\+A\+T\+ES}
+\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{remote_8c_a3f755a107ce6ebcd3938286c16f46f71}{laser\+\_\+states} \{ \hyperlink{remote_8c_a3f755a107ce6ebcd3938286c16f46f71aac132f2982b98bcaa3445e535a03ff75}{O\+FF} = 0, 
+\hyperlink{remote_8c_a3f755a107ce6ebcd3938286c16f46f71a977d478dacaae531f95695750d1e9d03}{ON}
+ \}
+\item 
+enum \hyperlink{remote_8c_ab85e49ed439b56da93dc0dd2a322e414}{servo\+\_\+states} \{ \\*
+\hyperlink{remote_8c_ab85e49ed439b56da93dc0dd2a322e414a0b917b4785b94404694b0f4fb522b268}{F\+U\+L\+L\+\_\+\+B\+A\+CK} = 0, 
+\hyperlink{remote_8c_ab85e49ed439b56da93dc0dd2a322e414a879169e31d992754ed99d9939499accb}{H\+A\+L\+F\+\_\+\+B\+A\+CK}, 
+\hyperlink{remote_8c_ab85e49ed439b56da93dc0dd2a322e414a4c60694a64806bf49e8e52bf901f9d5f}{D\+E\+A\+D\+\_\+\+Z\+O\+NE}, 
+\hyperlink{remote_8c_ab85e49ed439b56da93dc0dd2a322e414aa7a28d8350c8cbbc673d6a03315dc760}{H\+A\+L\+F\+\_\+\+F\+O\+R\+W\+A\+RD}, 
+\\*
+\hyperlink{remote_8c_ab85e49ed439b56da93dc0dd2a322e414a2b8c762d7281d97b75ac497c10bf384d}{F\+U\+L\+L\+\_\+\+F\+O\+R\+W\+A\+RD}
+ \}
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{remote_8c_a5eb7178c89e87a2b9cae0face8098854}{buffer\+\_\+is\+Full} (int $\ast$front, int $\ast$rear)
+\item 
+int \hyperlink{remote_8c_a465626b8e45538719238591a1e7dc058}{buffer\+\_\+is\+Empty} (int $\ast$front, int $\ast$rear)
+\item 
+void \hyperlink{remote_8c_a300298c7f791c4a7c9eb982580002e68}{buffer\+\_\+enqueue} (int val, int $\ast$queue, int $\ast$front, int $\ast$rear)
+\item 
+int \hyperlink{remote_8c_a9a1f74520178306984f5c7c437b9c2ff}{buffer\+\_\+dequeue} (int $\ast$queue, int $\ast$front, int $\ast$rear)
+\item 
+void \hyperlink{remote_8c_ad55cd47a6c453a25a9c1aa2dbb175b74}{enable\+P\+O\+R\+T\+L6} ()
+\item 
+void \hyperlink{remote_8c_a954d22235aa5ca76f4f48c5a0d442bb7}{disable\+P\+O\+R\+T\+L6} ()
+\item 
+void \hyperlink{remote_8c_a7abfff5dcdeac010fe85fbdaf1f77d97}{enable\+P\+O\+R\+T\+L2} ()
+\item 
+void \hyperlink{remote_8c_a700b852bf759376ee0555ee2dd4cf05a}{disable\+P\+O\+R\+T\+L2} ()
+\item 
+void \hyperlink{remote_8c_a90b97e1f4647e5f8077542dc69f41a09}{enable\+P\+O\+R\+T\+L5} ()
+\item 
+void \hyperlink{remote_8c_abaa3b00732c096a103be3e7b553d5a08}{disable\+P\+O\+R\+T\+L5} ()
+\item 
+void \hyperlink{remote_8c_afc16d108ed787f375f95fef433e948b0}{enable\+P\+O\+R\+T\+H3} ()
+\item 
+void \hyperlink{remote_8c_a5f28a8e2c7a8efcd0369c0d3dd54bc43}{disable\+P\+O\+R\+T\+H3} ()
+\item 
+void \hyperlink{remote_8c_a69f491a768a81c2cf99ee2653ad3002d}{A\+D\+C\+\_\+init} ()
+\item 
+void \hyperlink{remote_8c_a33c5e798e6b1627d4911bdfda27d65ec}{Servo\+\_\+\+Init} ()
+\item 
+void \hyperlink{remote_8c_a2242f9428023ff0aacadb5fa210a6686}{Idle} ()
+\item 
+void \hyperlink{remote_8c_a211e35ff30ad7bf925d19714467569bf}{Laser\+\_\+\+Task} ()
+\item 
+void \hyperlink{remote_8c_a0e73de4df51607c4e317611c8aa276ee}{Servo\+\_\+\+Task} ()
+\item 
+void \hyperlink{remote_8c_ac6b56d468eceb5d4ef6a69a12065e46f}{Set\+\_\+\+Photocell\+\_\+\+Threshold} ()
+\item 
+void \hyperlink{remote_8c_a8a8d6deb3ac034eae3d6c3cc807eea39}{Light\+Sensor\+\_\+\+Task} ()
+\item 
+void \hyperlink{remote_8c_ad8a2728c36733e882fcfecfc6ca15289}{Get\+\_\+\+Sensor\+\_\+\+Data} ()
+\item 
+void \hyperlink{remote_8c_ae1b551cc51c9d556342b27b466a7c7cb}{Reverse} ()
+\item 
+void \hyperlink{remote_8c_ac1444bfed27db1bd45805ad96f0dc9ad}{Bump\+\_\+\+Back} ()
+\item 
+void \hyperlink{remote_8c_afbbd76a8eb1942b90019a25e4e59d8b9}{Manual\+\_\+\+Drive} ()
+\item 
+void \hyperlink{remote_8c_a6580e0d2ebdb83a1f1e8296ed74e3de5}{Auto\+\_\+\+Drive} ()
+\item 
+void \hyperlink{remote_8c_aa3aa51be0732605940c3c314d722dc77}{Roomba\+\_\+\+Task} ()
+\item 
+void \hyperlink{remote_8c_a831e605f0d780bdd7c3583b0054dfb87}{Bluetooth\+\_\+\+Send} ()
+\item 
+void \hyperlink{remote_8c_a3c5263db0360d5b6f56841be346b197f}{Bluetooth\+\_\+\+Receive} ()
+\item 
+void \hyperlink{remote_8c_af9c2d0fc011e8984b199e8255ffd9f96}{a\+\_\+main} ()
+\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+uint8\+\_\+t \hyperlink{remote_8c_ac4c528bfd1f0b07dd1ff7cdcfd740512}{L\+A\+S\+ER} = 0
+\item 
+uint8\+\_\+t \hyperlink{remote_8c_a7c7e2d474752dba025a5c0c2b1b077f9}{S\+E\+R\+VO} = 1
+\item 
+uint8\+\_\+t \hyperlink{remote_8c_ad3e037bebad09d1b4cf62e7a9600790a}{P\+H\+O\+TO} = 2
+\item 
+uint8\+\_\+t \hyperlink{remote_8c_ad8cc58abe5ca1290e3fcad270c01b026}{S\+C\+R\+E\+EN} = 3
+\item 
+uint8\+\_\+t \hyperlink{remote_8c_ae6afaf2067d241dcd232364e30c1593d}{R\+O\+O\+M\+BA} = 4
+\item 
+uint8\+\_\+t \hyperlink{remote_8c_a43b063261f3aac0bf5ace8e787f72b49}{M\+O\+DE} = 5
+\item 
+uint8\+\_\+t \hyperlink{remote_8c_a3c8144aa6d2fddf22f867b97f46474be}{Idle\+P\+ID}
+\item 
+uint8\+\_\+t \hyperlink{remote_8c_ac992b41e25abf7cff9b134599eb02881}{Roomba\+Test\+P\+ID}
+\item 
+uint8\+\_\+t \hyperlink{remote_8c_ab2cea064af63608b22dc1770cc4b8313}{Roomba\+Task\+P\+ID}
+\item 
+uint8\+\_\+t \hyperlink{remote_8c_a668f609b12228ec88e9d11e46b01dca2}{Bluetooth\+Send\+P\+ID}
+\item 
+uint8\+\_\+t \hyperlink{remote_8c_aca7b80450a5e21e307c9a4e53522cc50}{Bluetooth\+Receive\+P\+ID}
+\item 
+uint8\+\_\+t \hyperlink{remote_8c_a83e8057d9e94a1fff93d536b7865ffe1}{Laser\+Task\+P\+ID}
+\item 
+uint8\+\_\+t \hyperlink{remote_8c_a5d2fd78962de41957f38b734d52665a1}{Servo\+Task\+P\+ID}
+\item 
+uint8\+\_\+t \hyperlink{remote_8c_a12db9a56bbbc6de7e1c158c14128aded}{Light\+Sensor\+Task\+P\+ID}
+\item 
+uint8\+\_\+t \hyperlink{remote_8c_a49deed434d09c8056b4ec69b13219a5c}{Get\+Sensor\+Data\+Task\+P\+ID}
+\item 
+int \hyperlink{remote_8c_a1bf5524bb709841776ebf020cf765f32}{laser\+State}
+\item 
+int \hyperlink{remote_8c_a2778b2a45971bc91a2fe06e3b88cfdf5}{servo\+State}
+\item 
+int \hyperlink{remote_8c_a087cbfbcd7bc4439b3a01037b666e741}{last\+Servo\+State}
+\item 
+char \hyperlink{remote_8c_a5987372d8d9b0215a72f61fcd2c8bce5}{roomba\+State}
+\item 
+int \hyperlink{remote_8c_a94a2e3dce6e758d534669ef6c86aaf9c}{wall\+State}
+\item 
+int \hyperlink{remote_8c_a326b0e65779304ac527c9ef23b816ccb}{bump\+State}
+\item 
+uint16\+\_\+t \hyperlink{remote_8c_a68ec0d412f0f4cc8fa85b4837b29afa3}{photocell\+Reading}
+\item 
+uint16\+\_\+t \hyperlink{remote_8c_aaed91a9b607f241836b044aab3108a52}{photo\+Threshold}
+\item 
+int \hyperlink{remote_8c_a13cc8594a04b707b0fcc44448018d14e}{A\+U\+TO}
+\item 
+int \hyperlink{remote_8c_a13c737652daad7d7bae072eda9bb92d2}{servo\+Queue} \mbox{[}\hyperlink{remote_8c_aa0cf8bad6fa392ec7cb9fdb843dbb90b}{Q\+Size}\mbox{]}
+\item 
+int \hyperlink{remote_8c_a1b61cf424992a5cea9d8b4a06378fe74}{servo\+Front}
+\item 
+int \hyperlink{remote_8c_a8fbfd809a92c8b3e83085a5a6dff01e9}{servo\+Rear}
+\item 
+int \hyperlink{remote_8c_a393f032c3aec64c323e1c5299a3c29c8}{laser\+Queue} \mbox{[}\hyperlink{remote_8c_aa0cf8bad6fa392ec7cb9fdb843dbb90b}{Q\+Size}\mbox{]}
+\item 
+int \hyperlink{remote_8c_a938febebfaa03d6fd9a7791a83ff2336}{laser\+Front}
+\item 
+int \hyperlink{remote_8c_aff74f006f65a47338c74e9880e867684}{laser\+Rear}
+\item 
+int \hyperlink{remote_8c_ad093c6a8326db7d9844c838db549711e}{roomba\+Queue} \mbox{[}\hyperlink{remote_8c_aa0cf8bad6fa392ec7cb9fdb843dbb90b}{Q\+Size}\mbox{]}
+\item 
+int \hyperlink{remote_8c_af5715b7c148911dff8b96fce089c800c}{roomba\+Front}
+\item 
+int \hyperlink{remote_8c_a3c51d50ca2c77c0280ad6bacc14eacc7}{roomba\+Rear}
+\item 
+\hyperlink{os_8h_ad50a579691fc8233e549f1b355ef96b3}{M\+U\+T\+EX} \hyperlink{remote_8c_a8c003aea69c3cc496ce10e8b85378432}{laser\+Mutex}
+\item 
+\hyperlink{os_8h_ad50a579691fc8233e549f1b355ef96b3}{M\+U\+T\+EX} \hyperlink{remote_8c_a6c9a78b448e70159d932f8806da8f474}{servo\+Mutex}
+\item 
+\hyperlink{os_8h_ad50a579691fc8233e549f1b355ef96b3}{M\+U\+T\+EX} \hyperlink{remote_8c_a36f169d0f8a2452d749d411106d7efb4}{sensor\+Mutex}
+\end{DoxyCompactItemize}
+
+
+\subsection{Macro Definition Documentation}
+\index{remote.\+c@{remote.\+c}!F\+\_\+\+C\+PU@{F\+\_\+\+C\+PU}}
+\index{F\+\_\+\+C\+PU@{F\+\_\+\+C\+PU}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{F\+\_\+\+C\+PU}{F_CPU}}]{\setlength{\rightskip}{0pt plus 5cm}\#define F\+\_\+\+C\+PU~16000000}\hypertarget{remote_8c_a43bafb28b29491ec7f871319b5a3b2f8}{}\label{remote_8c_a43bafb28b29491ec7f871319b5a3b2f8}
+
+
+Definition at line 1 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Q\+Size@{Q\+Size}}
+\index{Q\+Size@{Q\+Size}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Q\+Size}{QSize}}]{\setlength{\rightskip}{0pt plus 5cm}\#define Q\+Size~10}\hypertarget{remote_8c_aa0cf8bad6fa392ec7cb9fdb843dbb90b}{}\label{remote_8c_aa0cf8bad6fa392ec7cb9fdb843dbb90b}
+Queue globals 
+
+Definition at line 58 of file remote.\+c.
+
+
+
+\subsection{Typedef Documentation}
+\index{remote.\+c@{remote.\+c}!L\+A\+S\+E\+R\+\_\+\+S\+T\+A\+T\+ES@{L\+A\+S\+E\+R\+\_\+\+S\+T\+A\+T\+ES}}
+\index{L\+A\+S\+E\+R\+\_\+\+S\+T\+A\+T\+ES@{L\+A\+S\+E\+R\+\_\+\+S\+T\+A\+T\+ES}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{L\+A\+S\+E\+R\+\_\+\+S\+T\+A\+T\+ES}{LASER_STATES}}]{\setlength{\rightskip}{0pt plus 5cm}typedef enum {\bf laser\+\_\+states}  {\bf L\+A\+S\+E\+R\+\_\+\+S\+T\+A\+T\+ES}}\hypertarget{remote_8c_a82908fab568377f5df494ab0b89a48cc}{}\label{remote_8c_a82908fab568377f5df494ab0b89a48cc}
+\index{remote.\+c@{remote.\+c}!S\+E\+R\+V\+O\+\_\+\+S\+T\+A\+T\+ES@{S\+E\+R\+V\+O\+\_\+\+S\+T\+A\+T\+ES}}
+\index{S\+E\+R\+V\+O\+\_\+\+S\+T\+A\+T\+ES@{S\+E\+R\+V\+O\+\_\+\+S\+T\+A\+T\+ES}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{S\+E\+R\+V\+O\+\_\+\+S\+T\+A\+T\+ES}{SERVO_STATES}}]{\setlength{\rightskip}{0pt plus 5cm}typedef enum {\bf servo\+\_\+states}  {\bf S\+E\+R\+V\+O\+\_\+\+S\+T\+A\+T\+ES}}\hypertarget{remote_8c_ad73e5e5bf8b7a872c0751a74c372df69}{}\label{remote_8c_ad73e5e5bf8b7a872c0751a74c372df69}
+
+
+\subsection{Enumeration Type Documentation}
+\index{remote.\+c@{remote.\+c}!laser\+\_\+states@{laser\+\_\+states}}
+\index{laser\+\_\+states@{laser\+\_\+states}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{laser\+\_\+states}{laser_states}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf laser\+\_\+states}}\hypertarget{remote_8c_a3f755a107ce6ebcd3938286c16f46f71}{}\label{remote_8c_a3f755a107ce6ebcd3938286c16f46f71}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{O\+FF@{O\+FF}!remote.\+c@{remote.\+c}}\index{remote.\+c@{remote.\+c}!O\+FF@{O\+FF}}\item[{\em 
+O\+FF\hypertarget{remote_8c_a3f755a107ce6ebcd3938286c16f46f71aac132f2982b98bcaa3445e535a03ff75}{}\label{remote_8c_a3f755a107ce6ebcd3938286c16f46f71aac132f2982b98bcaa3445e535a03ff75}
+}]\index{ON@{ON}!remote.\+c@{remote.\+c}}\index{remote.\+c@{remote.\+c}!ON@{ON}}\item[{\em 
+ON\hypertarget{remote_8c_a3f755a107ce6ebcd3938286c16f46f71a977d478dacaae531f95695750d1e9d03}{}\label{remote_8c_a3f755a107ce6ebcd3938286c16f46f71a977d478dacaae531f95695750d1e9d03}
+}]\end{description}
+\end{Desc}
+
+
+Definition at line 42 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!servo\+\_\+states@{servo\+\_\+states}}
+\index{servo\+\_\+states@{servo\+\_\+states}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{servo\+\_\+states}{servo_states}}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf servo\+\_\+states}}\hypertarget{remote_8c_ab85e49ed439b56da93dc0dd2a322e414}{}\label{remote_8c_ab85e49ed439b56da93dc0dd2a322e414}
+\begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{F\+U\+L\+L\+\_\+\+B\+A\+CK@{F\+U\+L\+L\+\_\+\+B\+A\+CK}!remote.\+c@{remote.\+c}}\index{remote.\+c@{remote.\+c}!F\+U\+L\+L\+\_\+\+B\+A\+CK@{F\+U\+L\+L\+\_\+\+B\+A\+CK}}\item[{\em 
+F\+U\+L\+L\+\_\+\+B\+A\+CK\hypertarget{remote_8c_ab85e49ed439b56da93dc0dd2a322e414a0b917b4785b94404694b0f4fb522b268}{}\label{remote_8c_ab85e49ed439b56da93dc0dd2a322e414a0b917b4785b94404694b0f4fb522b268}
+}]\index{H\+A\+L\+F\+\_\+\+B\+A\+CK@{H\+A\+L\+F\+\_\+\+B\+A\+CK}!remote.\+c@{remote.\+c}}\index{remote.\+c@{remote.\+c}!H\+A\+L\+F\+\_\+\+B\+A\+CK@{H\+A\+L\+F\+\_\+\+B\+A\+CK}}\item[{\em 
+H\+A\+L\+F\+\_\+\+B\+A\+CK\hypertarget{remote_8c_ab85e49ed439b56da93dc0dd2a322e414a879169e31d992754ed99d9939499accb}{}\label{remote_8c_ab85e49ed439b56da93dc0dd2a322e414a879169e31d992754ed99d9939499accb}
+}]\index{D\+E\+A\+D\+\_\+\+Z\+O\+NE@{D\+E\+A\+D\+\_\+\+Z\+O\+NE}!remote.\+c@{remote.\+c}}\index{remote.\+c@{remote.\+c}!D\+E\+A\+D\+\_\+\+Z\+O\+NE@{D\+E\+A\+D\+\_\+\+Z\+O\+NE}}\item[{\em 
+D\+E\+A\+D\+\_\+\+Z\+O\+NE\hypertarget{remote_8c_ab85e49ed439b56da93dc0dd2a322e414a4c60694a64806bf49e8e52bf901f9d5f}{}\label{remote_8c_ab85e49ed439b56da93dc0dd2a322e414a4c60694a64806bf49e8e52bf901f9d5f}
+}]\index{H\+A\+L\+F\+\_\+\+F\+O\+R\+W\+A\+RD@{H\+A\+L\+F\+\_\+\+F\+O\+R\+W\+A\+RD}!remote.\+c@{remote.\+c}}\index{remote.\+c@{remote.\+c}!H\+A\+L\+F\+\_\+\+F\+O\+R\+W\+A\+RD@{H\+A\+L\+F\+\_\+\+F\+O\+R\+W\+A\+RD}}\item[{\em 
+H\+A\+L\+F\+\_\+\+F\+O\+R\+W\+A\+RD\hypertarget{remote_8c_ab85e49ed439b56da93dc0dd2a322e414aa7a28d8350c8cbbc673d6a03315dc760}{}\label{remote_8c_ab85e49ed439b56da93dc0dd2a322e414aa7a28d8350c8cbbc673d6a03315dc760}
+}]\index{F\+U\+L\+L\+\_\+\+F\+O\+R\+W\+A\+RD@{F\+U\+L\+L\+\_\+\+F\+O\+R\+W\+A\+RD}!remote.\+c@{remote.\+c}}\index{remote.\+c@{remote.\+c}!F\+U\+L\+L\+\_\+\+F\+O\+R\+W\+A\+RD@{F\+U\+L\+L\+\_\+\+F\+O\+R\+W\+A\+RD}}\item[{\em 
+F\+U\+L\+L\+\_\+\+F\+O\+R\+W\+A\+RD\hypertarget{remote_8c_ab85e49ed439b56da93dc0dd2a322e414a2b8c762d7281d97b75ac497c10bf384d}{}\label{remote_8c_ab85e49ed439b56da93dc0dd2a322e414a2b8c762d7281d97b75ac497c10bf384d}
+}]\end{description}
+\end{Desc}
+
+
+Definition at line 47 of file remote.\+c.
+
+
+
+\subsection{Function Documentation}
+\index{remote.\+c@{remote.\+c}!a\+\_\+main@{a\+\_\+main}}
+\index{a\+\_\+main@{a\+\_\+main}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{a\+\_\+main()}{a_main()}}]{\setlength{\rightskip}{0pt plus 5cm}void a\+\_\+main (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_af9c2d0fc011e8984b199e8255ffd9f96}{}\label{remote_8c_af9c2d0fc011e8984b199e8255ffd9f96}
+Application level main function. Creates the required tasks and then terminates 
+
+Definition at line 548 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!A\+D\+C\+\_\+init@{A\+D\+C\+\_\+init}}
+\index{A\+D\+C\+\_\+init@{A\+D\+C\+\_\+init}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{A\+D\+C\+\_\+init()}{ADC_init()}}]{\setlength{\rightskip}{0pt plus 5cm}void A\+D\+C\+\_\+init (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_a69f491a768a81c2cf99ee2653ad3002d}{}\label{remote_8c_a69f491a768a81c2cf99ee2653ad3002d}
+Initializes A to D conversion. 
+
+Definition at line 173 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Auto\+\_\+\+Drive@{Auto\+\_\+\+Drive}}
+\index{Auto\+\_\+\+Drive@{Auto\+\_\+\+Drive}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Auto\+\_\+\+Drive()}{Auto_Drive()}}]{\setlength{\rightskip}{0pt plus 5cm}void Auto\+\_\+\+Drive (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_a6580e0d2ebdb83a1f1e8296ed74e3de5}{}\label{remote_8c_a6580e0d2ebdb83a1f1e8296ed74e3de5}
+Auto mode, Drive straight forward. 
+
+Definition at line 426 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Bluetooth\+\_\+\+Receive@{Bluetooth\+\_\+\+Receive}}
+\index{Bluetooth\+\_\+\+Receive@{Bluetooth\+\_\+\+Receive}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Bluetooth\+\_\+\+Receive()}{Bluetooth_Receive()}}]{\setlength{\rightskip}{0pt plus 5cm}void Bluetooth\+\_\+\+Receive (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_a3c5263db0360d5b6f56841be346b197f}{}\label{remote_8c_a3c5263db0360d5b6f56841be346b197f}
+Receive the joystick, laser, and mode data from the base station over bluetooth. 
+
+Definition at line 486 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Bluetooth\+\_\+\+Send@{Bluetooth\+\_\+\+Send}}
+\index{Bluetooth\+\_\+\+Send@{Bluetooth\+\_\+\+Send}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Bluetooth\+\_\+\+Send()}{Bluetooth_Send()}}]{\setlength{\rightskip}{0pt plus 5cm}void Bluetooth\+\_\+\+Send (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_a831e605f0d780bdd7c3583b0054dfb87}{}\label{remote_8c_a831e605f0d780bdd7c3583b0054dfb87}
+Send the photocell reading back to the base station. 
+
+Definition at line 472 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!buffer\+\_\+dequeue@{buffer\+\_\+dequeue}}
+\index{buffer\+\_\+dequeue@{buffer\+\_\+dequeue}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{buffer\+\_\+dequeue(int $\ast$queue, int $\ast$front, int $\ast$rear)}{buffer_dequeue(int *queue, int *front, int *rear)}}]{\setlength{\rightskip}{0pt plus 5cm}int buffer\+\_\+dequeue (
+\begin{DoxyParamCaption}
+\item[{int $\ast$}]{queue, }
+\item[{int $\ast$}]{front, }
+\item[{int $\ast$}]{rear}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_a9a1f74520178306984f5c7c437b9c2ff}{}\label{remote_8c_a9a1f74520178306984f5c7c437b9c2ff}
+Dequeues the value from the specified buffer and returns it. 
+
+Definition at line 105 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!buffer\+\_\+enqueue@{buffer\+\_\+enqueue}}
+\index{buffer\+\_\+enqueue@{buffer\+\_\+enqueue}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{buffer\+\_\+enqueue(int val, int $\ast$queue, int $\ast$front, int $\ast$rear)}{buffer_enqueue(int val, int *queue, int *front, int *rear)}}]{\setlength{\rightskip}{0pt plus 5cm}void buffer\+\_\+enqueue (
+\begin{DoxyParamCaption}
+\item[{int}]{val, }
+\item[{int $\ast$}]{queue, }
+\item[{int $\ast$}]{front, }
+\item[{int $\ast$}]{rear}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_a300298c7f791c4a7c9eb982580002e68}{}\label{remote_8c_a300298c7f791c4a7c9eb982580002e68}
+Enqueues the value into the specified buffer. 
+
+Definition at line 94 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!buffer\+\_\+is\+Empty@{buffer\+\_\+is\+Empty}}
+\index{buffer\+\_\+is\+Empty@{buffer\+\_\+is\+Empty}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{buffer\+\_\+is\+Empty(int $\ast$front, int $\ast$rear)}{buffer_isEmpty(int *front, int *rear)}}]{\setlength{\rightskip}{0pt plus 5cm}int buffer\+\_\+is\+Empty (
+\begin{DoxyParamCaption}
+\item[{int $\ast$}]{front, }
+\item[{int $\ast$}]{rear}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_a465626b8e45538719238591a1e7dc058}{}\label{remote_8c_a465626b8e45538719238591a1e7dc058}
+Returns 1 if the buffer is empty. 
+
+Definition at line 87 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!buffer\+\_\+is\+Full@{buffer\+\_\+is\+Full}}
+\index{buffer\+\_\+is\+Full@{buffer\+\_\+is\+Full}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{buffer\+\_\+is\+Full(int $\ast$front, int $\ast$rear)}{buffer_isFull(int *front, int *rear)}}]{\setlength{\rightskip}{0pt plus 5cm}int buffer\+\_\+is\+Full (
+\begin{DoxyParamCaption}
+\item[{int $\ast$}]{front, }
+\item[{int $\ast$}]{rear}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_a5eb7178c89e87a2b9cae0face8098854}{}\label{remote_8c_a5eb7178c89e87a2b9cae0face8098854}
+Returns 1 if the buffer is full. 
+
+Definition at line 80 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Bump\+\_\+\+Back@{Bump\+\_\+\+Back}}
+\index{Bump\+\_\+\+Back@{Bump\+\_\+\+Back}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Bump\+\_\+\+Back()}{Bump_Back()}}]{\setlength{\rightskip}{0pt plus 5cm}void Bump\+\_\+\+Back (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_ac1444bfed27db1bd45805ad96f0dc9ad}{}\label{remote_8c_ac1444bfed27db1bd45805ad96f0dc9ad}
+Drive straight backwards 
+
+Definition at line 386 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!disable\+P\+O\+R\+T\+H3@{disable\+P\+O\+R\+T\+H3}}
+\index{disable\+P\+O\+R\+T\+H3@{disable\+P\+O\+R\+T\+H3}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{disable\+P\+O\+R\+T\+H3()}{disablePORTH3()}}]{\setlength{\rightskip}{0pt plus 5cm}void disable\+P\+O\+R\+T\+H3 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_a5f28a8e2c7a8efcd0369c0d3dd54bc43}{}\label{remote_8c_a5f28a8e2c7a8efcd0369c0d3dd54bc43}
+Sets P\+O\+R\+T\+H3 to low. 
+
+Definition at line 162 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!disable\+P\+O\+R\+T\+L2@{disable\+P\+O\+R\+T\+L2}}
+\index{disable\+P\+O\+R\+T\+L2@{disable\+P\+O\+R\+T\+L2}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{disable\+P\+O\+R\+T\+L2()}{disablePORTL2()}}]{\setlength{\rightskip}{0pt plus 5cm}void disable\+P\+O\+R\+T\+L2 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_a700b852bf759376ee0555ee2dd4cf05a}{}\label{remote_8c_a700b852bf759376ee0555ee2dd4cf05a}
+Sets P\+O\+R\+T\+L2 to low. 
+
+Definition at line 136 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!disable\+P\+O\+R\+T\+L5@{disable\+P\+O\+R\+T\+L5}}
+\index{disable\+P\+O\+R\+T\+L5@{disable\+P\+O\+R\+T\+L5}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{disable\+P\+O\+R\+T\+L5()}{disablePORTL5()}}]{\setlength{\rightskip}{0pt plus 5cm}void disable\+P\+O\+R\+T\+L5 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_abaa3b00732c096a103be3e7b553d5a08}{}\label{remote_8c_abaa3b00732c096a103be3e7b553d5a08}
+Sets P\+O\+R\+T\+L5 to low. 
+
+Definition at line 149 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!disable\+P\+O\+R\+T\+L6@{disable\+P\+O\+R\+T\+L6}}
+\index{disable\+P\+O\+R\+T\+L6@{disable\+P\+O\+R\+T\+L6}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{disable\+P\+O\+R\+T\+L6()}{disablePORTL6()}}]{\setlength{\rightskip}{0pt plus 5cm}void disable\+P\+O\+R\+T\+L6 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_a954d22235aa5ca76f4f48c5a0d442bb7}{}\label{remote_8c_a954d22235aa5ca76f4f48c5a0d442bb7}
+Sets P\+O\+R\+T\+L6 to low. 
+
+Definition at line 123 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!enable\+P\+O\+R\+T\+H3@{enable\+P\+O\+R\+T\+H3}}
+\index{enable\+P\+O\+R\+T\+H3@{enable\+P\+O\+R\+T\+H3}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{enable\+P\+O\+R\+T\+H3()}{enablePORTH3()}}]{\setlength{\rightskip}{0pt plus 5cm}void enable\+P\+O\+R\+T\+H3 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_afc16d108ed787f375f95fef433e948b0}{}\label{remote_8c_afc16d108ed787f375f95fef433e948b0}
+Sets P\+O\+R\+T\+H3 to high. 
+
+Definition at line 156 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!enable\+P\+O\+R\+T\+L2@{enable\+P\+O\+R\+T\+L2}}
+\index{enable\+P\+O\+R\+T\+L2@{enable\+P\+O\+R\+T\+L2}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{enable\+P\+O\+R\+T\+L2()}{enablePORTL2()}}]{\setlength{\rightskip}{0pt plus 5cm}void enable\+P\+O\+R\+T\+L2 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_a7abfff5dcdeac010fe85fbdaf1f77d97}{}\label{remote_8c_a7abfff5dcdeac010fe85fbdaf1f77d97}
+Sets P\+O\+R\+T\+L2 to high. 
+
+Definition at line 130 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!enable\+P\+O\+R\+T\+L5@{enable\+P\+O\+R\+T\+L5}}
+\index{enable\+P\+O\+R\+T\+L5@{enable\+P\+O\+R\+T\+L5}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{enable\+P\+O\+R\+T\+L5()}{enablePORTL5()}}]{\setlength{\rightskip}{0pt plus 5cm}void enable\+P\+O\+R\+T\+L5 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_a90b97e1f4647e5f8077542dc69f41a09}{}\label{remote_8c_a90b97e1f4647e5f8077542dc69f41a09}
+Sets P\+O\+R\+T\+L5 to high. 
+
+Definition at line 143 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!enable\+P\+O\+R\+T\+L6@{enable\+P\+O\+R\+T\+L6}}
+\index{enable\+P\+O\+R\+T\+L6@{enable\+P\+O\+R\+T\+L6}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{enable\+P\+O\+R\+T\+L6()}{enablePORTL6()}}]{\setlength{\rightskip}{0pt plus 5cm}void enable\+P\+O\+R\+T\+L6 (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_ad55cd47a6c453a25a9c1aa2dbb175b74}{}\label{remote_8c_ad55cd47a6c453a25a9c1aa2dbb175b74}
+Sets P\+O\+R\+T\+L6 to high. 
+
+Definition at line 117 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Get\+\_\+\+Sensor\+\_\+\+Data@{Get\+\_\+\+Sensor\+\_\+\+Data}}
+\index{Get\+\_\+\+Sensor\+\_\+\+Data@{Get\+\_\+\+Sensor\+\_\+\+Data}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Get\+\_\+\+Sensor\+\_\+\+Data()}{Get_Sensor_Data()}}]{\setlength{\rightskip}{0pt plus 5cm}void Get\+\_\+\+Sensor\+\_\+\+Data (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_ad8a2728c36733e882fcfecfc6ca15289}{}\label{remote_8c_ad8a2728c36733e882fcfecfc6ca15289}
+Get the bumper and virtual wall data packets from the Roomba. 
+
+Definition at line 335 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Idle@{Idle}}
+\index{Idle@{Idle}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Idle()}{Idle()}}]{\setlength{\rightskip}{0pt plus 5cm}void Idle (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_a2242f9428023ff0aacadb5fa210a6686}{}\label{remote_8c_a2242f9428023ff0aacadb5fa210a6686}
+Idle task to run when nothing else is ready. 
+
+Definition at line 198 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Laser\+\_\+\+Task@{Laser\+\_\+\+Task}}
+\index{Laser\+\_\+\+Task@{Laser\+\_\+\+Task}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Laser\+\_\+\+Task()}{Laser_Task()}}]{\setlength{\rightskip}{0pt plus 5cm}void Laser\+\_\+\+Task (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_a211e35ff30ad7bf925d19714467569bf}{}\label{remote_8c_a211e35ff30ad7bf925d19714467569bf}
+Checks the laser\+Queue, if something is available to dequeue, do it and turn the laser state on or off depending on the value. 
+
+Definition at line 207 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Light\+Sensor\+\_\+\+Task@{Light\+Sensor\+\_\+\+Task}}
+\index{Light\+Sensor\+\_\+\+Task@{Light\+Sensor\+\_\+\+Task}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Light\+Sensor\+\_\+\+Task()}{LightSensor_Task()}}]{\setlength{\rightskip}{0pt plus 5cm}void Light\+Sensor\+\_\+\+Task (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_a8a8d6deb3ac034eae3d6c3cc807eea39}{}\label{remote_8c_a8a8d6deb3ac034eae3d6c3cc807eea39}
+Sample the lightsensor and if a spike is detected, then the roomba is hit and it is time to die. Every half a second also recalculate the threshold value to account for the roomba moving between light and dark places. 
+
+Definition at line 295 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Manual\+\_\+\+Drive@{Manual\+\_\+\+Drive}}
+\index{Manual\+\_\+\+Drive@{Manual\+\_\+\+Drive}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Manual\+\_\+\+Drive()}{Manual_Drive()}}]{\setlength{\rightskip}{0pt plus 5cm}void Manual\+\_\+\+Drive (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_afbbd76a8eb1942b90019a25e4e59d8b9}{}\label{remote_8c_afbbd76a8eb1942b90019a25e4e59d8b9}
+Drive in the direction the joystick is pointing. 
+
+Definition at line 393 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Reverse@{Reverse}}
+\index{Reverse@{Reverse}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Reverse()}{Reverse()}}]{\setlength{\rightskip}{0pt plus 5cm}void Reverse (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_ae1b551cc51c9d556342b27b466a7c7cb}{}\label{remote_8c_ae1b551cc51c9d556342b27b466a7c7cb}
+Do the opposite of the Roombas current state. 
+
+Definition at line 353 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Roomba\+\_\+\+Task@{Roomba\+\_\+\+Task}}
+\index{Roomba\+\_\+\+Task@{Roomba\+\_\+\+Task}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Roomba\+\_\+\+Task()}{Roomba_Task()}}]{\setlength{\rightskip}{0pt plus 5cm}void Roomba\+\_\+\+Task (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_aa3aa51be0732605940c3c314d722dc77}{}\label{remote_8c_aa3aa51be0732605940c3c314d722dc77}
+Determine what movement to make based on sensors, and whether it is in manual or auto mode. 
+
+Definition at line 433 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Servo\+\_\+\+Init@{Servo\+\_\+\+Init}}
+\index{Servo\+\_\+\+Init@{Servo\+\_\+\+Init}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Servo\+\_\+\+Init()}{Servo_Init()}}]{\setlength{\rightskip}{0pt plus 5cm}void Servo\+\_\+\+Init (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_a33c5e798e6b1627d4911bdfda27d65ec}{}\label{remote_8c_a33c5e798e6b1627d4911bdfda27d65ec}
+Initializes Timer4 to control the servo. Timer4 is configured as phase and frequency P\+WM mode with a prescaler of 64 and non-\/inverted P\+WM. O\+C\+R4A=375 Then sets the servo to the middle. 0 degrees = 125, 90 degrees = 375, and 180 degrees= 625. 
+
+Definition at line 181 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Servo\+\_\+\+Task@{Servo\+\_\+\+Task}}
+\index{Servo\+\_\+\+Task@{Servo\+\_\+\+Task}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Servo\+\_\+\+Task()}{Servo_Task()}}]{\setlength{\rightskip}{0pt plus 5cm}void Servo\+\_\+\+Task (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_a0e73de4df51607c4e317611c8aa276ee}{}\label{remote_8c_a0e73de4df51607c4e317611c8aa276ee}
+Slowly move the servo to the desired goal (servo\+State). If the servo is in the deadzone, do not move. 
+
+Definition at line 229 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Set\+\_\+\+Photocell\+\_\+\+Threshold@{Set\+\_\+\+Photocell\+\_\+\+Threshold}}
+\index{Set\+\_\+\+Photocell\+\_\+\+Threshold@{Set\+\_\+\+Photocell\+\_\+\+Threshold}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Set\+\_\+\+Photocell\+\_\+\+Threshold()}{Set_Photocell_Threshold()}}]{\setlength{\rightskip}{0pt plus 5cm}void Set\+\_\+\+Photocell\+\_\+\+Threshold (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}\hypertarget{remote_8c_ac6b56d468eceb5d4ef6a69a12065e46f}{}\label{remote_8c_ac6b56d468eceb5d4ef6a69a12065e46f}
+Takes three readings from the photocells and averages them to get a threshold for what the room is currently like. 
+
+Definition at line 260 of file remote.\+c.
+
+
+
+\subsection{Variable Documentation}
+\index{remote.\+c@{remote.\+c}!A\+U\+TO@{A\+U\+TO}}
+\index{A\+U\+TO@{A\+U\+TO}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{A\+U\+TO}{AUTO}}]{\setlength{\rightskip}{0pt plus 5cm}int A\+U\+TO}\hypertarget{remote_8c_a13cc8594a04b707b0fcc44448018d14e}{}\label{remote_8c_a13cc8594a04b707b0fcc44448018d14e}
+
+
+Definition at line 37 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Bluetooth\+Receive\+P\+ID@{Bluetooth\+Receive\+P\+ID}}
+\index{Bluetooth\+Receive\+P\+ID@{Bluetooth\+Receive\+P\+ID}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Bluetooth\+Receive\+P\+ID}{BluetoothReceivePID}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t Bluetooth\+Receive\+P\+ID}\hypertarget{remote_8c_aca7b80450a5e21e307c9a4e53522cc50}{}\label{remote_8c_aca7b80450a5e21e307c9a4e53522cc50}
+
+
+Definition at line 21 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Bluetooth\+Send\+P\+ID@{Bluetooth\+Send\+P\+ID}}
+\index{Bluetooth\+Send\+P\+ID@{Bluetooth\+Send\+P\+ID}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Bluetooth\+Send\+P\+ID}{BluetoothSendPID}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t Bluetooth\+Send\+P\+ID}\hypertarget{remote_8c_a668f609b12228ec88e9d11e46b01dca2}{}\label{remote_8c_a668f609b12228ec88e9d11e46b01dca2}
+
+
+Definition at line 20 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!bump\+State@{bump\+State}}
+\index{bump\+State@{bump\+State}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{bump\+State}{bumpState}}]{\setlength{\rightskip}{0pt plus 5cm}int bump\+State}\hypertarget{remote_8c_a326b0e65779304ac527c9ef23b816ccb}{}\label{remote_8c_a326b0e65779304ac527c9ef23b816ccb}
+
+
+Definition at line 32 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Get\+Sensor\+Data\+Task\+P\+ID@{Get\+Sensor\+Data\+Task\+P\+ID}}
+\index{Get\+Sensor\+Data\+Task\+P\+ID@{Get\+Sensor\+Data\+Task\+P\+ID}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Get\+Sensor\+Data\+Task\+P\+ID}{GetSensorDataTaskPID}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t Get\+Sensor\+Data\+Task\+P\+ID}\hypertarget{remote_8c_a49deed434d09c8056b4ec69b13219a5c}{}\label{remote_8c_a49deed434d09c8056b4ec69b13219a5c}
+
+
+Definition at line 25 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Idle\+P\+ID@{Idle\+P\+ID}}
+\index{Idle\+P\+ID@{Idle\+P\+ID}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Idle\+P\+ID}{IdlePID}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t Idle\+P\+ID}\hypertarget{remote_8c_a3c8144aa6d2fddf22f867b97f46474be}{}\label{remote_8c_a3c8144aa6d2fddf22f867b97f46474be}
+
+
+Definition at line 17 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!L\+A\+S\+ER@{L\+A\+S\+ER}}
+\index{L\+A\+S\+ER@{L\+A\+S\+ER}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{L\+A\+S\+ER}{LASER}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t L\+A\+S\+ER = 0}\hypertarget{remote_8c_ac4c528bfd1f0b07dd1ff7cdcfd740512}{}\label{remote_8c_ac4c528bfd1f0b07dd1ff7cdcfd740512}
+
+
+Definition at line 10 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!laser\+Front@{laser\+Front}}
+\index{laser\+Front@{laser\+Front}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{laser\+Front}{laserFront}}]{\setlength{\rightskip}{0pt plus 5cm}int laser\+Front}\hypertarget{remote_8c_a938febebfaa03d6fd9a7791a83ff2336}{}\label{remote_8c_a938febebfaa03d6fd9a7791a83ff2336}
+
+
+Definition at line 65 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!laser\+Mutex@{laser\+Mutex}}
+\index{laser\+Mutex@{laser\+Mutex}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{laser\+Mutex}{laserMutex}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf M\+U\+T\+EX} laser\+Mutex}\hypertarget{remote_8c_a8c003aea69c3cc496ce10e8b85378432}{}\label{remote_8c_a8c003aea69c3cc496ce10e8b85378432}
+
+
+Definition at line 73 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!laser\+Queue@{laser\+Queue}}
+\index{laser\+Queue@{laser\+Queue}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{laser\+Queue}{laserQueue}}]{\setlength{\rightskip}{0pt plus 5cm}int laser\+Queue\mbox{[}{\bf Q\+Size}\mbox{]}}\hypertarget{remote_8c_a393f032c3aec64c323e1c5299a3c29c8}{}\label{remote_8c_a393f032c3aec64c323e1c5299a3c29c8}
+
+
+Definition at line 64 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!laser\+Rear@{laser\+Rear}}
+\index{laser\+Rear@{laser\+Rear}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{laser\+Rear}{laserRear}}]{\setlength{\rightskip}{0pt plus 5cm}int laser\+Rear}\hypertarget{remote_8c_aff74f006f65a47338c74e9880e867684}{}\label{remote_8c_aff74f006f65a47338c74e9880e867684}
+
+
+Definition at line 66 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!laser\+State@{laser\+State}}
+\index{laser\+State@{laser\+State}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{laser\+State}{laserState}}]{\setlength{\rightskip}{0pt plus 5cm}int laser\+State}\hypertarget{remote_8c_a1bf5524bb709841776ebf020cf765f32}{}\label{remote_8c_a1bf5524bb709841776ebf020cf765f32}
+
+
+Definition at line 27 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Laser\+Task\+P\+ID@{Laser\+Task\+P\+ID}}
+\index{Laser\+Task\+P\+ID@{Laser\+Task\+P\+ID}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Laser\+Task\+P\+ID}{LaserTaskPID}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t Laser\+Task\+P\+ID}\hypertarget{remote_8c_a83e8057d9e94a1fff93d536b7865ffe1}{}\label{remote_8c_a83e8057d9e94a1fff93d536b7865ffe1}
+
+
+Definition at line 22 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!last\+Servo\+State@{last\+Servo\+State}}
+\index{last\+Servo\+State@{last\+Servo\+State}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{last\+Servo\+State}{lastServoState}}]{\setlength{\rightskip}{0pt plus 5cm}int last\+Servo\+State}\hypertarget{remote_8c_a087cbfbcd7bc4439b3a01037b666e741}{}\label{remote_8c_a087cbfbcd7bc4439b3a01037b666e741}
+
+
+Definition at line 29 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Light\+Sensor\+Task\+P\+ID@{Light\+Sensor\+Task\+P\+ID}}
+\index{Light\+Sensor\+Task\+P\+ID@{Light\+Sensor\+Task\+P\+ID}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Light\+Sensor\+Task\+P\+ID}{LightSensorTaskPID}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t Light\+Sensor\+Task\+P\+ID}\hypertarget{remote_8c_a12db9a56bbbc6de7e1c158c14128aded}{}\label{remote_8c_a12db9a56bbbc6de7e1c158c14128aded}
+
+
+Definition at line 24 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!M\+O\+DE@{M\+O\+DE}}
+\index{M\+O\+DE@{M\+O\+DE}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{M\+O\+DE}{MODE}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t M\+O\+DE = 5}\hypertarget{remote_8c_a43b063261f3aac0bf5ace8e787f72b49}{}\label{remote_8c_a43b063261f3aac0bf5ace8e787f72b49}
+
+
+Definition at line 15 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!P\+H\+O\+TO@{P\+H\+O\+TO}}
+\index{P\+H\+O\+TO@{P\+H\+O\+TO}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{P\+H\+O\+TO}{PHOTO}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t P\+H\+O\+TO = 2}\hypertarget{remote_8c_ad3e037bebad09d1b4cf62e7a9600790a}{}\label{remote_8c_ad3e037bebad09d1b4cf62e7a9600790a}
+
+
+Definition at line 12 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!photocell\+Reading@{photocell\+Reading}}
+\index{photocell\+Reading@{photocell\+Reading}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{photocell\+Reading}{photocellReading}}]{\setlength{\rightskip}{0pt plus 5cm}uint16\+\_\+t photocell\+Reading}\hypertarget{remote_8c_a68ec0d412f0f4cc8fa85b4837b29afa3}{}\label{remote_8c_a68ec0d412f0f4cc8fa85b4837b29afa3}
+
+
+Definition at line 34 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!photo\+Threshold@{photo\+Threshold}}
+\index{photo\+Threshold@{photo\+Threshold}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{photo\+Threshold}{photoThreshold}}]{\setlength{\rightskip}{0pt plus 5cm}uint16\+\_\+t photo\+Threshold}\hypertarget{remote_8c_aaed91a9b607f241836b044aab3108a52}{}\label{remote_8c_aaed91a9b607f241836b044aab3108a52}
+
+
+Definition at line 35 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!R\+O\+O\+M\+BA@{R\+O\+O\+M\+BA}}
+\index{R\+O\+O\+M\+BA@{R\+O\+O\+M\+BA}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{R\+O\+O\+M\+BA}{ROOMBA}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t R\+O\+O\+M\+BA = 4}\hypertarget{remote_8c_ae6afaf2067d241dcd232364e30c1593d}{}\label{remote_8c_ae6afaf2067d241dcd232364e30c1593d}
+
+
+Definition at line 14 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!roomba\+Front@{roomba\+Front}}
+\index{roomba\+Front@{roomba\+Front}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{roomba\+Front}{roombaFront}}]{\setlength{\rightskip}{0pt plus 5cm}int roomba\+Front}\hypertarget{remote_8c_af5715b7c148911dff8b96fce089c800c}{}\label{remote_8c_af5715b7c148911dff8b96fce089c800c}
+
+
+Definition at line 69 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!roomba\+Queue@{roomba\+Queue}}
+\index{roomba\+Queue@{roomba\+Queue}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{roomba\+Queue}{roombaQueue}}]{\setlength{\rightskip}{0pt plus 5cm}int roomba\+Queue\mbox{[}{\bf Q\+Size}\mbox{]}}\hypertarget{remote_8c_ad093c6a8326db7d9844c838db549711e}{}\label{remote_8c_ad093c6a8326db7d9844c838db549711e}
+
+
+Definition at line 68 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!roomba\+Rear@{roomba\+Rear}}
+\index{roomba\+Rear@{roomba\+Rear}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{roomba\+Rear}{roombaRear}}]{\setlength{\rightskip}{0pt plus 5cm}int roomba\+Rear}\hypertarget{remote_8c_a3c51d50ca2c77c0280ad6bacc14eacc7}{}\label{remote_8c_a3c51d50ca2c77c0280ad6bacc14eacc7}
+
+
+Definition at line 70 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!roomba\+State@{roomba\+State}}
+\index{roomba\+State@{roomba\+State}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{roomba\+State}{roombaState}}]{\setlength{\rightskip}{0pt plus 5cm}char roomba\+State}\hypertarget{remote_8c_a5987372d8d9b0215a72f61fcd2c8bce5}{}\label{remote_8c_a5987372d8d9b0215a72f61fcd2c8bce5}
+
+
+Definition at line 30 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Roomba\+Task\+P\+ID@{Roomba\+Task\+P\+ID}}
+\index{Roomba\+Task\+P\+ID@{Roomba\+Task\+P\+ID}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Roomba\+Task\+P\+ID}{RoombaTaskPID}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t Roomba\+Task\+P\+ID}\hypertarget{remote_8c_ab2cea064af63608b22dc1770cc4b8313}{}\label{remote_8c_ab2cea064af63608b22dc1770cc4b8313}
+
+
+Definition at line 19 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Roomba\+Test\+P\+ID@{Roomba\+Test\+P\+ID}}
+\index{Roomba\+Test\+P\+ID@{Roomba\+Test\+P\+ID}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Roomba\+Test\+P\+ID}{RoombaTestPID}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t Roomba\+Test\+P\+ID}\hypertarget{remote_8c_ac992b41e25abf7cff9b134599eb02881}{}\label{remote_8c_ac992b41e25abf7cff9b134599eb02881}
+
+
+Definition at line 18 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!S\+C\+R\+E\+EN@{S\+C\+R\+E\+EN}}
+\index{S\+C\+R\+E\+EN@{S\+C\+R\+E\+EN}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{S\+C\+R\+E\+EN}{SCREEN}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t S\+C\+R\+E\+EN = 3}\hypertarget{remote_8c_ad8cc58abe5ca1290e3fcad270c01b026}{}\label{remote_8c_ad8cc58abe5ca1290e3fcad270c01b026}
+
+
+Definition at line 13 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!sensor\+Mutex@{sensor\+Mutex}}
+\index{sensor\+Mutex@{sensor\+Mutex}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{sensor\+Mutex}{sensorMutex}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf M\+U\+T\+EX} sensor\+Mutex}\hypertarget{remote_8c_a36f169d0f8a2452d749d411106d7efb4}{}\label{remote_8c_a36f169d0f8a2452d749d411106d7efb4}
+
+
+Definition at line 75 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!S\+E\+R\+VO@{S\+E\+R\+VO}}
+\index{S\+E\+R\+VO@{S\+E\+R\+VO}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{S\+E\+R\+VO}{SERVO}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t S\+E\+R\+VO = 1}\hypertarget{remote_8c_a7c7e2d474752dba025a5c0c2b1b077f9}{}\label{remote_8c_a7c7e2d474752dba025a5c0c2b1b077f9}
+
+
+Definition at line 11 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!servo\+Front@{servo\+Front}}
+\index{servo\+Front@{servo\+Front}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{servo\+Front}{servoFront}}]{\setlength{\rightskip}{0pt plus 5cm}int servo\+Front}\hypertarget{remote_8c_a1b61cf424992a5cea9d8b4a06378fe74}{}\label{remote_8c_a1b61cf424992a5cea9d8b4a06378fe74}
+
+
+Definition at line 61 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!servo\+Mutex@{servo\+Mutex}}
+\index{servo\+Mutex@{servo\+Mutex}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{servo\+Mutex}{servoMutex}}]{\setlength{\rightskip}{0pt plus 5cm}{\bf M\+U\+T\+EX} servo\+Mutex}\hypertarget{remote_8c_a6c9a78b448e70159d932f8806da8f474}{}\label{remote_8c_a6c9a78b448e70159d932f8806da8f474}
+
+
+Definition at line 74 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!servo\+Queue@{servo\+Queue}}
+\index{servo\+Queue@{servo\+Queue}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{servo\+Queue}{servoQueue}}]{\setlength{\rightskip}{0pt plus 5cm}int servo\+Queue\mbox{[}{\bf Q\+Size}\mbox{]}}\hypertarget{remote_8c_a13c737652daad7d7bae072eda9bb92d2}{}\label{remote_8c_a13c737652daad7d7bae072eda9bb92d2}
+
+
+Definition at line 60 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!servo\+Rear@{servo\+Rear}}
+\index{servo\+Rear@{servo\+Rear}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{servo\+Rear}{servoRear}}]{\setlength{\rightskip}{0pt plus 5cm}int servo\+Rear}\hypertarget{remote_8c_a8fbfd809a92c8b3e83085a5a6dff01e9}{}\label{remote_8c_a8fbfd809a92c8b3e83085a5a6dff01e9}
+
+
+Definition at line 62 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!servo\+State@{servo\+State}}
+\index{servo\+State@{servo\+State}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{servo\+State}{servoState}}]{\setlength{\rightskip}{0pt plus 5cm}int servo\+State}\hypertarget{remote_8c_a2778b2a45971bc91a2fe06e3b88cfdf5}{}\label{remote_8c_a2778b2a45971bc91a2fe06e3b88cfdf5}
+
+
+Definition at line 28 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!Servo\+Task\+P\+ID@{Servo\+Task\+P\+ID}}
+\index{Servo\+Task\+P\+ID@{Servo\+Task\+P\+ID}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{Servo\+Task\+P\+ID}{ServoTaskPID}}]{\setlength{\rightskip}{0pt plus 5cm}uint8\+\_\+t Servo\+Task\+P\+ID}\hypertarget{remote_8c_a5d2fd78962de41957f38b734d52665a1}{}\label{remote_8c_a5d2fd78962de41957f38b734d52665a1}
+
+
+Definition at line 23 of file remote.\+c.
+
+\index{remote.\+c@{remote.\+c}!wall\+State@{wall\+State}}
+\index{wall\+State@{wall\+State}!remote.\+c@{remote.\+c}}
+\subsubsection[{\texorpdfstring{wall\+State}{wallState}}]{\setlength{\rightskip}{0pt plus 5cm}int wall\+State}\hypertarget{remote_8c_a94a2e3dce6e758d534669ef6c86aaf9c}{}\label{remote_8c_a94a2e3dce6e758d534669ef6c86aaf9c}
+
+
+Definition at line 31 of file remote.\+c.
+

@@ -337,11 +337,11 @@
 									</header>
                                     <h4>RTOS</h4>
                                     <p>
-                                        The RTOS from project 2 is running on both the base and remote station. The stations do not use all of the features of the RTOS, but they use task creation, sleep, termination, and mutex lock and unlock. Thus the code does have critical sections that are protected by mutexes, and tasks that are put to sleep and woken up.
+                                        The RTOS from project 2 is running on both the base and remote stations. The stations do not use all of the features of the RTOS, but they use task creation, sleep, termination, os abort, and mutex lock and unlock. Thus the code does have critical sections that are protected by mutexes, and tasks that are put to sleep and woken up.
                                     </p>
                                     <h4>UART</h4>
                                     <p>
-                                        The UART library is used to transfer data across bluetooth, and to and from the Roomba. There are four commands for bluetooth and the Roomba and they are: UART_Init, Send_Byte, Receive_Byte, and Send_String. Bluetooth uses UART1 and the Roomba uses UART3. The first byte sent over bluetooth is always a flag indicating which actuator the data is meant for, then the remaining data is sent. The Roomba functions similarly with the first byte usually being a special opcode define in the OI.
+                                        The UART library is used to transfer data across bluetooth, and to and from the Roomba. There are four commands for bluetooth and the Roomba and they are: UART_Init, Send_Byte, Receive_Byte, and Send_String. Bluetooth uses UART1 and the Roomba uses UART3. The first byte sent over bluetooth is always a flag indicating which actuator the data is meant for, then the remaining data is sent. The Roomba functions similarly with the first byte usually being a special opcode that is defined in the OI.
                                     </p>
                                     <b>UART_Init</b>
                                     <p>
@@ -357,7 +357,7 @@
                                     </p>
                                     <b>Send_String</b>
                                     <p>
-                                        Send_String takes a character array and sends one character at a time until the entire array has been sent.
+                                        Send_String takes a character array and sends one character at a time using Send_Byte until the entire array has been sent.
                                     </p>
                                     <h4>Roomba</h4>
                                     <p>
@@ -365,7 +365,7 @@
                                     </p>
                                     <b>Roomba_Init</b>
                                     <p>
-                                        Roomba_Init wakes the Roomba from sleep, Starts the open interface (OI), waits 2 seconds, then pulses the DD pin three times to set the baud rate to 19.2k. Then the Roomba is put into safe mode and a song 0 is initialized.
+                                        Roomba_Init wakes the Roomba from sleep, Starts the open interface (OI), waits 2 seconds, then pulses the DD pin three times to set the baud rate to 19.2k. Then the Roomba is put into safe mode and song 0 is initialized.
                                     </p>
                                     <b>Roomba_Drive</b>
                                     <p>
@@ -385,7 +385,7 @@
                                     </p>
                                     <b>Roomba_Song</b>
                                     <p>
-                                        Roomba_Song loads a song onto the Roomba by sending the song number, 6 notes, and the duration each note should be played in 1/64ths of a second.
+                                        Roomba_Song loads a song onto the Roomba by sending the song number, 6 notes, and the duration each note should be played in increments of 1/64ths of a second.
                                     </p>
                                     <h4>Queues</h4>
                                     <p>
@@ -397,7 +397,7 @@
 									</p>
                                     <b>Mutexes</b>
                                     <p>
-                                        The adc_mutex is locked when an A to D conversion begins, and is unlocked when it finishes. This prevents any conversions from being interrupted and cancelled.The bluetooth_mutex is locked when data needs to be sent, and then unlocked when the data has sent. This is to prevent a task that is sending data from being interrupted part way through and having another task start sending data. The ls_mutex is locked anytime the lsQueue (light sensor queue) is accessed.
+                                        The adc_mutex is locked when an A to D conversion begins, and is unlocked when it finishes. This prevents any conversions from being interrupted and cancelled. The bluetooth_mutex is locked when data needs to be sent, and then unlocked when the data has sent. This is to prevent a task that is sending data from being interrupted part way through and having another task start sending data. The ls_mutex is locked anytime the lsQueue (light sensor queue) is accessed.
                                     </p>
                                     <b>LaserTask</b>
                                     <p>
@@ -409,11 +409,11 @@
                                     </p>
                                     <b>bluetoothReceive</b>
                                     <p>
-                                        If there is data available to receive, then this task reads the data and checks to see if the first byte is the light sensor flag indicating light sensor data is incoming. If it is, two more bytes are read and put together into a 16 bit integer. The ls_mutex is locked and this integer is enqueued into the light sensor queue, then the ls_mutex is unlocked. This task then sleeps for 15 ticks (150ms).
+                                        If there is data available to receive, then this task reads the data and checks to see if the first byte is the light sensor flag which indicates that light sensor data is incoming. If it is, two more bytes are read and put together into a 16 bit integer. The ls_mutex is locked and this integer is enqueued into the light sensor queue, then the ls_mutex is unlocked. This task then sleeps for 15 ticks (150ms).
                                     </p>
                                     <b>screenTask</b>
                                     <p>
-                                        screenTask locks the ls_mutex and dequeues an element from the buffer if one is available. This is all this task does for now, eventually it would display on an LCD screen on the base station. The ls_mutex is then unlocked. screenTask then sleeps for 15 ticks (150ms).
+                                        screenTask locks the ls_mutex and dequeues an element from the buffer if one is available. This is all this task does for now, eventually it would display the value on an LCD screen on the base station. The ls_mutex is then unlocked. screenTask then sleeps for 15 ticks (150ms).
                                     </p>
                                     <b>SwitchTask</b>
                                     <p>
@@ -425,15 +425,15 @@
                                     </p>
                                     <b>Bluetooth_Receive</b>
                                     <p>
-                                        Bluetooth_Receive will read a byte if it is available, then check to see if that incoming byte is a flag signalling more data is coming for the laser, the Roomba, or whether it means switch modes. If it is one of the first two, the data is received and put into the correct queue (laserQueue or roombaQueue). If it is the third, then the value of the AUTO variable is flipped, changing the state to either autonomous or manual control. If the set goes to manual control, the roombaBuffer is cleared so new data from the joystick can be received. This task sleeps for 5 ticks (50ms).
+                                        Bluetooth_Receive will read a byte if it is available, then check to see if the flag signals that more data is coming for the laser, the Roomba, or whether it means switch modes. If it is one of the first two, the data is received and put into the correct queue (laserQueue or roombaQueue). If it is the third, then the value of the AUTO variable is flipped, changing the state to either autonomous or manual control. If the state goes to manual control, the roombaBuffer is cleared so new data from the joystick can be received. This task sleeps for 5 ticks (50ms).
                                     </p>
                                     <b>Bluetooth_Send</b>
                                     <p>
-                                        Bluetooth_Send simply sends a byte indicating the data is for the photocell, then the current value of the photocell (stored in the global variable photocellReading). Then this task sleeps for 10 ticks (100ms).
+                                        Bluetooth_Send simply sends a photocell flag, then sends the current value of the photocell (stored in the global variable photocellReading). Then this task sleeps for 10 ticks (100ms).
                                     </p>
                                     <b>Laser_Task</b>
                                     <p>
-                                        Laser tasks checks if the buffer has data in it, if it does the data is dequeued and the laser is turned on or off depending on the new value. This task then sleeps for 10 ticks (100ms).
+                                        Laser tasks checks if the laserQueue has data in it, if it does the data is dequeued and the laser is turned on or off depending on the new value. This task then sleeps for 10 ticks (100ms).
                                     </p>
                                     <b>LightSensor_Task</b>
                                     <p>
@@ -441,11 +441,11 @@
                                     </p>
                                     <b>Get_Sensor_Data</b>
                                     <p>
-                                        Get_Sensor_Data sends a request to the Roomba over UART for the values of the bumper sensor and virtual wall detection sensor. These values are returned and stored in globala variables called bumpState and wallState. This task then sleeps for 20 ticks (200ms);
+                                        Get_Sensor_Data sends a request to the Roomba over UART for the values of the bumper sensor and the virtual wall detection sensor. These values are returned and stored in global variables called bumpState and wallState. This task then sleeps for 20 ticks (200ms);
                                     </p>
                                     <b>Roomba_Task</b>
                                     <p>
-                                        Roomba_Task implements the subsumption architecture discussed earlier in the design section. This is done through an if, else if, else tree. If wallState is set, then the Roomba will do the opposite of its current movement state, if the mode is also autonomous then the Roomba will turn counterclockwise after it backs up as well. If wallState is not set then a check is made for bumpState. If bumpState is set, the Roomba will go straight backwards. If autonomous mode is enabled it will also turn counterclockwise after is backs up. If bumpState is not set either then we reach the else case. Inside the else, a check is made for autonomous mode. If autuonomous mode is enabled the Roomba will travel straight forward. If autonomous mode is disabled, the Roomba will dequeue a new state from the roombaBuffer and perform that action. This task then sleeps for 20 ticks (200ms).
+                                        Roomba_Task implements the subsumption architecture discussed earlier in the design section. This is done through an if, else if, else tree. If wallState is set, then the Roomba will do the opposite of its current movement, if the mode is also autonomous then the Roomba will turn counterclockwise after it does the opposite as well. If wallState is not set then a check is made for bumpState. If bumpState is set, the Roomba will go straight backwards. If autonomous mode is enabled it will also turn counterclockwise after is backs up. If bumpState is not set either, then we reach the else case. Inside the else, a check is made for autonomous mode. If autuonomous mode is enabled the Roomba will travel straight forward. If autonomous mode is disabled, the Roomba will dequeue a new state from the roombaBuffer and perform that action. This task then sleeps for 20 ticks (200ms).
                                     </p>
 								</section>
 

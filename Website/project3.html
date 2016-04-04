@@ -70,7 +70,7 @@
 										<h3>Hardware</h3>
 									</header>
 									<h4>iRobot Roomba Create 2</h4>
-									<a class="image paragraph"><img src="images/mega2560.jpg"></a>
+									<a class="image paragraph"><img src="images/irobot-roomba.jpg"></a>
                                     <br>
 									<p>
 										The iRobot Roomba Create 2 is a mobile programmable robot that allows sounds, movements, and additional sensors and actuators to be added and customized.
@@ -100,8 +100,92 @@
 										<h3>Testing</h3>
 									</header>
 									<p>
-										Testing
+										Testing was conducted to evaluate whether the applications behaviour matched the expected criteria. Testing was split into four distinct categories. These categories are manuel control and laser, IR boundary and obstacle avoidance, semi-autonomous, and light detection.
 									</p>
+									<h4>Manual Control and Firing</h4>
+									<p>
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>To test that the joystick movements are correctly mapped, sent over bluetooth, and translated into Roomba drive commands to control the Roomba.</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Description:</td>
+                                                <td>Moving the joystick up and down makes the Roomba go straight forward and straight backwards. Moving the joystick left causes the Roomba to spin counterclockwise, moving right causes the Roomba to spin clockwise. Moving the joystick to the top left corner causes the Roomba to travel forwards and counterclockwise, the top right corner causes it to travel forwards and clockwise, the bottom left causes it to travel backwards and clockwise, and the bottom right to travel backwards and counterclockwise.</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the video below, the Roomba responds quickly and effectively to the expected behaviour</td>
+                                            </tr>
+                                        </table>
+									</p>
+									<video width="640" height="400" controls>
+										<source src="videos/manual_and_laser.mov" type="video/mp4">
+										Your browser does not support the video tag.
+									</video>
+									<h4>IR Boundary and Obstacle Avoidance in Manual Mode</h4>
+									<p>
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>This test has two purposes. The first is to make sure the Roomba does not cross any virtual walls by backing up when the wall is detected. The second is to back up when the Roomba runs into an obstacle with the bumper.</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Description:</td>
+                                                <td>When the Roomba runs into an obstacle with the bumper, it will travel straight backwards to back away from the object so that the user can then attempt to avoid the obstacle. The same occurs for the virtual wall.</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the video below, the Roomba backs away when the bumper is hit, or the virtual wall is detected.</td>
+                                            </tr>
+                                        </table>
+									</p>
+									<video width="640" height="400" controls>
+										<source src="videos/bumper_and_ir.mov" type="video/mp4">
+										Your browser does not support the video tag.
+									</video>
+									<h4>Semi-Autonomous Control</h4>
+									<p>
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>This test has four purposes. The first is to make that the Roomba can switch from manual to semi-autonomous mode and vice versa. The second is to verify that while in semi-autonomous mode, the Roomba travels forward. The third tests that if a virtual wall is detected, the Roomba will backup, turn counterclockwise, and then continue forward. The fourth shows that when an obstacle is hit the roomba backs up, turns counterclockwise, and continues as well.</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Description:</td>
+                                                <td>The video starts by switching from manual mode to semi-autonomous mode. Then the Roomba travels into the virtual wall and turns counterclockwise. Once the Roomba hits the real wall, it also turns clockwise. The video ends by using the button to switch back to manual mode. The virtual wall emitter is enclosed by two red cups in order to emit a more focused beam.</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the video below, the Roomba successfully switches modes, avoids the virtual wall, and bounces off the real wall, and successfully returns to manual mode.</td>
+                                            </tr>
+                                        </table>
+									</p>
+									<video width="640" height="400" controls>
+										<source src="videos/autonomous.mov" type="video/mp4">
+										Your browser does not support the video tag.
+									</video>
+									<h4>Light Detection</h4>
+									<p>
+										<table>
+                                            <tr>
+                                                <td>Objective:</td>
+                                                <td>To test that the light sensor successfully detects a laser and registers it as a hit.</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Description:</td>
+                                                <td>When a laser is shined on the light sensor, the Roomba will play a sound to indicate that it was hit, turn off its laser, stop moving, and be in a dead state.</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Results:</td>
+                                                <td>As shown in the video below, the Roomba successfully stops moving, has its laser off, and can no longer be controlled until it is reset.</td>
+                                            </tr>
+                                        </table>
+									</p>
+									<video width="640" height="400" controls>
+										<source src="videos/light_detection.mov" type="video/mp4">
+										Your browser does not support the video tag.
+									</video>
 								</section>
 
 								<section id="Conclusion">

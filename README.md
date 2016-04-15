@@ -2,7 +2,7 @@
 
 Website Link: www.roombatank.com
 
-Placed 2nd in the class compeition, the videos can be seen at the following link: http://www.roombatank.com/project3.html#Competition
+Placed 2nd in the class compeition. We are the tank with the yellow flag with a "2" written on it. The videos can be seen at the following link: http://www.roombatank.com/project3.html#Competition
 
 This repo holds the project code as well as the website code
 
